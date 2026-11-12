@@ -1,0 +1,2553 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Rx Patient Instructions System | 3" x 2" Label Printing</title>
+
+  <!-- Google Fonts: Inter & Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Scanner Libraries from offersgit -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
+
+  <style>
+    :root {
+      /* Color Palette: White background, Dark Navy Blue, Orange Primary Accent */
+      --bg-body: #ffffff;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-hover: #f1f5f9;
+
+      --navy-950: #070d1e;
+      --navy-900: #0a192f;
+      --navy-800: #0f2b5c;
+      --navy-700: #1e3a8a;
+      --navy-600: #2563eb;
+      --navy-100: #dbeafe;
+      --navy-50: #eff6ff;
+
+      --orange-600: #ea580c;
+      --orange-500: #f97316;
+      --orange-400: #fb923c;
+      --orange-100: #ffedd5;
+      --orange-50: #fff7ed;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-light: #94a3b8;
+
+      --border-color: #e2e8f0;
+      --border-dark: #cbd5e1;
+
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 30px rgba(15, 23, 42, 0.12);
+      --shadow-orange: 0 6px 20px rgba(234, 88, 12, 0.35);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================================================
+       1. Top Navigation Bar (English UI)
+       ========================================================= */
+    .app-header {
+      background-color: var(--bg-surface);
+      border-bottom: 2px solid var(--border-color);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+      border: 2px solid var(--orange-500);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(15, 43, 92, 0.25);
+    }
+
+    .brand-info h1 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy-800);
+      line-height: 1.2;
+    }
+
+    .brand-info p {
+      font-size: 12px;
+      color: var(--orange-600);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .db-status-badge {
+      background: var(--navy-50);
+      border: 1px solid #bfdbfe;
+      color: var(--navy-800);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #22c55e;
+      animation: pulseIndicator 2s infinite;
+    }
+
+    @keyframes pulseIndicator {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .btn-scanner-trigger {
+      background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-orange);
+      transition: all 0.2s ease;
+    }
+
+    .btn-scanner-trigger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(234, 88, 12, 0.45);
+    }
+
+    /* =========================================================
+       2. Main Workspace Layout
+       ========================================================= */
+    .main-workspace {
+      max-width: 1320px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Search Section */
+    .search-panel {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .search-bar-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      position: relative;
+    }
+
+    .search-input-field {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input-field i.icon-search {
+      position: absolute;
+      left: 14px;
+      color: var(--navy-800);
+      font-size: 15px;
+    }
+
+    .search-input-field input {
+      width: 100%;
+      padding: 11px 16px 11px 42px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy-900);
+      background: var(--bg-subtle);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .search-input-field input:focus {
+      background: #ffffff;
+      border-color: var(--orange-500);
+      box-shadow: 0 0 0 4px var(--orange-100);
+    }
+
+    .btn-search-submit {
+      background: var(--navy-800);
+      color: #ffffff;
+      border: none;
+      padding: 11px 22px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-search-submit:hover {
+      background: var(--navy-700);
+    }
+
+    .quick-search-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 2px solid var(--navy-700);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+    }
+
+    .dropdown-row-item {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s;
+    }
+
+    .dropdown-row-item:hover {
+      background: var(--orange-50);
+    }
+
+    /* Two-column layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 22px;
+    }
+
+    @media (max-width: 960px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Product Card */
+    .product-display-card {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .product-img-box {
+      width: 100%;
+      height: 220px;
+      background: #ffffff;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .product-img-box img {
+      max-width: 95%;
+      max-height: 95%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .img-source-tag {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #38bdf8;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+
+    .code-badge-top {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--navy-800);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .product-spec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .trade-name-en-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy-800);
+      line-height: 1.3;
+    }
+
+    .trade-name-ar-sub {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      text-align: left;
+    }
+
+    .active-ingredient-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--orange-50);
+      border: 1px solid var(--orange-400);
+      color: var(--orange-600);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+
+    .meta-data-table {
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .meta-row strong {
+      color: var(--navy-900);
+    }
+
+    /* Instructions & Label Builder */
+    .instructions-builder-panel {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .builder-top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--bg-subtle);
+      padding-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .builder-top-controls h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--navy-800);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Language Switcher for Printed Label */
+    .label-lang-toggle-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--navy-50);
+      border: 1.5px solid var(--navy-700);
+      border-radius: 10px;
+      padding: 3px;
+    }
+
+    .lang-toggle-btn {
+      padding: 6px 14px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--navy-700);
+      transition: all 0.2s;
+    }
+
+    .lang-toggle-btn.active {
+      background: var(--navy-800);
+      color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .active-preset-select-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .active-preset-select {
+      padding: 6px 12px;
+      border: 1.5px solid var(--navy-600);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy-800);
+      background: #ffffff;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Instruction Items List */
+    .instruction-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .instruction-card-row {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .instruction-card-row.is-checked {
+      background: #ffffff;
+      border-color: var(--orange-500);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .instruction-checkbox {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--orange-600);
+      cursor: pointer;
+    }
+
+    .instruction-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .instruction-tag-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--navy-800);
+      background: var(--navy-50);
+      padding: 2px 8px;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .instruction-editable-text {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--navy-900);
+      line-height: 1.45;
+      padding: 4px 6px;
+      border-radius: 4px;
+      outline: none;
+      border: 1px solid transparent;
+      transition: border 0.15s;
+    }
+
+    .instruction-editable-text.rtl-text {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .instruction-editable-text:focus {
+      border-color: var(--navy-600);
+      background: #ffffff;
+    }
+
+    .btn-delete-instruction {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .btn-delete-instruction:hover {
+      color: #ef4444;
+      background: #fee2e2;
+    }
+
+    /* Add custom instruction */
+    .add-instruction-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .add-instruction-input {
+      flex: 1;
+      padding: 9px 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .add-instruction-input:focus {
+      border-color: var(--orange-500);
+    }
+
+    .btn-add-action {
+      background: var(--navy-800);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Print Preview & Execution Bar */
+    .print-control-bar {
+      border-top: 2px solid var(--border-color);
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .print-info-text {
+      font-size: 13px;
+      color: var(--navy-800);
+      font-weight: 700;
+    }
+
+    .btn-launch-preview {
+      background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 50%, var(--orange-600) 100%);
+      color: #ffffff;
+      border: none;
+      padding: 13px 28px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(15, 43, 92, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-launch-preview:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.45);
+    }
+
+    /* =========================================================
+       3. Print Preview Modal (Exact 3" x 2" Paper Representation)
+       ========================================================= */
+    .preview-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .preview-modal-dialog {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 960px;
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      border: 2px solid var(--navy-700);
+    }
+
+    .preview-modal-header {
+      background: var(--navy-950);
+      color: #ffffff;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-modal-header h3 {
+      font-size: 15.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #ffffff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .btn-close-modal:hover {
+      background: #ef4444;
+    }
+
+    .preview-modal-toolbar {
+      background: var(--bg-subtle);
+      border-bottom: 1.5px solid var(--border-color);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .toolbar-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy-800);
+    }
+
+    .toolbar-option input[type="range"] {
+      accent-color: var(--orange-500);
+      cursor: pointer;
+      width: 80px;
+    }
+
+    .toolbar-select-box {
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--navy-800);
+      background: #fff;
+    }
+
+    .preview-modal-content {
+      padding: 24px 20px;
+      overflow-y: auto;
+      flex: 1;
+      background: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .label-preview-row-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Screen Representation of 3in x 2in label (Aspect Ratio 3:2) */
+    .screen-label-card {
+      width: 345px;
+      height: 230px;
+      background: #ffffff;
+      border: 1.5px solid #0f172a;
+      border-radius: 3px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    .screen-label-card.is-rtl {
+      direction: rtl;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .label-watermark-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.12; /* Faded watermark as requested */
+      filter: grayscale(100%) contrast(140%);
+      transition: opacity 0.2s;
+    }
+
+    .label-content-layer {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .label-header-block {
+      border-bottom: 1.5px solid #000000;
+      padding-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .label-header-title {
+      font-size: 11.5px;
+      font-weight: 900;
+      color: #000000;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+
+    .label-header-subtitle {
+      font-size: 8px;
+      font-weight: 800;
+      color: #333333;
+      margin-top: 1px;
+    }
+
+    .label-page-chip {
+      background: #000000;
+      color: #ffffff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 8px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .label-items-list {
+      flex: 1;
+      padding: 3px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      justify-content: center;
+    }
+
+    .label-point-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      font-size: 9.5px;
+      line-height: 1.25;
+      color: #000000;
+      font-weight: 700;
+    }
+
+    .label-point-bullet {
+      font-size: 9px;
+      color: #000000;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .label-footer-bar {
+      border-top: 1px dashed #666666;
+      padding-top: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5px;
+      font-weight: 700;
+      color: #333333;
+    }
+
+    .preview-modal-footer {
+      background: #ffffff;
+      border-top: 1.5px solid var(--border-color);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-execute-print {
+      background: linear-gradient(135deg, var(--orange-600), var(--orange-500));
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-orange);
+    }
+
+    /* =========================================================
+       4. Scanner Modal (Directly taken from offersgit)
+       ========================================================= */
+    #scannerModalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 100000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .scanner-shell {
+      width: 100%;
+      max-width: 520px;
+      height: 94vh;
+      background: #1e293b;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid #667eea;
+      position: relative;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scanner-header-bar {
+      background: #0f172a;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      color: #ffffff;
+    }
+
+    .scanner-title-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scanner-brand-title {
+      font-weight: 800;
+      font-size: 14px;
+      color: #f8fafc;
+    }
+
+    .scanner-badge-v9 {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .scanner-actions-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .scanner-action-btn {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scanner-action-btn:hover {
+      background: #ea580c;
+    }
+
+    .scanner-camera-box {
+      width: 100%;
+      background: #000000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #reader {
+      width: 100%;
+      min-height: 240px;
+      background: #000000;
+      margin: 0 auto;
+    }
+
+    .scanner-laser-line {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      background: #22c55e;
+      box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e;
+      pointer-events: none;
+      animation: scanLaser 2s infinite ease-in-out;
+      z-index: 10;
+    }
+
+    @keyframes scanLaser {
+      0%, 100% { top: 20%; opacity: 0.8; }
+      50% { top: 80%; opacity: 1; }
+    }
+
+    .scanner-camera-tools-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 6px;
+      z-index: 25;
+    }
+
+    .camera-tool-pill {
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(251, 191, 36, 0.6);
+      color: #fbbf24;
+      font-size: 11.5px;
+      font-weight: bold;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    .scanner-manual-wrap {
+      padding: 12px 14px;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .scanner-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .scanner-manual-input {
+      flex: 1;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1.5px solid #475569;
+      background: #111827;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .scanner-manual-input:focus {
+      border-color: #f59e0b;
+    }
+
+    .btn-scanner-submit {
+      padding: 0 16px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* =========================================================
+       5. Thermal Label 3" x 2" Print Engine (@media print)
+       ========================================================= */
+    @page {
+      size: 3in 2in;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 3in;
+        height: 2in;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body > *:not(#printExecutionSandbox) {
+        display: none !important;
+      }
+
+      #printExecutionSandbox {
+        display: block !important;
+        width: 3in;
+        height: 2in;
+        margin: 0;
+        padding: 0;
+      }
+
+      .print-label-page {
+        width: 3in;
+        height: 2in;
+        max-width: 3in;
+        max-height: 2in;
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        box-sizing: border-box;
+        padding: 2.2mm 2.8mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .print-label-page.is-rtl {
+        direction: rtl;
+        font-family: 'Cairo', sans-serif;
+      }
+
+      .print-watermark {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 1;
+        opacity: 0.12 !important;
+        filter: grayscale(100%) contrast(150%) !important;
+      }
+
+      .print-content-wrap {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    }
+
+    #printExecutionSandbox {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       1. Top Navbar (English UI)
+       ========================================================= -->
+  <header class="app-header">
+    <div class="brand-group">
+      <div class="brand-icon">
+        <i class="fas fa-prescription-bottle-alt"></i>
+      </div>
+      <div class="brand-info">
+        <h1>Rx Patient Instructions System</h1>
+        <p><i class="fas fa-tag"></i> Thermal Label Format: 3" × 2" (76.2 × 50.8 mm)</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div id="masterDbStatusBadge" class="db-status-badge">
+        <span class="status-indicator"></span>
+        <span id="masterDbStatusText">Master DB: Initializing...</span>
+      </div>
+
+      <button class="btn-scanner-trigger" onclick="openBarcodeScannerModal()">
+        <i class="fas fa-qrcode"></i>
+        <span>Scan Barcode / QR</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       2. Main Content
+       ========================================================= -->
+  <main class="main-workspace">
+
+    <!-- Search Section -->
+    <section class="search-panel">
+      <div class="search-bar-row">
+        <div class="search-input-field">
+          <i class="fas fa-search icon-search"></i>
+          <input type="text" id="globalProductSearchInput" 
+                 placeholder="Search by 6-digit Code (e.g. 100929 for Fosamax), Barcode GTIN, or Drug Name / Active Ingredient..."
+                 oninput="handleSearchTypeahead(this.value)"
+                 onkeydown="if(event.key==='Enter') triggerSearchQuery()">
+        </div>
+        <button class="btn-search-submit" onclick="triggerSearchQuery()">
+          <i class="fas fa-search"></i>
+          <span>Search</span>
+        </button>
+      </div>
+      <div id="quickSearchDropdown" class="quick-search-dropdown"></div>
+    </section>
+
+    <!-- Two-column dashboard -->
+    <div class="dashboard-grid">
+
+      <!-- Left Card: Selected Medication -->
+      <aside class="product-display-card">
+        <div class="product-img-box">
+          <span id="cardProductCode" class="code-badge-top">Code: 100929</span>
+          <img id="cardProductImage" 
+               src="https://stgprevapi.al-dawaa.com/medias/%D9%81%D9%88%D8%B3%D8%A7%D9%85%D8%A7%D9%83%D8%B3-70-%D9%85%D8%AC%D9%85-%D9%82%D8%B1%D8%B5-%D8%A7%D8%B3%D8%A8%D9%88%D8%B9%D9%8A%D8%A7-%D9%84%D9%84%D8%AD%D9%81%D8%A7%D8%B8-%D8%B9%D9%84%D9%89-%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B9%D8%B8%D8%A7%D9%85-4-%D8%A7%D9%82%D8%B1%D8%A7%D8%B5_0_1200.webp?context=bWFzdGVyfGltYWdlc3wxMDU0OTB8aW1hZ2Uvd2VicHxhREppTDJnMU5TODVOekkwTURFeU5ESTVNelF5THpFd01Ea3lPVjh3WDJGeVh6RXlNREJYZURFeU1EQklYMWRGUWxBdWQyVmljQXwwMjZhYThmMzU5Yzk1NDNlM2U4OTUwYjI4MjJjNTVmODUwNzkwNTg3ZmNiZDJiZWUwYWVkMDYxZDM0Nzc1ZmYz" 
+               alt="Medication Image">
+          <span id="imgSourceIndicator" class="img-source-tag">Master DB Image ✓</span>
+        </div>
+
+        <div class="product-spec-list">
+          <div id="cardTradeNameEn" class="trade-name-en-title">FOSAMAX ONCE WEEKLY 70 MG 4 TA</div>
+          <div id="cardTradeNameAr" class="trade-name-ar-sub">فوساماكس اقراص 70 مجم</div>
+
+          <div class="active-ingredient-pill">
+            <i class="fas fa-atom"></i>
+            <span id="cardActiveIngredient">ALENDRONATE MONOSODIUM TRIHYDR</span>
+          </div>
+        </div>
+
+        <div class="meta-data-table">
+          <div class="meta-row">
+            <span>Manufacturer:</span>
+            <strong id="cardManufacture">ORGANON</strong>
+          </div>
+          <div class="meta-row">
+            <span>Price:</span>
+            <strong id="cardUnitPrice" style="color:var(--orange-600)">45.95 SAR</strong>
+          </div>
+          <div class="meta-row">
+            <span>Barcode (GTIN):</span>
+            <strong id="cardGtinCode">366582500353</strong>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Panel: Instructions Builder & Active Ingredient Linking -->
+      <section class="instructions-builder-panel">
+        <div class="builder-top-controls">
+          <h2>
+            <i class="fas fa-clipboard-list" style="color:var(--orange-500)"></i>
+            <span>Instructions & Label Customizer</span>
+          </h2>
+
+          <!-- Label Output Language Selector (Requested by User) -->
+          <div class="label-lang-toggle-box">
+            <span style="font-size:11.5px; font-weight:800; color:var(--text-muted); margin-left:6px;">Print Language:</span>
+            <button id="btnLangAr" class="lang-toggle-btn active" onclick="setLabelLanguage('ar')">
+              🇸🇦 العربية (Arabic)
+            </button>
+            <button id="btnLangEn" class="lang-toggle-btn" onclick="setLabelLanguage('en')">
+              🇬🇧 English
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Ingredient Linking Preset -->
+        <div class="active-preset-select-row">
+          <label for="activePresetDropdown"><strong>Active Ingredient Link:</strong></label>
+          <select id="activePresetDropdown" class="active-preset-select" onchange="switchActiveIngredientPreset(this.value)">
+            <option value="alendronate">Alendronate / Fosamax (Osteoporosis Monograph)</option>
+            <option value="ppi">Omeprazole / Pantoprazole / Esomeprazole (PPIs)</option>
+            <option value="thyroid">Levothyroxine (Euthyrox / Thyroid Care)</option>
+            <option value="metformin">Metformin (Glucophage / Diabetes Care)</option>
+            <option value="antibiotic">Antibiotics (Full Course & Intervals)</option>
+            <option value="nsaid">NSAIDs (Ibuprofen / Voltaren / Stomach Care)</option>
+            <option value="cholesterol">Statins (Atorvastatin / Lipitor / Cholesterol)</option>
+          </select>
+          <span style="font-size:11.5px; color:var(--orange-600); font-weight:700;">
+            <i class="fas fa-link"></i> Auto-linked by Active Ingredient
+          </span>
+        </div>
+
+        <!-- Instructions Checklist -->
+        <div id="instructionsChecklist" class="instruction-checklist"></div>
+
+        <!-- Add Custom Instruction Row -->
+        <div class="add-instruction-row">
+          <input type="text" id="customInstructionInput" class="add-instruction-input" 
+                 placeholder="Type custom patient instruction for this active ingredient and press Enter..." 
+                 onkeydown="if(event.key==='Enter') addCustomInstructionItem()">
+          <button class="btn-add-action" onclick="addCustomInstructionItem()">
+            <i class="fas fa-plus"></i>
+            <span>Add Item</span>
+          </button>
+        </div>
+
+        <!-- Print Action Bar -->
+        <div class="print-control-bar">
+          <div class="print-info-text">
+            <i class="fas fa-check-circle" style="color: #22c55e;"></i>
+            <span id="selectedCountText">5 Instructions Selected for Label</span>
+            <span style="margin-left:10px; color:var(--text-muted); font-size:12px;">(Exact 3" × 2" Thermal Label)</span>
+          </div>
+
+          <button class="btn-launch-preview" onclick="openPrintModal()">
+            <i class="fas fa-print"></i>
+            <span>Preview & Print Label (3" × 2")</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- =========================================================
+       3. Print Preview Modal (Exact 3" x 2" Paper Representation)
+       ========================================================= -->
+  <div id="printModalBackdrop" class="preview-modal-backdrop">
+    <div class="preview-modal-dialog">
+      
+      <div class="preview-modal-header">
+        <h3>
+          <i class="fas fa-eye" style="color:var(--orange-400)"></i>
+          <span>Thermal Label Preview — 3" × 2" (76.2 × 50.8 mm)</span>
+        </h3>
+        <button class="btn-close-modal" onclick="closePrintModal()">✕</button>
+      </div>
+
+      <!-- Controls Toolbar -->
+      <div class="preview-modal-toolbar">
+        <!-- Language toggle directly in modal -->
+        <div class="toolbar-option">
+          <span>Language:</span>
+          <select id="modalLangSelector" class="toolbar-select-box" onchange="setLabelLanguage(this.value)">
+            <option value="ar">Arabic (العربية)</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        <div class="toolbar-option">
+          <span><i class="fas fa-text-height"></i> Font Size:</span>
+          <input type="range" id="modalFontSizeRange" min="8" max="13" step="0.5" value="9.5" oninput="renderModalLabels()">
+          <span id="fontSizeValLabel">9.5pt</span>
+        </div>
+
+        <div class="toolbar-option">
+          <span><i class="fas fa-layer-group"></i> Max Per Label:</span>
+          <select id="modalMaxPerLabel" class="toolbar-select-box" onchange="renderModalLabels()">
+            <option value="auto">Auto Fit</option>
+            <option value="2">2 Points (Large)</option>
+            <option value="3" selected>3 Points (Balanced)</option>
+            <option value="4">4 Points (Compact)</option>
+            <option value="5">5 Points</option>
+          </select>
+        </div>
+
+        <div class="toolbar-option">
+          <span><i class="fas fa-image"></i> Watermark Opacity:</span>
+          <input type="range" id="modalWatermarkOpacity" min="5" max="35" step="1" value="12" oninput="renderModalLabels()">
+          <span id="opacityValLabel">12%</span>
+        </div>
+
+        <div class="toolbar-option">
+          <strong id="totalPagesBadge" style="color:var(--orange-600)">Total: 2 Labels</strong>
+        </div>
+      </div>
+
+      <!-- Modal Body (Renders the 3" x 2" labels) -->
+      <div class="preview-modal-content">
+        <div id="labelsRenderContainer" class="label-preview-row-flex"></div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="preview-modal-footer">
+        <button class="btn-delete-instruction" onclick="closePrintModal()" style="font-size:13px; font-weight:700;">
+          Close Window
+        </button>
+
+        <button class="btn-execute-print" onclick="executeBrowserPrint()">
+          <i class="fas fa-print"></i>
+          <span>Print Now (3" × 2" Thermal Printer) 🖨️</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================
+       4. Barcode Scanner Modal (Full features from offersgit)
+       ========================================================= -->
+  <div id="scannerModalOverlay">
+    <div class="scanner-shell">
+      <div class="scanner-header-bar">
+        <div class="scanner-title-box">
+          <span class="scanner-brand-title">BARCODE & SFDA SCANNER</span>
+          <span class="scanner-badge-v9">PRO</span>
+        </div>
+        <div class="scanner-actions-box">
+          <button class="scanner-action-btn" title="Switch Camera" onclick="flipScannerCamera()">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+          <button class="scanner-action-btn" title="Close" onclick="closeBarcodeScannerModal()">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <div class="scanner-camera-box">
+        <div id="reader"></div>
+        <div class="scanner-laser-line"></div>
+        <div class="scanner-camera-tools-overlay">
+          <button id="torchToggleBtn" class="camera-tool-pill" onclick="toggleCameraTorch()">
+            ⚡ Flash
+          </button>
+        </div>
+      </div>
+
+      <div class="scanner-manual-wrap">
+        <div style="font-size:11.5px; color:#94a3b8; text-align:center;">
+          Scan 2D SFDA DataMatrix, EAN-13, or enter 6-digit Code below:
+        </div>
+        <div class="scanner-input-row">
+          <input id="scannerManualInputCode" class="scanner-manual-input" type="text"
+                 placeholder="Enter 6-digit Code (e.g. 100929) or Barcode"
+                 onkeydown="if(event.key==='Enter') submitManualScannerCode()">
+          <button class="btn-scanner-submit" onclick="submitManualScannerCode()">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden container used strictly by @media print -->
+  <div id="printExecutionSandbox"></div>
+
+  <!-- =========================================================
+       5. JavaScript Application Logic
+       ========================================================= */
+  -->
+  <script>
+    // =========================================================
+    // A) Database URLs & Worker / Se7en Endpoints
+    // =========================================================
+    const WORKER_BASE = "https://dry-rain-899d.meralmohamed121022.workers.dev";
+    const API_ENDPOINT = `${WORKER_BASE}/api/product?code=`;
+
+    const SE7EN_GATEWAY_URLS = [
+      "https://monoprice.depanto2025.workers.dev/api/v1/customer/search",
+      "https://api.se-7en.com/api/v1/customer/search"
+    ];
+
+    const decodeURL = (str) => atob(str.split('').reverse().join(''));
+    const MASTER_URL_1 = decodeURL("u92cq5SMwITJSVEVTFUTwITJEVEVBREUV9ibpFWbvMHZhVGavMnZlJ3LyVGdzFWbkVGdhRGc19iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa");
+    const MASTER_URL_2 = decodeURL("u92cq5iMwITJSVEVTFUTwITJEVEVBREUV9ibpFWbvMHZhVGavMnZlJ3LyVGdzFWbkVGdhRGc19iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa");
+    const MASTER_URL_3 = decodeURL("u92cq5yMwITJSVEVTFUTwITJEVEVBREUV9ibpFWbvMHZhVGavMnZlJ3LyVGdzFWbkVGdhRGc19iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa");
+
+    let productsDB = [];
+    let masterBarcodeMap = new Map();
+    let isMasterDbReady = false;
+
+    // Current Label Language (Selected by User: 'ar' or 'en')
+    let currentLabelLang = 'ar';
+
+    // Default Selected Product (Fosamax 70mg, Code: 100929)
+    let currentMedication = {
+      code: "100929",
+      tradeNameEn: "FOSAMAX ONCE WEEKLY 70 MG 4 TA",
+      tradeNameAr: "فوساماكس اقراص 70 مجم",
+      activeIngredient: "ALENDRONATE MONOSODIUM TRIHYDR",
+      brand: "ORGANON / FOSAMAX",
+      price: "45.95 SAR",
+      gtin: "366582500353",
+      imageUrl: "https://stgprevapi.al-dawaa.com/medias/%D9%81%D9%88%D8%B3%D8%A7%D9%85%D8%A7%D9%83%D8%B3-70-%D9%85%D8%AC%D9%85-%D9%82%D8%B1%D8%B5-%D8%A7%D8%B3%D8%A8%D9%88%D8%B9%D9%8A%D8%A7-%D9%84%D9%84%D8%AD%D9%81%D8%A7%D8%B8-%D8%B9%D9%84%D9%89-%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B9%D8%B8%D8%A7%D9%85-4-%D8%A7%D9%82%D8%B1%D8%A7%D8%B5_0_1200.webp?context=bWFzdGVyfGltYWdlc3wxMDU0OTB8aW1hZ2Uvd2VicHxhREppTDJnMU5TODVOekkwTURFeU5ESTVNelF5THpFd01Ea3lPVjh3WDJGeVh6RXlNREJYZURFeU1EQklYMWRGUWxBdWQyVmljQXwwMjZhYThmMzU5Yzk1NDNlM2U4OTUwYjI4MjJjNTVmODUwNzkwNTg3ZmNiZDJiZWUwYWVkMDYxZDM0Nzc1ZmYz",
+      imageSource: "Master DB ✓"
+    };
+
+    // =========================================================
+    // B) Active Ingredient Instructions Database (Dual EN / AR)
+    // =========================================================
+    const ACTIVE_INGREDIENT_PRESETS = {
+      alendronate: {
+        id: "alendronate",
+        nameEn: "Alendronate Sodium / Bisphosphonate",
+        nameAr: "أليندرونات الصوديوم (هشاشة العظام)",
+        matcherKeywords: ["alendron", "fosamax", "osteomax", "fosa", "binosto", "فوساماكس", "اليندرون"],
+        instructionsEn: [
+          { tag: "🌅 Dosing Time", text: "Take only upon rising for the day; do not take at bedtime or before arising.", checked: true },
+          { tag: "⏳ Fasting Wait", text: "Take at least one-half hour before the first food, beverage, or medication of the day with plain water only.", checked: true },
+          { tag: "💧 Water & Swallowing", text: "(Tablet) Swallow tablet whole with 6 to 8 ounces of plain water; do not chew or suck.", checked: true },
+          { tag: "🚫 Upright Posture", text: "Do not lie down or recline for at least 30 minutes after taking and until after your first food of the day.", checked: true },
+          { tag: "📅 Missed Dose", text: "Missed dose: If a once-weekly dose is missed, take one dose on the morning after remembered, then resume normal weekly schedule; do not take 2 doses on the same day.", checked: true },
+          { tag: "🥤 Oral Solution", text: "(Oral solution) Take at least 2 ounces of plain water immediately after taking the oral solution.", checked: false },
+          { tag: "🫧 Effervescent", text: "(Effervescent tablet) Dissolve in 4 oz room temperature plain water; wait 5 min after effervescence stops, stir for 10 sec, and drink.", checked: false }
+        ],
+        instructionsAr: [
+          { tag: "🌅 وقت الجرعة", text: "تؤخذ الجرعة أول ما تصحى من النوم مباشرة (على الريق)؛ تجنب أخذها قبل النوم أو وأنت منسدح في الفراش نهائياً.", checked: true },
+          { tag: "⏳ الانتظار قبل الأكل", text: "انتظر نصف ساعة (30 دقيقة) على الأقل بعد أخذ الحبة قبل تناول أول وجبة أو مشروب أو أي دواء آخر (مع ماء عادي فقط).", checked: true },
+          { tag: "💧 طريقة البلع", text: "(الأقراص): ابلع الحبة كاملة مع كاسة ماء عادي كبيرة (200 إلى 240 مل)؛ وممنوع كسر الحبة أو مضغها أو مصها نهائياً.", checked: true },
+          { tag: "🚫 ممنوع الاستلقاء", text: "ممنوع الاستلقاء أو النوم نهائياً لمدة 30 دقيقة على الأقل بعد بلع الحبة وحتى بعد وجبة الفطور (لحماية المريء من الالتهاب والحموضة).", checked: true },
+          { tag: "📅 الجرعة المنسية", text: "في حال نسيان الجرعة (الأسبوعية): خذ حبة واحدة فقط في صباح اليوم التالي أول ما تتذكر، ثم ارجع لجدولك الأسبوعي في نفس اليوم المعتاد؛ (تحذير: لا تأخذ حبتين بنفس اليوم).", checked: true },
+          { tag: "🥤 محلول شراب", text: "(محلول الشراب): اشرب على الأقل ربع كوب ماء عادي (60 مل) مباشرة بعد تناول جرعة المحلول الفموي.", checked: false },
+          { tag: "🫧 أقراص فوارة", text: "(الأقراص الفوارة): قم بإذابة القرص في نصف كوب ماء عادي، انتظر 5 دقائق حتى يهدأ الفوران تماماً، ثم حرّك 10 ثوانٍ واشربه فوراً (ممنوع بلع الفوار مباشرة دون إذابة).", checked: false }
+        ]
+      },
+
+      ppi: {
+        id: "ppi",
+        nameEn: "Omeprazole / Pantoprazole / Esomeprazole",
+        nameAr: "مثبطات الحموضة وقرحة المعدة (PPIs)",
+        matcherKeywords: ["omeprazole", "pantoprazole", "esomeprazole", "losec", "pantozol", "nexium", "controloc", "حموضة", "معدة"],
+        instructionsEn: [
+          { tag: "🌅 Morning Dose", text: "Take once daily on an empty stomach 30 to 60 minutes before breakfast with a full glass of water.", checked: true },
+          { tag: "💊 Swallow Whole", text: "Swallow the capsule/tablet whole; do not chew, crush, or open unless advised by pharmacist.", checked: true },
+          { tag: "🍽️ Twice Daily", text: "If prescribed twice daily, take the second dose 30 minutes before your evening meal.", checked: true },
+          { tag: "⚠️ Dietary Tip", text: "Avoid heavy, fatty, or spicy foods right before bedtime to minimize acid reflux.", checked: true }
+        ],
+        instructionsAr: [
+          { tag: "🌅 التوقيت", text: "تؤخذ حبة واحدة على الريق قبل وجبة الإفطار بنصف ساعة إلى 45 دقيقة مع كاسة ماء كاملة.", checked: true },
+          { tag: "💊 طريقة التناول", text: "ابلع الحبة كاملة؛ لا تقم بكسرها أو طحنها للحفاظ على الغلاف الواقي من حمض المعدة.", checked: true },
+          { tag: "🍽️ مرتين يومياً", text: "إذا كانت وصفتك مرتين يومياً: تؤخذ الحبة الثانية قبل وجبة العشاء بنصف ساعة.", checked: true },
+          { tag: "⚠️ نصيحة غذائية", text: "تجنب الأطعمة الدسمة والحارة والمشروبات الغازية قبل النوم بساعتين لتقليل الارتجاع.", checked: true }
+        ]
+      },
+
+      thyroid: {
+        id: "thyroid",
+        nameEn: "Levothyroxine Sodium",
+        nameAr: "ليفوثيروكسين (خمول الغدة الدرقية)",
+        matcherKeywords: ["levothyroxine", "thyrox", "euthyrox", "eltroxin", "غدة", "يوثيروكس"],
+        instructionsEn: [
+          { tag: "🌅 Fasting Dose", text: "Take once daily in the morning on an empty stomach at least 30 to 60 minutes before breakfast.", checked: true },
+          { tag: "💧 Full Glass of Water", text: "Swallow with a full glass of water to avoid esophageal choking or tablet swelling.", checked: true },
+          { tag: "🚫 Separate Minerals", text: "Separate by at least 4 hours from calcium, iron supplements, and antacids.", checked: true },
+          { tag: "📅 Daily Routine", text: "Take consistently at the same time each morning; do not discontinue even if feeling well.", checked: true }
+        ],
+        instructionsAr: [
+          { tag: "🌅 على الريق", text: "تؤخذ الجرعة أول ما تصحى من النوم صباحاً على معدة فارغة تماماً مع كاسة ماء كاملة.", checked: true },
+          { tag: "⏳ الانتظار", text: "انتظر ساعة كاملة قبل تناول وجبة الإفطار أو شرب القهوة والشاي لضمان امتصاص الدواء بالكامل.", checked: true },
+          { tag: "🚫 مباعدة المعادن", text: "افصل بين هذا الدواء وحبوب الكالسيوم أو الحديد أو أدوية الحموضة بـ 4 ساعات على الأقل.", checked: true },
+          { tag: "📅 الانتظام", text: "يجب الالتزام بأخذ الدواء يومياً بنفس التوقيت ولا تتوقف عنه حتى لو شعرت بتحسن.", checked: true }
+        ]
+      },
+
+      metformin: {
+        id: "metformin",
+        nameEn: "Metformin Hydrochloride",
+        nameAr: "ميتفورمين (منظم السكر - جلوكوفاج)",
+        matcherKeywords: ["metformin", "glucophage", "جلوكوفاج", "ميتفورمين", "منظم سكر"],
+        instructionsEn: [
+          { tag: "🍽️ With Meals", text: "Take with or immediately after meals to reduce gastrointestinal upset and nausea.", checked: true },
+          { tag: "💧 Stay Hydrated", text: "Drink plenty of water throughout the day to support healthy kidney filtration.", checked: true },
+          { tag: "💊 Extended Release", text: "If taking XR (extended-release), swallow whole; do not break, crush, or chew.", checked: true }
+        ],
+        instructionsAr: [
+          { tag: "🍽️ مع الوجبة", text: "تؤخذ الجرعة وسط وجبة الطعام أو بعد الأكل مباشرة لتقليل اضطرابات وغثيان المعدة.", checked: true },
+          { tag: "💧 شرب الماء", text: "احرص على شرب كميات كافية من الماء على مدار اليوم لدعم صحة الكلى.", checked: true },
+          { tag: "💊 أقراص XR", text: "إذا كان نوع الدواء ممتد المفعول (XR): ابلع الحبة كاملة ولا تكسرها أو تمضغها أبداً.", checked: true }
+        ]
+      },
+
+      antibiotic: {
+        id: "antibiotic",
+        nameEn: "Antibiotics (Amoxicillin / Clavulanate / etc.)",
+        nameAr: "المضادات الحيوية العامة",
+        matcherKeywords: ["amoxicillin", "clavulan", "augmentin", "curam", "zithro", "cipro", "مضاد", "أوجمنتين"],
+        instructionsEn: [
+          { tag: "⏰ Strict Timing", text: "Take at evenly spaced intervals (e.g. exactly every 12 or 8 hours) to maintain constant blood levels.", checked: true },
+          { tag: "🏁 Complete Course", text: "Finish the entire prescribed course even if you feel completely recovered after a few days.", checked: true },
+          { tag: "💧 Fluids", text: "Drink plenty of water with each dose and throughout the day.", checked: true }
+        ],
+        instructionsAr: [
+          { tag: "⏰ التوقيت الدقيق", text: "التزم بتناول الجرعات في مواعيد دقيقة (كل 12 ساعة أو كل 8 ساعات) للحفاظ على تركيز الدواء.", checked: true },
+          { tag: "🏁 إكمال الكورس", text: "يجب إكمال كامل العبوة والمدة المقررة من الطبيب حتى لو شعرت باختفاء الأعراض تماماً.", checked: true },
+          { tag: "💧 وفرة السوائل", text: "اشرب كمية وافرة من الماء مع كل جرعة وطوال اليوم.", checked: true }
+        ]
+      },
+
+      nsaid: {
+        id: "nsaid",
+        nameEn: "NSAIDs (Ibuprofen / Voltaren / Diclofenac)",
+        nameAr: "المسكنات ومضادات الالتهاب غير الستيرويدية",
+        matcherKeywords: ["ibuprofen", "brufen", "diclofenac", "voltaren", "naproxen", "بروفين", "فولتارين", "مسكن"],
+        instructionsEn: [
+          { tag: "🍽️ After Food", text: "Always take with food, milk, or immediately after a meal to protect the stomach lining.", checked: true },
+          { tag: "💧 Water Intake", text: "Swallow with a full glass of water and remain upright for at least 15 minutes.", checked: true },
+          { tag: "⚠️ Precaution", text: "Use for the shortest duration necessary; consult your pharmacist if you have hypertension or renal issues.", checked: true }
+        ],
+        instructionsAr: [
+          { tag: "🍽️ بعد الأكل", text: "تؤخذ الحبة دائماً بعد وجبة طعام رئيسية أو مع الحليب؛ تجنب أخذها على معدة فارغة نهائياً.", checked: true },
+          { tag: "💧 شرب الماء", text: "ابلع الحبة مع كاسة ماء كاملة ولا تستلقي مباشرة بعد بلعها لحماية المعدة.", checked: true },
+          { tag: "⚠️ تنبيه طبي", text: "تستخدم عند اللزوم فقط وبأقل جرعة فعالة، واستشر الصيدلي إذا كان لديك مشاكل بالضغط أو الكلى.", checked: true }
+        ]
+      },
+
+      cholesterol: {
+        id: "cholesterol",
+        nameEn: "Statins (Atorvastatin / Rosuvastatin)",
+        nameAr: "أدوية الدهون والكوليسترول",
+        matcherKeywords: ["atorvastatin", "lipitor", "rosuvastatin", "crestor", "كولسترول", "ليبيتور", "كريستور"],
+        instructionsEn: [
+          { tag: "🌙 Evening Dose", text: "Best taken in the evening at bedtime once daily, with or without food.", checked: true },
+          { tag: "🍊 Grapefruit", text: "Avoid consuming grapefruit or grapefruit juice as it may increase medication levels in blood.", checked: true },
+          { tag: "💪 Consultation", text: "Report any unexplained muscle pain, tenderness, or weakness to your physician promptly.", checked: true }
+        ],
+        instructionsAr: [
+          { tag: "🌙 وقت المساء", text: "يفضل تناول الجرعة مساءً قبل النوم في نفس الموعد يومياً (مع الأكل أو بدونه).", checked: true },
+          { tag: "🍊 الجريب فروت", text: "تجنب تناول فاكهة أو عصير الجريب فروت مع هذا الدواء لتفادي زيادة تركيزه بالدم.", checked: true },
+          { tag: "💪 استشارة", text: "في حال شعرت بألم عضلي غير مبرر أو إرهاق شديد، أبلغ الطبيب أو الصيدلي فوراً.", checked: true }
+        ]
+      }
+    };
+
+    // Active instruction set
+    let currentPresetKey = 'alendronate';
+    let workingInstructions = [];
+
+    // =========================================================
+    // C) Format Image URL with Full Arabic Encoding & Bidi Strip
+    // =========================================================
+    function formatProductImageUrl(url) {
+      if (!url) return '';
+      let clean = String(url)
+        .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '')
+        .replace(/^["']|["']$/g, '')
+        .trim();
+      
+      if (!clean || /^no\s*image$/i.test(clean) || clean === '1' || clean === 'null' || clean === 'undefined' || clean === 'false') {
+        return '';
+      }
+
+      if (clean.startsWith('//')) {
+        clean = 'https:' + clean;
+      } else if (clean.startsWith('/medias/') || clean.startsWith('/media/') || clean.startsWith('/')) {
+        clean = 'https://stgprevapi.al-dawaa.com' + (clean.startsWith('/') ? clean : '/' + clean);
+      } else if (clean.startsWith('medias/') || clean.startsWith('media/')) {
+        clean = 'https://stgprevapi.al-dawaa.com/' + clean;
+      } else if (!/^https?:\/\//i.test(clean)) {
+        if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(clean)) {
+          clean = 'https://' + clean;
+        } else if (clean.includes('/')) {
+          clean = 'https://stgprevapi.al-dawaa.com/medias/' + clean.replace(/^\/+/, '');
+        } else {
+          return '';
+        }
+      }
+
+      // Safe decoding and encoding of Arabic characters in URL
+      try {
+        try {
+          clean = decodeURI(clean);
+        } catch (e1) {
+          clean = decodeURI(clean.replace(/%(?![0-9a-fA-F]{2})/g, '%25'));
+        }
+        clean = encodeURI(clean);
+      } catch (e2) {}
+
+      return clean;
+    }
+
+    // =========================================================
+    // D) Image Fetching Fallbacks (Worker API + Se7en Gateway)
+    // =========================================================
+    async function fetchImageFromWorker(code) {
+      if (!code) return null;
+      try {
+        const res = await fetch(`${API_ENDPOINT}${code}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data.success && data.image) {
+          return formatProductImageUrl(data.image);
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function querySe7enSearchApi(query) {
+      if (!query || !query.trim()) return [];
+      const qStr = encodeURIComponent(query.trim());
+      for (const baseUrl of SE7EN_GATEWAY_URLS) {
+        try {
+          const res = await fetch(`${baseUrl}?q=${qStr}&page=1&pageSize=10`, {
+            headers: { "Accept": "application/json" }
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json && Array.isArray(json.data) && json.data.length > 0) {
+              return json.data;
+            }
+          }
+        } catch (err) {}
+      }
+      return [];
+    }
+
+    async function resolveProductImage(code, productObj) {
+      // 1. Direct itemurl in product database
+      const rawUrl = productObj.itemurl || productObj.ItemURL || productObj.image || '';
+      const formatted = formatProductImageUrl(rawUrl);
+      if (formatted) return { url: formatted, source: "Master DB" };
+
+      // 2. Cloudflare Worker API
+      const workerImg = await fetchImageFromWorker(code);
+      if (workerImg) return { url: workerImg, source: "Worker API" };
+
+      // 3. Fallback to Se7en Search Gateway API
+      const searchTerms = [
+        productObj.gtin || productObj.GTIN || '',
+        `${productObj.Brand || ''} ${productObj["Item Description"] || ''}`.trim(),
+        productObj["أسم المنتج"] || ''
+      ].filter(Boolean);
+
+      for (const term of searchTerms) {
+        const results = await querySe7enSearchApi(term);
+        const matchWithImg = results.find(r => r.imageUrl && r.imageUrl.startsWith('http'));
+        if (matchWithImg) {
+          return { url: formatProductImageUrl(matchWithImg.imageUrl), source: "Se7en API" };
+        }
+      }
+
+      // 4. Default clean fallback
+      return {
+        url: "https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png",
+        source: "Default Rx"
+      };
+    }
+
+    // =========================================================
+    // E) GS1 DataMatrix SFDA Barcode Parsing (from offersgit)
+    // =========================================================
+    function parseBarcodeGS1(rawText) {
+      if (!rawText) return { gtin: "", gtin14: "", gtin13: "", digitsOnly: "", exp: "", lot: "", sn: "", raw: "" };
+      let str = String(rawText).trim();
+
+      if (/^\][a-zA-Z0-9]{2}/.test(str)) str = str.substring(3);
+      str = str.replace(/[\x1d\x1e\x1f]/g, '|').replace(/^[|]+/, '').trim();
+
+      let gtin14 = "";
+      let exp = "";
+      let lot = "";
+      let sn = "";
+
+      const urlMatch = str.match(/\/01\/(\d{14})/);
+      if (urlMatch) gtin14 = urlMatch[1];
+
+      if (!gtin14 && /\(01\)(\d{14})/.test(str)) {
+        const mG = str.match(/\(01\)(\d{14})/);
+        if (mG) gtin14 = mG[1];
+        const mE = str.match(/\(17\)(\d{6})/);
+        if (mE) exp = mE[1];
+        const mL = str.match(/\(10\)([^()|]+)/);
+        if (mL) lot = mL[1].trim();
+        const mS = str.match(/\(21\)([^()|]+)/);
+        if (mS) sn = mS[1].trim();
+      }
+
+      if (!gtin14 && str.startsWith("01") && /^\d{16}/.test(str)) {
+        gtin14 = str.substring(2, 16);
+      }
+
+      const digits = (gtin14 || str).replace(/\D/g, '');
+      const gtin13 = (gtin14 && gtin14.length === 14 && gtin14.startsWith('0')) ? gtin14.substring(1) : (digits.length === 13 ? digits : '');
+
+      return {
+        gtin: gtin14 || digits,
+        gtin14: gtin14 || (digits.length === 14 ? digits : ''),
+        gtin13: gtin13,
+        digitsOnly: digits,
+        exp, lot, sn, raw: rawText
+      };
+    }
+
+    // =========================================================
+    // F) Master Products Database Loader (85,930 Items)
+    // =========================================================
+    async function initMasterDatabase() {
+      const statusText = document.getElementById("masterDbStatusText");
+
+      try {
+        statusText.innerText = "Master DB: Loading from GitHub...";
+
+        const cached = localStorage.getItem("patient_instructions_db_v2");
+        if (cached) {
+          try {
+            productsDB = JSON.parse(cached);
+            buildBarcodeFastIndex();
+            statusText.innerText = `Master DB: ${productsDB.length.toLocaleString('en-US')} Products Active ✓`;
+            isMasterDbReady = true;
+          } catch(e) {}
+        }
+
+        const parseJsonSafely = async (res) => {
+          const text = await res.text();
+          const first = text.indexOf('[');
+          const last = text.lastIndexOf(']');
+          if (first !== -1 && last !== -1) {
+            return JSON.parse(text.slice(first, last + 1));
+          }
+          return JSON.parse(text);
+        };
+
+        const fetchFile = async (url) => {
+          try {
+            const res = await fetch(url);
+            if (!res.ok) return [];
+            return await parseJsonSafely(res);
+          } catch (e) {
+            return [];
+          }
+        };
+
+        const [data1, data2, data3] = await Promise.all([
+          fetchFile(MASTER_URL_1),
+          fetchFile(MASTER_URL_2),
+          fetchFile(MASTER_URL_3)
+        ]);
+
+        const combined = [...(data1||[]), ...(data2||[]), ...(data3||[])];
+        if (combined.length > 0) {
+          productsDB = combined;
+          buildBarcodeFastIndex();
+          isMasterDbReady = true;
+          statusText.innerText = `Master DB: ${productsDB.length.toLocaleString('en-US')} Products Active ✓`;
+
+          try {
+            localStorage.setItem("patient_instructions_db_v2", JSON.stringify(productsDB.slice(0, 20000)));
+          } catch(e) {}
+        } else if (!isMasterDbReady) {
+          statusText.innerText = "Master DB: Ready (Offline Mode)";
+        }
+      } catch (err) {
+        console.warn("DB Error:", err);
+        if (!isMasterDbReady) statusText.innerText = "Master DB: Standalone Mode";
+      }
+    }
+
+    function buildBarcodeFastIndex() {
+      masterBarcodeMap.clear();
+      for (let i = 0; i < productsDB.length; i++) {
+        const p = productsDB[i];
+        if (!p) continue;
+
+        const code = String(p.Code || p.code || '').trim();
+        if (code) {
+          masterBarcodeMap.set(code, p);
+          masterBarcodeMap.set(code.replace(/^0+/, ''), p);
+        }
+
+        const gtinArr = Array.isArray(p.GTIN) ? p.GTIN : (p.GTIN ? [p.GTIN] : []);
+        for (let g of gtinArr) {
+          const gStr = String(g).trim();
+          if (gStr) {
+            masterBarcodeMap.set(gStr, p);
+            masterBarcodeMap.set(gStr.replace(/^0+/, ''), p);
+          }
+        }
+
+        const b = String(p.Barcode || p.barcode || '').trim();
+        if (b) {
+          masterBarcodeMap.set(b, p);
+          masterBarcodeMap.set(b.replace(/^0+/, ''), p);
+        }
+      }
+    }
+
+    function findProductInDB(query) {
+      if (!query) return null;
+      const clean = String(query).trim();
+      const parsed = parseBarcodeGS1(clean);
+
+      const candidates = [
+        clean,
+        clean.replace(/^0+/, ''),
+        parsed.gtin14,
+        parsed.gtin13,
+        parsed.digitsOnly
+      ].filter(Boolean);
+
+      for (let k of candidates) {
+        if (masterBarcodeMap.has(k)) {
+          return masterBarcodeMap.get(k);
+        }
+      }
+
+      const lower = clean.toLowerCase();
+      return productsDB.find(p => {
+        const ar = String(p["أسم المنتج"] || '').toLowerCase();
+        const en = String(p["Item Description"] || '').toLowerCase();
+        return ar.includes(lower) || en.includes(lower);
+      });
+    }
+
+    // =========================================================
+    // G) Active Ingredient Automatic Linking Engine
+    // =========================================================
+    function matchActiveIngredientPreset(product) {
+      const activeCat = String(product["Category Level E"] || product["Category Level D"] || '').toLowerCase();
+      const descEn = String(product["Item Description"] || '').toLowerCase();
+      const descAr = String(product["أسم المنتج"] || '').toLowerCase();
+      const brand = String(product.Brand || '').toLowerCase();
+
+      const combinedText = `${activeCat} ${descEn} ${descAr} ${brand}`;
+
+      for (const [key, preset] of Object.entries(ACTIVE_INGREDIENT_PRESETS)) {
+        for (const kw of preset.matcherKeywords) {
+          if (combinedText.includes(kw.toLowerCase())) {
+            return key;
+          }
+        }
+      }
+
+      return 'alendronate'; // fallback default
+    }
+
+    function switchActiveIngredientPreset(presetKey) {
+      currentPresetKey = presetKey;
+      document.getElementById("activePresetDropdown").value = presetKey;
+
+      const preset = ACTIVE_INGREDIENT_PRESETS[presetKey];
+      if (!preset) return;
+
+      const sourceList = (currentLabelLang === 'ar') ? preset.instructionsAr : preset.instructionsEn;
+      workingInstructions = JSON.parse(JSON.stringify(sourceList));
+
+      renderInstructionsChecklist();
+    }
+
+    function setLabelLanguage(lang) {
+      currentLabelLang = lang;
+
+      // Update UI active button
+      document.getElementById("btnLangAr").classList.toggle("active", lang === 'ar');
+      document.getElementById("btnLangEn").classList.toggle("active", lang === 'en');
+      document.getElementById("modalLangSelector").value = lang;
+
+      // Refresh working instructions for this language
+      const preset = ACTIVE_INGREDIENT_PRESETS[currentPresetKey];
+      if (preset) {
+        const sourceList = (lang === 'ar') ? preset.instructionsAr : preset.instructionsEn;
+        workingInstructions = JSON.parse(JSON.stringify(sourceList));
+      }
+
+      renderInstructionsChecklist();
+      renderModalLabels();
+    }
+
+    function renderInstructionsChecklist() {
+      const container = document.getElementById("instructionsChecklist");
+      container.innerHTML = "";
+
+      const isRtl = (currentLabelLang === 'ar');
+
+      workingInstructions.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = `instruction-card-row ${item.checked ? 'is-checked' : ''}`;
+        row.innerHTML = `
+          <input type="checkbox" class="instruction-checkbox" ${item.checked ? 'checked' : ''} 
+                 onchange="toggleInstructionChecked(${index}, this.checked)">
+          <div class="instruction-body">
+            <span class="instruction-tag-label">${item.tag || 'Instruction'}</span>
+            <div class="instruction-editable-text ${isRtl ? 'rtl-text' : ''}" contenteditable="true" 
+                 onblur="updateInstructionText(${index}, this.innerText)">${item.text}</div>
+          </div>
+          <button class="btn-delete-instruction" title="Remove" onclick="deleteInstructionItem(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+
+      const checkedCount = workingInstructions.filter(i => i.checked).length;
+      document.getElementById("selectedCountText").innerText = `${checkedCount} Instructions Selected for Label`;
+    }
+
+    function toggleInstructionChecked(index, isChecked) {
+      if (workingInstructions[index]) {
+        workingInstructions[index].checked = isChecked;
+        renderInstructionsChecklist();
+      }
+    }
+
+    function updateInstructionText(index, newText) {
+      if (workingInstructions[index]) {
+        workingInstructions[index].text = newText.trim();
+      }
+    }
+
+    function deleteInstructionItem(index) {
+      workingInstructions.splice(index, 1);
+      renderInstructionsChecklist();
+    }
+
+    function addCustomInstructionItem() {
+      const input = document.getElementById("customInstructionInput");
+      const val = input.value.trim();
+      if (!val) return;
+
+      workingInstructions.push({
+        tag: (currentLabelLang === 'ar') ? "💡 تعليمة إضافية" : "💡 Custom Point",
+        text: val,
+        checked: true
+      });
+
+      input.value = "";
+      renderInstructionsChecklist();
+    }
+
+    // =========================================================
+    // H) Selecting and Loading Medication into Interface
+    // =========================================================
+    async function selectMedicationItem(p) {
+      if (!p) return;
+      const code = String(p.Code || p.code || '100929');
+      const enName = p["Item Description"] || p.nameEn || 'MEDICATION';
+      const arName = p["أسم المنتج"] || p.nameAr || 'صنف دوائي';
+      const brand = p.Brand || p.Manufacture || 'ORGANON';
+      const price = p["Unit Price"] ? `${p["Unit Price"]} SAR` : '---';
+      const gtin = Array.isArray(p.GTIN) ? p.GTIN[0] : (p.GTIN || p.Barcode || '---');
+      const active = p["Category Level E"] || p["Category Level D"] || "Active Ingredient";
+
+      // Resolve Image through the multi-tier pipeline
+      const imgData = await resolveProductImage(code, p);
+
+      currentMedication = {
+        code,
+        tradeNameEn: enName,
+        tradeNameAr: arName,
+        activeIngredient: active,
+        brand,
+        price,
+        gtin,
+        imageUrl: imgData.url,
+        imageSource: imgData.source
+      };
+
+      // Update Card Elements
+      document.getElementById("cardProductCode").innerText = `Code: ${code}`;
+      document.getElementById("cardProductImage").src = imgData.url;
+      document.getElementById("imgSourceIndicator").innerText = `${imgData.source} ✓`;
+      document.getElementById("cardTradeNameEn").innerText = enName;
+      document.getElementById("cardTradeNameAr").innerText = arName;
+      document.getElementById("cardActiveIngredient").innerText = active;
+      document.getElementById("cardManufacture").innerText = brand;
+      document.getElementById("cardUnitPrice").innerText = price;
+      document.getElementById("cardGtinCode").innerText = gtin;
+
+      // Automatically link Active Ingredient Preset
+      const matchedPreset = matchActiveIngredientPreset(p);
+      switchActiveIngredientPreset(matchedPreset);
+
+      // Close popups
+      document.getElementById("quickSearchDropdown").style.display = "none";
+      closeBarcodeScannerModal();
+      playBeepTone();
+    }
+
+    // =========================================================
+    // I) Search & Typeahead Handling
+    // =========================================================
+    function handleSearchTypeahead(val) {
+      const box = document.getElementById("quickSearchDropdown");
+      const q = String(val).trim().toLowerCase();
+
+      if (!q || q.length < 2) {
+        box.style.display = "none";
+        return;
+      }
+
+      const matches = [];
+      for (let p of productsDB) {
+        const c = String(p.Code || p.code || '');
+        const ar = String(p["أسم المنتج"] || '').toLowerCase();
+        const en = String(p["Item Description"] || '').toLowerCase();
+        const active = String(p["Category Level E"] || '').toLowerCase();
+
+        if (c.includes(q) || ar.includes(q) || en.includes(q) || active.includes(q)) {
+          matches.push(p);
+          if (matches.length >= 8) break;
+        }
+      }
+
+      if (matches.length === 0) {
+        box.style.display = "none";
+        return;
+      }
+
+      box.innerHTML = "";
+      matches.forEach(p => {
+        const itemEl = document.createElement("div");
+        itemEl.className = "dropdown-row-item";
+        itemEl.innerHTML = `
+          <div>
+            <div style="font-weight:700; color:var(--navy-900); font-size:13.5px;">${p["Item Description"] || p["أسم المنتج"]}</div>
+            <div style="font-size:11.5px; color:var(--text-muted); display:flex; gap:10px;">
+              <span>Code: <strong>${p.Code || p.code}</strong></span>
+              <span>Active: ${p["Category Level E"] || '---'}</span>
+            </div>
+          </div>
+          <button class="btn-scanner-submit" style="font-size:11px; padding:4px 10px;">Select 👈</button>
+        `;
+        itemEl.onclick = () => selectMedicationItem(p);
+        box.appendChild(itemEl);
+      });
+
+      box.style.display = "block";
+    }
+
+    function triggerSearchQuery() {
+      const val = document.getElementById("globalProductSearchInput").value;
+      const found = findProductInDB(val);
+      if (found) {
+        selectMedicationItem(found);
+      } else {
+        alert("⚠️ Item not found in Master Database!");
+      }
+    }
+
+    // =========================================================
+    // J) 3" x 2" Thermal Label Multi-Page Render & Simulation
+    // =========================================================
+    function openPrintModal() {
+      document.getElementById("printModalBackdrop").style.display = "flex";
+      renderModalLabels();
+    }
+
+    function closePrintModal() {
+      document.getElementById("printModalBackdrop").style.display = "none";
+    }
+
+    function renderModalLabels() {
+      const fontSize = parseFloat(document.getElementById("modalFontSizeRange").value) || 9.5;
+      const maxPerLabelVal = document.getElementById("modalMaxPerLabel").value;
+      const opacity = parseInt(document.getElementById("modalWatermarkOpacity").value) || 12;
+
+      document.getElementById("fontSizeValLabel").innerText = `${fontSize}pt`;
+      document.getElementById("opacityValLabel").innerText = `${opacity}%`;
+
+      const selected = workingInstructions.filter(i => i.checked);
+      const isRtl = (currentLabelLang === 'ar');
+
+      if (selected.length === 0) {
+        document.getElementById("labelsRenderContainer").innerHTML = `
+          <div style="background:#fff; padding:20px; border-radius:8px; text-align:center; color:#64748b;">
+            ⚠️ No instructions selected. Please check at least one instruction.
+          </div>
+        `;
+        document.getElementById("totalPagesBadge").innerText = `Total: 0 Labels`;
+        return;
+      }
+
+      let itemsPerLabel = 3;
+      if (maxPerLabelVal === "auto") {
+        itemsPerLabel = (fontSize > 11) ? 2 : (fontSize < 9.5 ? 4 : 3);
+      } else {
+        itemsPerLabel = parseInt(maxPerLabelVal);
+      }
+
+      const pages = [];
+      for (let i = 0; i < selected.length; i += itemsPerLabel) {
+        pages.push(selected.slice(i, i + itemsPerLabel));
+      }
+
+      const totalPages = pages.length;
+      document.getElementById("totalPagesBadge").innerText = `Total: ${totalPages} Label${totalPages > 1 ? 's' : ''} (3" × 2")`;
+
+      const container = document.getElementById("labelsRenderContainer");
+      container.innerHTML = "";
+
+      // Determine Trade Name and Active Ingredient based on chosen Label Language
+      const displayTradeName = isRtl ? (currentMedication.tradeNameAr || currentMedication.tradeNameEn) : currentMedication.tradeNameEn;
+      const displayActive = isRtl ? `المادة الفعالة: ${currentMedication.activeIngredient}` : `Active: ${currentMedication.activeIngredient}`;
+      const displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
+
+      pages.forEach((pageItems, pIndex) => {
+        const pageNum = pIndex + 1;
+        const card = document.createElement("div");
+        card.className = `screen-label-card ${isRtl ? 'is-rtl' : ''}`;
+
+        let pointsHtml = "";
+        pageItems.forEach((inst) => {
+          pointsHtml += `
+            <div class="label-point-row" style="font-size: ${fontSize}pt;">
+              <span class="label-point-bullet">•</span>
+              <span>${inst.text}</span>
+            </div>
+          `;
+        });
+
+        const barcodeSvg = generateCode128Svg(currentMedication.code, { width: 0.9, height: 16, showText: false });
+
+        card.innerHTML = `
+          <!-- Watermark Product Image Faded -->
+          <img class="label-watermark-image" src="${currentMedication.imageUrl}" 
+               style="opacity: ${opacity / 100};" alt="Watermark">
+
+          <div class="label-content-layer">
+            <div class="label-header-block">
+              <div>
+                <div class="label-header-title">${displayTradeName}</div>
+                <div class="label-header-subtitle">${displayActive}</div>
+              </div>
+              ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
+            </div>
+
+            <div class="label-items-list">
+              ${pointsHtml}
+            </div>
+
+            <div class="label-footer-bar">
+              <span>${displayFooter}</span>
+              <div style="display:flex; align-items:center; gap:4px;" dir="ltr">
+                <span>#${currentMedication.code}</span>
+                ${barcodeSvg}
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // =========================================================
+    // K) Browser Printing for 3" x 2" Thermal Printer
+    // =========================================================
+    function executeBrowserPrint() {
+      const fontSize = parseFloat(document.getElementById("modalFontSizeRange").value) || 9.5;
+      const maxPerLabelVal = document.getElementById("modalMaxPerLabel").value;
+      const opacity = parseInt(document.getElementById("modalWatermarkOpacity").value) || 12;
+
+      const selected = workingInstructions.filter(i => i.checked);
+      if (selected.length === 0) {
+        alert("Please select at least one instruction before printing!");
+        return;
+      }
+
+      let itemsPerLabel = 3;
+      if (maxPerLabelVal === "auto") {
+        itemsPerLabel = (fontSize > 11) ? 2 : (fontSize < 9.5 ? 4 : 3);
+      } else {
+        itemsPerLabel = parseInt(maxPerLabelVal);
+      }
+
+      const pages = [];
+      for (let i = 0; i < selected.length; i += itemsPerLabel) {
+        pages.push(selected.slice(i, i + itemsPerLabel));
+      }
+
+      const totalPages = pages.length;
+      const isRtl = (currentLabelLang === 'ar');
+
+      const printContainer = document.getElementById("printExecutionSandbox");
+      printContainer.innerHTML = "";
+
+      const displayTradeName = isRtl ? (currentMedication.tradeNameAr || currentMedication.tradeNameEn) : currentMedication.tradeNameEn;
+      const displayActive = isRtl ? `المادة الفعالة: ${currentMedication.activeIngredient}` : `Active: ${currentMedication.activeIngredient}`;
+      const displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
+
+      pages.forEach((pageItems, pIndex) => {
+        const pageNum = pIndex + 1;
+        const pageEl = document.createElement("div");
+        pageEl.className = `print-label-page ${isRtl ? 'is-rtl' : ''}`;
+
+        let pointsHtml = "";
+        pageItems.forEach((inst) => {
+          pointsHtml += `
+            <div class="label-point-row" style="font-size: ${fontSize}pt; line-height: 1.25; margin-bottom: 2px;">
+              <span class="label-point-bullet">•</span>
+              <span>${inst.text}</span>
+            </div>
+          `;
+        });
+
+        const barcodeSvg = generateCode128Svg(currentMedication.code, { width: 0.9, height: 16, showText: false });
+
+        pageEl.innerHTML = `
+          <!-- Faded Watermark Image -->
+          <img class="print-watermark" src="${currentMedication.imageUrl}" 
+               style="opacity: ${opacity / 100} !important;" alt="Watermark">
+
+          <div class="print-content-wrap">
+            <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 2px;">
+              <div>
+                <div class="label-header-title" style="font-size: 11pt; font-weight: 900;">${displayTradeName}</div>
+                <div class="label-header-subtitle" style="font-size: 8pt; font-weight: 800;">${displayActive}</div>
+              </div>
+              ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 8pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
+            </div>
+
+            <div class="label-items-list" style="flex:1; justify-content:center; padding: 2px 0;">
+              ${pointsHtml}
+            </div>
+
+            <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7.5pt;">
+              <span>${displayFooter}</span>
+              <div style="display:flex; align-items:center; gap:4px;" dir="ltr">
+                <span>#${currentMedication.code}</span>
+                ${barcodeSvg}
+              </div>
+            </div>
+          </div>
+        `;
+
+        printContainer.appendChild(pageEl);
+      });
+
+      window.print();
+    }
+
+    // =========================================================
+    // L) Barcode Scanner Modal Logic
+    // =========================================================
+    let html5Scanner = null;
+    let cameraMode = "environment";
+    let isTorchOn = false;
+
+    async function openBarcodeScannerModal() {
+      const modal = document.getElementById("scannerModalOverlay");
+      modal.style.display = "flex";
+
+      try {
+        if (typeof Html5Qrcode === 'undefined') {
+          throw new Error("Html5Qrcode not loaded");
+        }
+
+        if (html5Scanner) {
+          await html5Scanner.stop().catch(()=>{});
+        }
+
+        html5Scanner = new Html5Qrcode("reader");
+        const config = {
+          fps: 20,
+          qrbox: { width: 280, height: 280 },
+          aspectRatio: 1.0,
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.DATA_MATRIX,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39
+          ]
+        };
+
+        await html5Scanner.start(
+          { facingMode: cameraMode },
+          config,
+          (decoded) => handleScannedBarcode(decoded),
+          () => {}
+        );
+      } catch (e) {
+        console.warn("Camera Init Error:", e);
+      }
+    }
+
+    async function closeBarcodeScannerModal() {
+      const modal = document.getElementById("scannerModalOverlay");
+      modal.style.display = "none";
+      if (html5Scanner) {
+        await html5Scanner.stop().catch(()=>{});
+        html5Scanner = null;
+      }
+    }
+
+    async function flipScannerCamera() {
+      cameraMode = (cameraMode === "environment") ? "user" : "environment";
+      await openBarcodeScannerModal();
+    }
+
+    function toggleCameraTorch() {
+      if (!html5Scanner) return;
+      try {
+        const track = html5Scanner.getRunningTrack();
+        if (track && track.applyConstraints) {
+          isTorchOn = !isTorchOn;
+          track.applyConstraints({ advanced: [{ torch: isTorchOn }] });
+        }
+      } catch(e) {}
+    }
+
+    function handleScannedBarcode(decoded) {
+      if (!decoded) return;
+      playBeepTone();
+
+      const parsed = parseBarcodeGS1(decoded);
+      const codeOrGtin = parsed.gtin14 || parsed.gtin13 || parsed.gtin || decoded;
+
+      const found = findProductInDB(codeOrGtin);
+      if (found) {
+        selectMedicationItem(found);
+      } else {
+        selectMedicationItem({
+          Code: codeOrGtin,
+          "Item Description": `Scanned Product #${codeOrGtin}`,
+          "أسم المنتج": `صنف ممسوح #${codeOrGtin}`,
+          "Unit Price": 0
+        });
+      }
+    }
+
+    function submitManualScannerCode() {
+      const val = document.getElementById("scannerManualInputCode").value.trim();
+      if (!val) return;
+      handleScannedBarcode(val);
+      document.getElementById("scannerManualInputCode").value = "";
+    }
+
+    function playBeepTone() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.12);
+      } catch(e) {}
+    }
+
+    // =========================================================
+    // M) Code 128 SVG Barcode Generator
+    // =========================================================
+    function generateCode128Svg(text, options = {}) {
+      if (!text) return '';
+      const cleanText = String(text).trim();
+      if (!cleanText) return '';
+
+      const width = options.width || 1.0;
+      const height = options.height || 18;
+
+      const patterns = [
+        "212222","222122","222221","121223","121322","131222","122213","122312","132212","221213",
+        "221312","231212","112232","122132","122231","113222","123122","123221","223211","221132",
+        "221231","213212","223112","312131","311222","321122","321221","312212","322112","322211",
+        "212123","212321","232121","111323","131123","131321","112313","132113","132311","211313",
+        "231113","231311","112133","112331","132131","113123","113321","133121","313121","211331",
+        "231131","213113","213311","213131","311123","311321","331121","312113","312311","332111",
+        "314111","221411","431111","111224","111422","121124","121421","141122","141221","112214",
+        "112412","122114","122411","142112","142211","241211","221114","413111","241112","134111",
+        "111242","121142","121241","114212","124112","124211","411212","421112","421211","212141",
+        "214121","412121","111143","111341","131141","114113","114311","411113","411311","113141",
+        "114131","311141","411131","211412","211214","211232","2331112"
+      ];
+
+      const startCode = 104;
+      const codes = [startCode];
+      let checksum = startCode;
+
+      for (let i = 0; i < cleanText.length; i++) {
+        const charCode = cleanText.charCodeAt(i) - 32;
+        if (charCode >= 0 && charCode <= 95) {
+          codes.push(charCode);
+          checksum += charCode * (i + 1);
+        }
+      }
+
+      codes.push(checksum % 103);
+      codes.push(106);
+
+      let binary = "";
+      for (let code of codes) {
+        const pattern = patterns[code];
+        if (!pattern) continue;
+        for (let j = 0; j < pattern.length; j++) {
+          const run = parseInt(pattern[j], 10);
+          binary += (j % 2 === 0 ? "1" : "0").repeat(run);
+        }
+      }
+
+      let rects = "";
+      let currentX = 0;
+      for (let i = 0; i < binary.length; i++) {
+        if (binary[i] === "1") {
+          let run = 1;
+          while (i + 1 < binary.length && binary[i + 1] === "1") {
+            run++;
+            i++;
+          }
+          rects += `<rect x="${currentX * width}" y="0" width="${run * width}" height="${height}" fill="#000000" />`;
+          currentX += run;
+        } else {
+          currentX++;
+        }
+      }
+
+      const totalWidth = currentX * width;
+      return `<svg width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">${rects}</svg>`;
+    }
+
+    // =========================================================
+    // N) Bootstrap on Page Load
+    // =========================================================
+    window.addEventListener("DOMContentLoaded", () => {
+      // Initialize with default Alendronate instructions
+      switchActiveIngredientPreset('alendronate');
+
+      // Initialize Master Database
+      initMasterDatabase();
+
+      // Close dropdowns on outside click
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".search-panel")) {
+          document.getElementById("quickSearchDropdown").style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
