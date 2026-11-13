@@ -232,6 +232,61 @@
       border: 1px solid #bae6fd;
     }
 
+    /* Route Switcher Buttons in Active Banner */
+    .route-pills-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 4px;
+      vertical-align: middle;
+      flex-wrap: wrap;
+    }
+    .route-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      outline: none;
+    }
+    .route-pill-btn i {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+    .route-pill-btn:hover {
+      border-color: #f97316;
+      color: #ea580c;
+      background: #fff7ed;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(234, 88, 12, 0.15);
+    }
+    .route-pill-btn.active {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+      color: #ffffff !important;
+      border-color: #ea580c !important;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35) !important;
+      transform: translateY(-1px);
+      font-weight: 800;
+    }
+    .route-pill-btn.active i {
+      color: #ffffff !important;
+      opacity: 1;
+    }
+    .route-pill-btn:active {
+      transform: translateY(0);
+    }
+
     .status-indicator_old {
       width: 8px;
       height: 8px;
@@ -1786,8 +1841,64 @@
     }
 
     // =========================================================
-    // D) Image Fetching Fallbacks (Worker API + Se7en Gateway)
+    // D) Smart Image Resolution & Se7en Server Integration
     // =========================================================
+    const MEDICAL_PLACEHOLDER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'><rect width='200' height='200' fill='%23f8fafc'/><g fill='none' stroke='%2394a3b8' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'><rect x='50' y='65' width='100' height='95' rx='14'/><path d='M80 65 V48 a20 20 0 0 1 40 0 V65'/><line x1='100' y1='92' x2='100' y2='132'/><line x1='80' y1='112' x2='120' y2='112'/></g><text x='100' y='180' font-family='system-ui, -apple-system, sans-serif' font-size='12' fill='%2394a3b8' text-anchor='middle' font-weight='700'>No Image Available</text></svg>";
+
+    // Global cache for successfully repaired images (with localStorage persistence)
+    window.repairedImages = window.repairedImages || {};
+    try {
+      const cachedRepaired = localStorage.getItem('se7en_repaired_images_cache');
+      if (cachedRepaired) {
+        const parsed = JSON.parse(cachedRepaired);
+        for (const k in parsed) {
+          if (parsed[k] && parsed[k] !== 'FAILED' && typeof parsed[k] === 'string' && parsed[k].startsWith('http')) {
+            window.repairedImages[k] = parsed[k];
+          }
+        }
+      }
+    } catch (e) {}
+
+    function persistRepairedImagesCache() {
+      try {
+        const validOnly = {};
+        for (const k in window.repairedImages) {
+          const val = window.repairedImages[k];
+          if (val && typeof val === 'string' && val.startsWith('http') && val !== 'FAILED') {
+            validOnly[k] = val;
+          }
+        }
+        localStorage.setItem('se7en_repaired_images_cache', JSON.stringify(validOnly));
+      } catch (e) {}
+    }
+
+    function testImageLoad(url, timeoutMs = 2500) {
+      return new Promise((resolve) => {
+        if (!url || typeof url !== 'string') return resolve(false);
+        if (url.startsWith('data:')) return resolve(true);
+        const img = new Image();
+        let finished = false;
+        img.onload = () => { if (!finished) { finished = true; resolve(true); } };
+        img.onerror = () => { if (!finished) { finished = true; resolve(false); } };
+        img.src = url;
+        setTimeout(() => { if (!finished) { finished = true; resolve(false); } }, timeoutMs);
+      });
+    }
+
+    function normalizeSearchTextHelper(str) {
+      if (!str) return '';
+      return String(str)
+        .toLowerCase()
+        .replace(/[\u064B-\u065F\u0670]/g, '')
+        .replace(/[إأآا]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/[ىي]/g, 'ي')
+        .replace(/([0-9]+)/g, ' $1 ')
+        .replace(/[^a-z0-9\u0600-\u06FF\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
     async function fetchImageFromWorker(code) {
       if (!code) return null;
       try {
@@ -1811,7 +1922,7 @@
       const qStr = encodeURIComponent(queryStr);
       for (const baseUrl of SE7EN_GATEWAY_URLS) {
         try {
-          const res = await fetch(`${baseUrl}?q=${qStr}&page=1&pageSize=10`, {
+          const res = await fetch(`${baseUrl}?q=${qStr}&page=1&pageSize=15`, {
             headers: { "Accept": "application/json" }
           });
           if (res.ok) {
@@ -1825,36 +1936,146 @@
       return [];
     }
 
+    async function findImageOnSe7en(code, productInfo = {}) {
+      const cleanCode = String(code || '').trim();
+      if (!cleanCode) return null;
+
+      // 1. Fast Cache Check
+      if (window.repairedImages && window.repairedImages[cleanCode]) {
+        if (window.repairedImages[cleanCode] !== 'FAILED') {
+          return window.repairedImages[cleanCode];
+        }
+      }
+
+      const p = { ...(productInfo || {}) };
+      const nameAR = String(p["أسم المنتج"] || p.nameAR || p.tradeNameAr || '').trim();
+      const nameEN = String(p["Item Description"] || p["Item Description English"] || p.tradeNameEn || p.nameEN || '').trim();
+      const brand = String(p.Brand || p.brand || '').trim();
+
+      // GTIN check first
+      let gtins = [];
+      const rawGtin = p.GTIN ?? p.gtin ?? p.Gtin ?? p.Barcode ?? p.barcode;
+      if (rawGtin) gtins = Array.isArray(rawGtin) ? rawGtin : [rawGtin];
+
+      for (const g of gtins) {
+        const cleanG = String(g || '').trim().replace(/\D/g, '');
+        if (cleanG.length >= 8) {
+          const gResults = await querySe7enSearchApi(cleanG);
+          const withImg = gResults.filter(r => r.imageUrl && r.imageUrl.startsWith('http'));
+          if (withImg.length > 0) {
+            const found = withImg[0].imageUrl;
+            window.repairedImages[cleanCode] = found;
+            persistRepairedImagesCache();
+            return found;
+          }
+        }
+      }
+
+      // Smart Word Decomposition (from offersgit.html)
+      const normAR = normalizeSearchTextHelper(nameAR);
+      const normEN = normalizeSearchTextHelper(nameEN);
+      const normBrand = normalizeSearchTextHelper(brand);
+
+      const arWords = normAR.split(' ').filter(w => w.length > 1);
+      const enWords = normEN.split(' ').filter(w => w.length > 1);
+      const brandWords = normBrand.split(' ').filter(w => w.length > 1);
+
+      const stopWords = new Set([
+        'tab', 'tabs', 'tablet', 'tablets', 'cap', 'caps', 'capsule', 'capsules', 'softgel', 'softgels',
+        'syrup', 'susp', 'suspension', 'cream', 'crm', 'ointment', 'gel', 'lotion', 'spray', 'drops',
+        'sachet', 'sachets', 'amp', 'ampoule', 'mg', 'g', 'gm', 'ml', 'pcs', 'pack', 'box', 'strip',
+        'قرص', 'اقراص', 'كبسولة', 'كبسولات', 'حبة', 'حبات', 'شراب', 'معلق', 'كريم', 'مرهم', 'جل',
+        'لوشن', 'بخاخ', 'نقط', 'كيس', 'اكياس', 'امبول', 'امبولات', 'مجم', 'ملجم', 'جم', 'مل', 'قطعة',
+        'كبسوله', 'حبه', 'علبه', 'كرتون'
+      ]);
+
+      const primaryEn = enWords.filter(w => !brandWords.includes(w) && !stopWords.has(w) && !/^\d+$/.test(w));
+      const primaryAr = arWords.filter(w => !brandWords.includes(w) && !stopWords.has(w) && !/^\d+$/.test(w));
+
+      const queries = [];
+      if (primaryEn.length > 0) queries.push(primaryEn.slice(0, 2).join(' '));
+      if (primaryAr.length > 0) queries.push(primaryAr.slice(0, 2).join(' '));
+      if (brand && primaryEn.length > 0) queries.push(`${brand} ${primaryEn.slice(0, 2).join(' ')}`);
+      if (brand && primaryAr.length > 0) queries.push(`${brand} ${primaryAr.slice(0, 2).join(' ')}`);
+      if (enWords.length >= 2) queries.push(enWords.slice(0, 3).join(' '));
+      if (arWords.length >= 2) queries.push(arWords.slice(0, 3).join(' '));
+
+      const targetTokens = new Set([...arWords, ...enWords, ...brandWords]);
+      const seenQueries = new Set();
+
+      for (const q of queries) {
+        const qClean = q.trim();
+        if (!qClean || seenQueries.has(qClean)) continue;
+        seenQueries.add(qClean);
+
+        const results = await querySe7enSearchApi(qClean);
+        const valid = results.filter(r => r.imageUrl && r.imageUrl.startsWith('http'));
+        if (!valid.length) continue;
+
+        // Score results
+        const scored = valid.map(cand => {
+          const candTitle = normalizeSearchTextHelper(cand.title || '');
+          const candBrand = normalizeSearchTextHelper(cand.brand || '');
+          const candTokens = new Set([...candTitle.split(' '), ...candBrand.split(' ')]);
+
+          let score = 0;
+          if (normBrand && (candTitle.includes(normBrand) || candBrand.includes(normBrand))) score += 35;
+          for (const tok of targetTokens) {
+            if (!stopWords.has(tok) && candTokens.has(tok)) {
+              score += /^\d+$/.test(tok) ? 15 : 25;
+            }
+          }
+          if (candTitle.includes(normalizeSearchTextHelper(qClean))) score += 30;
+          return { score, cand };
+        });
+
+        scored.sort((a, b) => b.score - a.score);
+        const found = scored[0].cand.imageUrl;
+        window.repairedImages[cleanCode] = found;
+        persistRepairedImagesCache();
+        return found;
+      }
+
+      return null;
+    }
+
     async function resolveProductImage(code, productObj) {
+      const cleanCode = String(code || '').trim();
       try {
+        // 1. Check local repaired images cache first
+        if (window.repairedImages && window.repairedImages[cleanCode] && window.repairedImages[cleanCode] !== 'FAILED') {
+          return { url: window.repairedImages[cleanCode], source: "Se7en Repaired ✓" };
+        }
+
+        // 2. Check Master DB URL if valid and alive
         const rawUrl = productObj.imageUrl || productObj.itemurl || productObj.ItemURL || productObj.image || '';
         const formatted = formatProductImageUrl(rawUrl);
-        if (formatted) return { url: formatted, source: "Master DB" };
-
-        const workerImg = await fetchImageFromWorker(String(code).trim());
-        if (workerImg) return { url: workerImg, source: "Worker API" };
-
-        const rawGtin = Array.isArray(productObj.GTIN) ? (productObj.GTIN[0] || '') : (productObj.GTIN || productObj.gtin || '');
-        const searchTerms = [
-          String(rawGtin || '').trim(),
-          `${productObj.Brand || ''} ${productObj["Item Description"] || ''}`.trim(),
-          String(productObj["أسم المنتج"] || '').trim()
-        ].filter(Boolean);
-
-        for (const term of searchTerms) {
-          const results = await querySe7enSearchApi(term);
-          const matchWithImg = results.find(r => r.imageUrl && r.imageUrl.startsWith('http'));
-          if (matchWithImg) {
-            return { url: formatProductImageUrl(matchWithImg.imageUrl), source: "Se7en API" };
+        if (formatted) {
+          const isAlive = await testImageLoad(formatted, 1800);
+          if (isAlive) {
+            return { url: formatted, source: "Master DB" };
           }
+        }
+
+        // 3. Smart Search on Se7en Gateway
+        const se7enImg = await findImageOnSe7en(cleanCode, productObj);
+        if (se7enImg) {
+          return { url: formatProductImageUrl(se7enImg) || se7enImg, source: "Se7en API" };
+        }
+
+        // 4. Worker API fallback
+        const workerImg = await fetchImageFromWorker(cleanCode);
+        if (workerImg) {
+          const isAlive = await testImageLoad(workerImg, 1500);
+          if (isAlive) return { url: workerImg, source: "Worker API" };
         }
       } catch (err) {
         console.warn("resolveProductImage error:", err);
       }
 
       return {
-        url: "https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png",
-        source: "Default Rx"
+        url: MEDICAL_PLACEHOLDER_SVG,
+        source: "No Image"
       };
     }
 
@@ -2458,7 +2679,18 @@
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = `route-pill-btn ${r === selectedRoute ? 'active' : ''}`;
-        btn.innerText = r;
+        
+        let iconHtml = '';
+        const rLower = r.toLowerCase();
+        if (rLower.includes('oral')) iconHtml = '<i class="fas fa-capsules"></i>';
+        else if (rLower.includes('rectal')) iconHtml = '<i class="fas fa-pills"></i>';
+        else if (rLower.includes('intravenous') || rLower.includes('injection') || rLower.includes('injectable')) iconHtml = '<i class="fas fa-syringe"></i>';
+        else if (rLower.includes('ophthalmic')) iconHtml = '<i class="fas fa-eye"></i>';
+        else if (rLower.includes('topical')) iconHtml = '<i class="fas fa-pump-medical"></i>';
+        else if (rLower.includes('inhal')) iconHtml = '<i class="fas fa-lungs"></i>';
+        else iconHtml = '<i class="fas fa-route"></i>';
+
+        btn.innerHTML = `${iconHtml}<span>${r}</span>`;
         btn.title = `Switch to ${r} Administration`;
         btn.onclick = () => switchDrugRoute(r);
         container.appendChild(btn);
@@ -2670,7 +2902,8 @@
         // 1. Instant Synchronous UI Update (Zero Latency!) with Full Arabic URL Formatting
         const rawImg = p.imageUrl || p.itemurl || p.ItemURL || p.image || '';
         const formattedImg = formatProductImageUrl(rawImg);
-        const fallbackImg = "https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/858ba78ce2719a0e7069fd4807b725e0002a17d8/6_20251129_184528_0005.png";
+        const cachedRepaired = (window.repairedImages && window.repairedImages[code] && window.repairedImages[code] !== 'FAILED') ? window.repairedImages[code] : null;
+        const initialImg = cachedRepaired || formattedImg || MEDICAL_PLACEHOLDER_SVG;
 
         currentMedication = {
           code,
@@ -2680,8 +2913,8 @@
           brand,
           price,
           gtin,
-          imageUrl: formattedImg || fallbackImg,
-          imageSource: formattedImg ? 'Master DB ✓' : 'Default Rx'
+          imageUrl: initialImg,
+          imageSource: cachedRepaired ? 'Se7en Repaired ✓' : (formattedImg ? 'Master DB ✓' : 'Searching Image...')
         };
 
         const codeEl = document.getElementById("cardProductCode");
@@ -2706,9 +2939,18 @@
         if (cardImg) {
           cardImg.src = currentMedication.imageUrl;
           cardImg.alt = `${enName} - ${arName}`;
-          cardImg.onerror = function() {
+          cardImg.onerror = async function() {
             this.onerror = null;
-            this.src = fallbackImg;
+            // Attempt smart repair from Se7en on image failure!
+            const repaired = await findImageOnSe7en(code, p);
+            if (repaired && repaired !== 'FAILED') {
+              this.src = repaired;
+              if (srcInd) srcInd.innerText = 'Se7en Repaired ✓';
+              currentMedication.imageUrl = repaired;
+            } else {
+              this.src = MEDICAL_PLACEHOLDER_SVG;
+              if (srcInd) srcInd.innerText = 'No Image Available';
+            }
           };
         }
 
@@ -2725,7 +2967,8 @@
             cardImg.src = finalFormatted;
             cardImg.onerror = function() {
               this.onerror = null;
-              this.src = fallbackImg;
+              this.src = MEDICAL_PLACEHOLDER_SVG;
+              if (srcInd) srcInd.innerText = 'No Image Available';
             };
             if (srcInd) srcInd.innerText = `${imgData.source} ✓`;
           }
