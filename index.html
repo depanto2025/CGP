@@ -302,9 +302,31 @@
     }
 
     .btn-header-print {
-      background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+      background: linear-gradient(135deg, #16a34a, #15803d);
       color: #ffffff;
-      border: 1.5px solid var(--orange-500);
+      border: 1.5px solid #22c55e;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-header-print:hover {
+      background: linear-gradient(135deg, #15803d, #166534);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45);
+    }
+
+    .btn-header-preview {
+      background: #ffffff;
+      color: var(--navy-900);
+      border: 1.5px solid var(--border-color);
       padding: 9px 16px;
       border-radius: var(--radius-md);
       font-size: 13.5px;
@@ -316,9 +338,313 @@
       transition: all 0.2s ease;
     }
 
-    .btn-header-print:hover {
-      background: var(--navy-900);
-      box-shadow: 0 4px 12px rgba(15, 43, 92, 0.3);
+    .btn-header-preview:hover {
+      border-color: var(--navy-800);
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       Batch Queue Tray Section (Multi-Product Print Queue)
+       ========================================================= */
+    .batch-queue-panel {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      margin-top: 14px;
+      margin-bottom: 20px;
+      transition: all 0.25s ease;
+    }
+    .batch-queue-panel:hover {
+      border-color: #cbd5e1;
+    }
+    .batch-queue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .batch-queue-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .batch-queue-icon-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+    }
+    .batch-queue-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--navy-900);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .batch-count-pill {
+      font-size: 11px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+    .batch-queue-subtitle {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .batch-queue-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-batch-print {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-batch-print:hover {
+      background: linear-gradient(135deg, #15803d, #166534);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+    }
+    .btn-batch-preview {
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-batch-preview:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+    }
+    .btn-batch-add {
+      background: #f8fafc;
+      color: #334155;
+      border: 1.5px solid #cbd5e1;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-batch-add:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .btn-batch-clear {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+    .btn-batch-clear:hover {
+      background: #fecaca;
+    }
+    .batch-queue-tray {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 2px 10px 2px;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f8fafc;
+    }
+    .batch-queue-tray::-webkit-scrollbar {
+      height: 6px;
+    }
+    .batch-queue-tray::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .batch-queue-empty-box {
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      background: #f8fafc;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 12px;
+      color: #64748b;
+      font-size: 12.5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .batch-item-card {
+      min-width: 240px;
+      max-width: 270px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      flex-shrink: 0;
+    }
+    .batch-item-card:hover {
+      border-color: #f97316;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
+      transform: translateY(-2px);
+    }
+    .batch-item-card.is-active {
+      border-color: #ea580c !important;
+      background: #fffaf5 !important;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.2) !important;
+    }
+    .batch-item-top {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .batch-item-thumb {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+    .batch-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .batch-item-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .batch-item-active {
+      font-size: 10.5px;
+      color: #0369a1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+    .batch-item-route {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #ea580c;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      padding: 1px 7px;
+      margin-top: 3px;
+    }
+    .batch-item-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 6px;
+      margin-top: 2px;
+    }
+    .batch-item-qty-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+    }
+    .batch-qty-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .batch-qty-btn:hover {
+      background: #ea580c;
+      color: #ffffff;
+      border-color: #ea580c;
+    }
+    .batch-remove-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 1px solid #fca5a5;
+      background: #fff;
+      color: #ef4444;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .batch-remove-btn:hover {
+      background: #ef4444;
+      color: #ffffff;
     }
 
     .btn-scanner-trigger {
@@ -1457,9 +1783,9 @@
 <body>
 
   <!-- Floating Print Button (Always Accessible as requested) -->
-  <button class="floating-print-fab" onclick="openPrintModal()" title="Print 3x2 Label Now">
+  <button class="floating-print-fab" onclick="triggerDirectBatchPrint()" title="طباعة مجمعة فورية لجميع الأصناف">
     <i class="fas fa-print"></i>
-    <span>Print Label (3" × 2")</span>
+    <span>طباعة فورية (Print)</span>
   </button>
 
   <!-- =========================================================
@@ -1482,15 +1808,21 @@
         <span class="status-indicator"></span>
       </div>
 
-      <!-- Top Print Button as requested -->
-      <button class="btn-header-print" onclick="openPrintModal()">
+      <!-- Top Direct Print Button -->
+      <button class="btn-header-print" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لجميع الكروت المجهزة">
         <i class="fas fa-print"></i>
-        <span>Print Label (3"×2")</span>
+        <span id="headerPrintBtnText">طباعة فورية (Print)</span>
+      </button>
+
+      <!-- Top Preview Button (Requested by User) -->
+      <button class="btn-header-preview" onclick="openPrintModal()" title="معاينة جميع الكروت قبل الطباعة">
+        <i class="fas fa-eye"></i>
+        <span>معاينة (Preview)</span>
       </button>
 
       <button class="btn-scanner-trigger" onclick="openBarcodeScannerModal()">
         <i class="fas fa-qrcode"></i>
-        <span>Scan Barcode / QR</span>
+        <span>مسح باركود (Scan)</span>
       </button>
     </div>
   </header>
@@ -1516,6 +1848,60 @@
         </button>
       </div>
       <div id="quickSearchDropdown" class="quick-search-dropdown"></div>
+    </section>
+
+    <!-- Multi-Product Batch Queue Tray (قائمة الأصناف المجهزة للطباعة المجمعة) -->
+    <section id="batchQueueSection" class="batch-queue-panel">
+      <div class="batch-queue-header">
+        <div class="batch-queue-title-wrap">
+          <div class="batch-queue-icon-badge">
+            <i class="fas fa-boxes-stacked"></i>
+          </div>
+          <div>
+            <div class="batch-queue-title">
+              <span>قائمة الطباعة المجمعة (Multi-Product Print Queue)</span>
+              <span id="batchCountBadge" class="batch-count-pill">0 أصناف (0 كروت)</span>
+            </div>
+            <div class="batch-queue-subtitle">
+              الأصناف الممسوحة بالباركود أو المضافة جاهزة للطباعة المباشرة دفعة واحدة
+            </div>
+          </div>
+        </div>
+
+        <div class="batch-queue-actions">
+          <!-- Direct Batch Print -->
+          <button class="btn-batch-print" onclick="triggerDirectBatchPrint()" title="طباعة فورية لكافة الأصناف دفعة واحدة">
+            <i class="fas fa-print"></i>
+            <span>طباعة مجمعة (Print All)</span>
+          </button>
+
+          <!-- Preview Batch Labels -->
+          <button class="btn-batch-preview" onclick="openPrintModal()" title="معاينة الكروت قبل الطباعة">
+            <i class="fas fa-eye"></i>
+            <span>معاينة (Preview)</span>
+          </button>
+
+          <!-- Add Current Medication -->
+          <button class="btn-batch-add" onclick="addCurrentMedicationToBatch()" title="إضافة الصنف المعروض حالياً للقائمة">
+            <i class="fas fa-plus-circle"></i>
+            <span>إضافة الصنف الحالي</span>
+          </button>
+
+          <!-- Clear Queue -->
+          <button class="btn-batch-clear" onclick="clearBatchQueue()" title="تفريغ القائمة">
+            <i class="fas fa-trash-can"></i>
+            <span>تفريغ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Cards Tray -->
+      <div id="batchQueueTray" class="batch-queue-tray">
+        <div class="batch-queue-empty-box">
+          <i class="fas fa-barcode" style="font-size:22px; color:#94a3b8;"></i>
+          <span>قائمة الطباعة فارغة حالياً. قم بمسح باركود الأصناف أو البحث لإضافتها هنا للطباعة المجمعة.</span>
+        </div>
+      </div>
     </section>
 
     <!-- Two-column dashboard -->
@@ -1556,11 +1942,17 @@
           </div>
         </div>
 
-        <!-- Quick Print on Card -->
-        <button class="btn-launch-preview" style="padding:10px; font-size:13px; width:100%; justify-content:center;" onclick="openPrintModal()">
-          <i class="fas fa-print"></i>
-          <span>Print 3"×2" Label</span>
-        </button>
+        <!-- Quick Print & Preview Dual Buttons on Card -->
+        <div style="display:flex; gap:8px;">
+          <button class="btn-launch-preview" style="flex:1; padding:10px; font-size:12.5px; justify-content:center; background:linear-gradient(135deg, #16a34a, #15803d);" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لجميع الكروت">
+            <i class="fas fa-print"></i>
+            <span>طباعة فورية</span>
+          </button>
+          <button class="btn-launch-preview" style="padding:10px 14px; font-size:12.5px; justify-content:center; background:#0f172a;" onclick="openPrintModal()" title="معاينة الكروت">
+            <i class="fas fa-eye"></i>
+            <span>معاينة</span>
+          </button>
+        </div>
       </aside>
 
       <!-- Right Panel: Instructions Builder & Active Ingredient Linking -->
@@ -1621,10 +2013,16 @@
             <span style="margin-left:10px; color:var(--text-muted); font-size:12px;">(Exact 3" × 2" Thermal Label - Single Page Optimized)</span>
           </div>
 
-          <button class="btn-launch-preview" onclick="openPrintModal()">
-            <i class="fas fa-print"></i>
-            <span>Preview & Print Label (3" × 2")</span>
-          </button>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn-launch-preview" style="background:linear-gradient(135deg, #16a34a, #15803d); box-shadow:0 2px 8px rgba(22, 163, 74, 0.3);" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لجميع الكروت">
+              <i class="fas fa-print"></i>
+              <span>طباعة فورية (Print Now)</span>
+            </button>
+            <button class="btn-launch-preview" style="background:#0f172a;" onclick="openPrintModal()" title="معاينة جميع الكروت">
+              <i class="fas fa-eye"></i>
+              <span>معاينة الكروت (Preview)</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1733,6 +2131,17 @@
         </div>
       </div>
 
+      <!-- Continuous Scan Batch Status Bar -->
+      <div id="scannerBatchStatusBar" style="display:flex; justify-content:space-between; align-items:center; background:#1e293b; padding:10px 14px; border-radius:10px; margin: 10px 16px 0 16px; border:1px solid #334155;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e;"></span>
+          <span id="scannerBatchCountText" style="color:#f8fafc; font-size:12px; font-weight:700;">الأصناف الممسوحة: 0</span>
+        </div>
+        <button style="background:linear-gradient(135deg, #16a34a, #15803d); color:#fff; border:none; padding:6px 14px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;" onclick="closeBarcodeScannerModal(); triggerDirectBatchPrint();">
+          <i class="fas fa-print"></i> طباعة الكل فوراً
+        </button>
+      </div>
+
       <div class="scanner-manual-wrap">
         <div style="font-size:11.5px; color:#94a3b8; text-align:center;">
           Scan 2D SFDA DataMatrix, EAN-13, or enter 6-digit Code below:
@@ -1792,6 +2201,183 @@
       imageUrl: "https://stgprevapi.al-dawaa.com/medias/%D9%81%D9%88%D8%B3%D8%A7%D9%85%D8%A7%D9%83%D8%B3-70-%D9%85%D8%AC%D9%85-%D9%82%D8%B1%D8%B5-%D8%A7%D8%B3%D8%A8%D9%88%D8%B9%D9%8A%D8%A7-%D9%84%D9%84%D8%AD%D9%81%D8%A7%D8%B8-%D8%B9%D9%84%D9%89-%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B9%D8%B8%D8%A7%D9%85-4-%D8%A7%D9%82%D8%B1%D8%A7%D8%B5_0_1200.webp?context=bWFzdGVyfGltYWdlc3wxMDU0OTB8aW1hZ2Uvd2VicHxhREppTDJnMU5TODVOekkwTURFeU5ESTVNelF5THpFd01Ea3lPVjh3WDJGeVh6RXlNREJYZURFeU1EQklYMWRGUWxBdWQyVmljQXwwMjZhYThmMzU5Yzk1NDNlM2U4OTUwYjI4MjJjNTVmODUwNzkwNTg3ZmNiZDJiZWUwYWVkMDYxZDM0Nzc1ZmYz",
       imageSource: "Master DB ✓"
     };
+
+    // =========================================================
+    // Multi-Product Batch Queue State & Management
+    // =========================================================
+    let batchMedicationQueue = [];
+    let currentBatchActiveId = null;
+
+    function showToast(msg) {
+      let toast = document.getElementById("appGlobalToast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "appGlobalToast";
+        toast.style.cssText = "position:fixed; top:24px; left:50%; transform:translateX(-50%); background:#0f172a; color:#fff; padding:10px 22px; border-radius:30px; font-size:13px; font-weight:700; z-index:99999; box-shadow:0 8px 24px rgba(0,0,0,0.35); border:1px solid #334155; display:flex; align-items:center; gap:8px; pointer-events:none; transition:opacity 0.3s ease; opacity:0;";
+        document.body.appendChild(toast);
+      }
+      toast.innerText = msg;
+      toast.style.opacity = "1";
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => { toast.style.opacity = "0"; }, 2500);
+    }
+
+    function addCurrentMedicationToBatch(showAlert = true) {
+      if (!currentMedication || !currentMedication.code) return;
+      const cleanCode = String(currentMedication.code).trim();
+      
+      const existing = batchMedicationQueue.find(x => String(x.code).trim() === cleanCode);
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+        existing.medication = { ...currentMedication };
+        existing.instructions = JSON.parse(JSON.stringify(workingInstructions));
+        existing.selectedRoute = currentActiveRoute;
+        currentBatchActiveId = existing.id;
+        if (showAlert) showToast(`✓ تم زيادة كمية: ${currentMedication.tradeNameEn || currentMedication.tradeNameAr} إلى (${existing.quantity})`);
+      } else {
+        const newItem = {
+          id: "batch_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+          code: cleanCode,
+          product: currentLoadedProduct,
+          medication: { ...currentMedication },
+          drug: currentActiveDrug,
+          selectedRoute: currentActiveRoute,
+          instructions: JSON.parse(JSON.stringify(workingInstructions)),
+          quantity: 1
+        };
+        batchMedicationQueue.push(newItem);
+        currentBatchActiveId = newItem.id;
+        if (showAlert) showToast(`✓ تمت إضافة: ${currentMedication.tradeNameEn || currentMedication.tradeNameAr} إلى قائمة الطباعة`);
+      }
+      updateBatchQueueUI();
+    }
+
+    function removeBatchItem(id, event) {
+      if (event) event.stopPropagation();
+      batchMedicationQueue = batchMedicationQueue.filter(x => x.id !== id);
+      if (currentBatchActiveId === id) {
+        currentBatchActiveId = batchMedicationQueue[0] ? batchMedicationQueue[0].id : null;
+      }
+      updateBatchQueueUI();
+      showToast("🗑️ تم حذف الصنف من قائمة الطباعة");
+    }
+
+    function changeBatchItemQty(id, delta, event) {
+      if (event) event.stopPropagation();
+      const item = batchMedicationQueue.find(x => x.id === id);
+      if (!item) return;
+      item.quantity = Math.max(1, (item.quantity || 1) + delta);
+      updateBatchQueueUI();
+    }
+
+    function clearBatchQueue() {
+      if (batchMedicationQueue.length === 0) return;
+      if (confirm("هل أنت متأكد من تفريغ قائمة الطباعة المجمعة؟")) {
+        batchMedicationQueue = [];
+        currentBatchActiveId = null;
+        updateBatchQueueUI();
+        showToast("🗑️ تم تفريغ قائمة الطباعة المجمعة");
+      }
+    }
+
+    function selectBatchItemToEdit(id) {
+      const item = batchMedicationQueue.find(x => x.id === id);
+      if (!item) return;
+      currentBatchActiveId = id;
+      if (item.product) {
+        selectMedicationItem(item.product, false);
+      }
+      if (item.selectedRoute) {
+        switchDrugRoute(item.selectedRoute);
+      }
+      if (item.instructions && item.instructions.length > 0) {
+        workingInstructions = JSON.parse(JSON.stringify(item.instructions));
+        renderInstructionsChecklist();
+      }
+      updateBatchQueueUI();
+    }
+
+    function syncCurrentItemToBatch() {
+      if (!currentBatchActiveId) return;
+      const item = batchMedicationQueue.find(x => x.id === currentBatchActiveId);
+      if (item) {
+        item.instructions = JSON.parse(JSON.stringify(workingInstructions));
+        item.selectedRoute = currentActiveRoute;
+        item.medication = { ...currentMedication };
+      }
+    }
+
+    function updateBatchQueueUI() {
+      const tray = document.getElementById("batchQueueTray");
+      const badge = document.getElementById("batchCountBadge");
+      const headerBtnText = document.getElementById("headerPrintBtnText");
+      const scannerBadge = document.getElementById("scannerBatchCountText");
+
+      let totalLabels = 0;
+      batchMedicationQueue.forEach(i => {
+        totalLabels += (i.quantity || 1);
+      });
+
+      if (badge) {
+        badge.innerText = `${batchMedicationQueue.length} أصناف (${totalLabels} كروت)`;
+      }
+      if (headerBtnText) {
+        headerBtnText.innerText = totalLabels > 0 ? `طباعة مجمعة (${totalLabels})` : 'طباعة فورية (Print)';
+      }
+      if (scannerBadge) {
+        scannerBadge.innerHTML = `الأصناف الممسوحة: <strong style="color:#f97316;">${batchMedicationQueue.length}</strong> (${totalLabels} كروت)`;
+      }
+
+      if (!tray) return;
+
+      if (batchMedicationQueue.length === 0) {
+        tray.innerHTML = `
+          <div class="batch-queue-empty-box">
+            <i class="fas fa-barcode" style="font-size:22px; color:#94a3b8;"></i>
+            <span>قائمة الطباعة فارغة حالياً. قم بمسح باركود الأصناف أو البحث لإضافتها هنا للطباعة المجمعة.</span>
+          </div>
+        `;
+        return;
+      }
+
+      tray.innerHTML = "";
+      batchMedicationQueue.forEach(item => {
+        const med = item.medication || {};
+        const isSelected = (item.id === currentBatchActiveId);
+        const card = document.createElement("div");
+        card.className = `batch-item-card ${isSelected ? 'is-active' : ''}`;
+        card.onclick = () => selectBatchItemToEdit(item.id);
+
+        const title = med.tradeNameEn || med.tradeNameAr || `Product #${item.code}`;
+        const active = med.activeIngredient || 'Active';
+        const route = item.selectedRoute || 'General';
+        const imgUrl = med.imageUrl || MEDICAL_PLACEHOLDER_SVG;
+
+        card.innerHTML = `
+          <div class="batch-item-top">
+            <img class="batch-item-thumb" src="${imgUrl}" alt="${title}" onerror="this.src='${MEDICAL_PLACEHOLDER_SVG}'">
+            <div class="batch-item-info">
+              <div class="batch-item-title" title="${title}">${title}</div>
+              <div class="batch-item-active" title="${active}">${active}</div>
+              <span class="batch-item-route">${route}</span>
+            </div>
+          </div>
+          <div class="batch-item-bottom">
+            <div class="batch-item-qty-box" title="عدد الكروت لهذا الصنف">
+              <span>العدد:</span>
+              <button class="batch-qty-btn" onclick="changeBatchItemQty('${item.id}', -1, event)" title="تقليل">-</button>
+              <span style="min-width:14px; text-align:center;">${item.quantity || 1}</span>
+              <button class="batch-qty-btn" onclick="changeBatchItemQty('${item.id}', 1, event)" title="زيادة">+</button>
+            </div>
+            <button class="batch-remove-btn" onclick="removeBatchItem('${item.id}', event)" title="حذف من القائمة">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        `;
+
+        tray.appendChild(card);
+      });
+    }
 
     // =========================================================
     // B) Dynamedex Database Link (Loaded from dynamedex_instructions.js)
@@ -2659,6 +3245,8 @@
       }));
 
       updateRouteButtonsUI(drug, route);
+      syncCurrentItemToBatch();
+      updateBatchQueueUI();
       renderInstructionsChecklist();
       renderModalLabels();
 
@@ -2843,6 +3431,7 @@
     function toggleInstructionChecked(index, isChecked) {
       if (workingInstructions[index]) {
         workingInstructions[index].checked = isChecked;
+        syncCurrentItemToBatch();
         renderInstructionsChecklist();
         renderModalLabels();
       }
@@ -2856,12 +3445,14 @@
         } else {
           workingInstructions[index].textEn = newText.trim();
         }
+        syncCurrentItemToBatch();
         renderModalLabels();
       }
     }
 
     function deleteInstructionItem(index) {
       workingInstructions.splice(index, 1);
+      syncCurrentItemToBatch();
       renderInstructionsChecklist();
       renderModalLabels();
     }
@@ -2880,6 +3471,7 @@
       });
 
       input.value = "";
+      syncCurrentItemToBatch();
       renderInstructionsChecklist();
       renderModalLabels();
     }
@@ -2888,7 +3480,7 @@
     // H) Selecting and Loading Medication into Interface
     // =========================================================
     const selectAndDisplayProduct = selectMedicationItem;
-    function selectMedicationItem(p) {
+    function selectMedicationItem(p, autoAddToBatch = true) {
       if (!p) return;
       try {
         const code = String(p.Code || p.code || '100929');
@@ -2958,7 +3550,14 @@
         const matchedDrug = findDynamedexDrug(p);
         switchActiveIngredientPreset(matchedDrug, p);
 
-        // 3. Resolve Full Quality Image Asynchronously in the Background
+        // 3. Batch Queue Integration
+        if (autoAddToBatch) {
+          addCurrentMedicationToBatch(false);
+        } else {
+          syncCurrentItemToBatch();
+        }
+
+        // 4. Resolve Full Quality Image Asynchronously in the Background
         resolveProductImage(code, p).then(imgData => {
           if (imgData && imgData.url && cardImg) {
             const finalFormatted = formatProductImageUrl(imgData.url) || imgData.url;
@@ -2971,6 +3570,8 @@
               if (srcInd) srcInd.innerText = 'No Image Available';
             };
             if (srcInd) srcInd.innerText = `${imgData.source} ✓`;
+            syncCurrentItemToBatch();
+            updateBatchQueueUI();
           }
         }).catch(() => {});
 
@@ -2979,7 +3580,6 @@
       } finally {
         const dropdown = document.getElementById("quickSearchDropdown");
         if (dropdown) dropdown.style.display = "none";
-        closeBarcodeScannerModal();
         playBeepTone();
       }
     }
@@ -3054,10 +3654,213 @@
     // J) 3" x 2" Thermal Label Multi-Page Render & Simulation
     // NO BOTTOM CUTTING: Barcode is vertical on side margin!
     // =========================================================
-    async function openPrintModal() {
-      if (currentLabelLang === 'ar') {
-        await ensureAllCheckedInstructionsTranslated();
+    // =========================================================
+    // J) 3" x 2" Multi-Product Thermal Label Engine & Batch Print
+    // Direct Print + Full Batch Preview (Zero Cut-Off Layout)
+    // =========================================================
+    async function ensureAllBatchTranslated() {
+      if (currentLabelLang !== 'ar') return;
+      const transIndicator = document.getElementById("transIndicator");
+      if (transIndicator) transIndicator.style.display = "inline-flex";
+
+      const promises = [];
+      const queueToTranslate = (batchMedicationQueue.length > 0) ? batchMedicationQueue : [{ instructions: workingInstructions }];
+
+      for (const item of queueToTranslate) {
+        if (!item.instructions) continue;
+        for (const inst of item.instructions) {
+          if (inst.checked && !inst.textAr) {
+            promises.push(
+              translateTextToAr(inst.textEn || inst.text).then(tr => {
+                inst.textAr = tr;
+                inst.text = tr;
+              })
+            );
+          } else if (inst.checked && inst.textAr) {
+            inst.text = inst.textAr;
+          }
+        }
       }
+
+      await Promise.all(promises);
+      if (transIndicator) transIndicator.style.display = "none";
+    }
+
+    function generateLabelsHtmlForBatch(options = {}) {
+      const { fontSize = 9, opacity = 12, maxPerLabelVal = "auto", isPrint = true } = options;
+      const isRtl = (currentLabelLang === 'ar');
+      
+      const queueToPrint = (batchMedicationQueue.length > 0) 
+        ? batchMedicationQueue 
+        : [{
+            medication: currentMedication,
+            instructions: workingInstructions,
+            quantity: 1
+          }];
+
+      let allCardsHtml = '';
+      let grandTotalLabels = 0;
+
+      queueToPrint.forEach((batchItem) => {
+        const med = batchItem.medication || currentMedication;
+        const instructions = (batchItem.instructions || []).filter(i => i.checked);
+        if (instructions.length === 0) return;
+
+        const qty = Math.max(1, parseInt(batchItem.quantity) || 1);
+
+        let itemsPerLabel = 4;
+        if (maxPerLabelVal === "auto") {
+          itemsPerLabel = (fontSize >= 11) ? 3 : (instructions.length <= 4 ? 4 : 4);
+        } else {
+          itemsPerLabel = parseInt(maxPerLabelVal);
+        }
+
+        const pages = [];
+        for (let i = 0; i < instructions.length; i += itemsPerLabel) {
+          pages.push(instructions.slice(i, i + itemsPerLabel));
+        }
+
+        const totalPages = pages.length;
+        const displayTradeName = isRtl ? (med.tradeNameAr || med.tradeNameEn) : (med.tradeNameEn || med.tradeNameAr);
+        const displayActive = isRtl ? `المادة الفعالة: ${med.activeIngredient}` : `Active: ${med.activeIngredient}`;
+        const displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
+        const verticalBarcodeSvg = generateCode128Svg(med.code, { vertical: true, width: 0.8, height: 14 });
+
+        for (let q = 0; q < qty; q++) {
+          pages.forEach((pageItems, pIndex) => {
+            grandTotalLabels++;
+            const pageNum = pIndex + 1;
+
+            let pointsHtml = "";
+            pageItems.forEach((inst) => {
+              const textToShow = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
+              if (isPrint) {
+                pointsHtml += `
+                  <div class="label-point-row" style="font-size: ${fontSize}pt; line-height: 1.25; margin-bottom: 2px;">
+                    <span class="label-point-bullet">•</span>
+                    <span>${textToShow}</span>
+                  </div>
+                `;
+              } else {
+                pointsHtml += `
+                  <div class="label-point-row" style="font-size: ${fontSize}pt;">
+                    <span class="label-point-bullet">•</span>
+                    <span>${textToShow}</span>
+                  </div>
+                `;
+              }
+            });
+
+            if (isPrint) {
+              allCardsHtml += `
+                <div class="print-label-page ${isRtl ? 'is-rtl' : 'is-ltr'}">
+                  <img class="print-watermark" src="${med.imageUrl}" style="opacity: ${opacity / 100} !important;" alt="Watermark" onerror="this.style.display='none'">
+                  <div class="label-main-text-area">
+                    <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 2px;">
+                      <div>
+                        <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900;">${displayTradeName}</div>
+                        <div class="label-header-subtitle" style="font-size: 7.5pt; font-weight: 800;">${displayActive}</div>
+                      </div>
+                      ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
+                    </div>
+                    <div class="label-items-list" style="flex:1; justify-content:center; padding: 2px 0;">
+                      ${pointsHtml}
+                    </div>
+                    <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7pt;">
+                      <span>${displayFooter}</span>
+                      ${totalPages > 1 ? `<span style="font-weight:900;">${pageNum}/${totalPages}</span>` : ''}
+                    </div>
+                  </div>
+                  <div class="label-vertical-barcode-col" dir="ltr">
+                    <span class="vertical-barcode-number">#${med.code}</span>
+                    ${verticalBarcodeSvg}
+                  </div>
+                </div>
+              `;
+            } else {
+              allCardsHtml += `
+                <div class="screen-label-card ${isRtl ? 'is-rtl' : 'is-ltr'}">
+                  <img class="label-watermark-image" src="${med.imageUrl}" style="opacity: ${opacity / 100};" alt="Watermark" onerror="this.style.display='none'">
+                  <div class="label-main-text-area">
+                    <div class="label-header-block">
+                      <div>
+                        <div class="label-header-title">${displayTradeName}</div>
+                        <div class="label-header-subtitle">${displayActive}</div>
+                      </div>
+                      <div style="display:flex; gap:5px; align-items:center;">
+                        ${qty > 1 ? `<span style="background:#ea580c; color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:10px;">نسخة ${q + 1} من ${qty}</span>` : ''}
+                        ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
+                      </div>
+                    </div>
+                    <div class="label-items-list">
+                      ${pointsHtml}
+                    </div>
+                    <div class="label-footer-bar">
+                      <span>${displayFooter}</span>
+                      ${totalPages > 1 ? `<span style="font-weight:900;">${pageNum}/${totalPages}</span>` : ''}
+                    </div>
+                  </div>
+                  <div class="label-vertical-barcode-col" dir="ltr">
+                    <span class="vertical-barcode-number">#${med.code}</span>
+                    ${verticalBarcodeSvg}
+                  </div>
+                </div>
+              `;
+            }
+          });
+        }
+      });
+
+      return { html: allCardsHtml, totalLabels: grandTotalLabels };
+    }
+
+    // Direct Instant Print for All Scanned/Queued Items
+    async function triggerDirectBatchPrint() {
+      if (batchMedicationQueue.length === 0) {
+        addCurrentMedicationToBatch(false);
+      } else {
+        syncCurrentItemToBatch();
+      }
+
+      if (currentLabelLang === 'ar') {
+        await ensureAllBatchTranslated();
+      }
+
+      const fontSize = parseFloat(document.getElementById("modalFontSizeRange")?.value) || 9;
+      const maxPerLabelVal = document.getElementById("modalMaxPerLabel")?.value || "auto";
+      const opacity = parseInt(document.getElementById("modalWatermarkOpacity")?.value) || 12;
+
+      const { html, totalLabels } = generateLabelsHtmlForBatch({
+        fontSize,
+        opacity,
+        maxPerLabelVal,
+        isPrint: true
+      });
+
+      if (!html || totalLabels === 0) {
+        alert("⚠️ لا توجد تعليمات محددة للطباعة! يرجى اختيار تعليمة واحدة على الأقل.");
+        return;
+      }
+
+      const printContainer = document.getElementById("printExecutionSandbox");
+      if (printContainer) {
+        printContainer.innerHTML = html;
+      }
+
+      window.print();
+    }
+
+    async function openPrintModal() {
+      if (batchMedicationQueue.length === 0) {
+        addCurrentMedicationToBatch(false);
+      } else {
+        syncCurrentItemToBatch();
+      }
+
+      if (currentLabelLang === 'ar') {
+        await ensureAllBatchTranslated();
+      }
+
       document.getElementById("printModalBackdrop").style.display = "flex";
       renderModalLabels();
     }
@@ -3067,197 +3870,45 @@
     }
 
     function renderModalLabels() {
-      const fontSize = parseFloat(document.getElementById("modalFontSizeRange").value) || 9;
-      const maxPerLabelVal = document.getElementById("modalMaxPerLabel").value;
-      const opacity = parseInt(document.getElementById("modalWatermarkOpacity").value) || 12;
+      const fontSize = parseFloat(document.getElementById("modalFontSizeRange")?.value) || 9;
+      const maxPerLabelVal = document.getElementById("modalMaxPerLabel")?.value || "auto";
+      const opacity = parseInt(document.getElementById("modalWatermarkOpacity")?.value) || 12;
 
-      document.getElementById("fontSizeValLabel").innerText = `${fontSize}pt`;
-      document.getElementById("opacityValLabel").innerText = `${opacity}%`;
+      const fsLabel = document.getElementById("fontSizeValLabel");
+      if (fsLabel) fsLabel.innerText = `${fontSize}pt`;
+      const opLabel = document.getElementById("opacityValLabel");
+      if (opLabel) opLabel.innerText = `${opacity}%`;
 
-      const selected = workingInstructions.filter(i => i.checked);
-      const isRtl = (currentLabelLang === 'ar');
-
-      if (selected.length === 0) {
-        document.getElementById("labelsRenderContainer").innerHTML = `
-          <div style="background:#fff; padding:20px; border-radius:8px; text-align:center; color:#64748b;">
-            ⚠️ No instructions selected. Please check at least one instruction.
-          </div>
-        `;
-        document.getElementById("totalPagesBadge").innerText = `Total: 0 Labels`;
-        return;
-      }
-
-      // 1-page preference: default allows 4 items comfortably without cutting off!
-      let itemsPerLabel = 4;
-      if (maxPerLabelVal === "auto") {
-        itemsPerLabel = (fontSize >= 11) ? 3 : (selected.length <= 4 ? 4 : 4);
-      } else {
-        itemsPerLabel = parseInt(maxPerLabelVal);
-      }
-
-      const pages = [];
-      for (let i = 0; i < selected.length; i += itemsPerLabel) {
-        pages.push(selected.slice(i, i + itemsPerLabel));
-      }
-
-      const totalPages = pages.length;
-      document.getElementById("totalPagesBadge").innerText = `Total: ${totalPages} Label${totalPages > 1 ? 's' : ''} (3" × 2")`;
+      const { html, totalLabels } = generateLabelsHtmlForBatch({
+        fontSize,
+        opacity,
+        maxPerLabelVal,
+        isPrint: false
+      });
 
       const container = document.getElementById("labelsRenderContainer");
-      container.innerHTML = "";
+      const totalBadge = document.getElementById("totalPagesBadge");
 
-      // Determine Trade Name and Active Ingredient based on chosen Label Language
-      const displayTradeName = isRtl ? (currentMedication.tradeNameAr || currentMedication.tradeNameEn) : (currentMedication.tradeNameEn || currentMedication.tradeNameAr);
-      const displayActive = isRtl ? `المادة الفعالة: ${currentMedication.activeIngredient}` : `Active: ${currentMedication.activeIngredient}`;
-      const displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
-
-      // Native vertical SVG barcode
-      const verticalBarcodeSvg = generateCode128Svg(currentMedication.code, { vertical: true, width: 0.8, height: 14 });
-
-      pages.forEach((pageItems, pIndex) => {
-        const pageNum = pIndex + 1;
-        const card = document.createElement("div");
-        card.className = `screen-label-card ${isRtl ? 'is-rtl' : 'is-ltr'}`;
-
-        let pointsHtml = "";
-        pageItems.forEach((inst) => {
-          pointsHtml += `
-            <div class="label-point-row" style="font-size: ${fontSize}pt;">
-              <span class="label-point-bullet">•</span>
-              <span>${inst.text}</span>
+      if (!html || totalLabels === 0) {
+        if (container) {
+          container.innerHTML = `
+            <div style="background:#fff; padding:20px; border-radius:8px; text-align:center; color:#64748b;">
+              ⚠️ لا توجد تعليمات محددة للطباعة. يرجى اختيار تعليمة واحدة على الأقل.
             </div>
           `;
-        });
-
-        card.innerHTML = `
-          <!-- Watermark Product Image Faded -->
-          <img class="label-watermark-image" src="${currentMedication.imageUrl}" 
-               style="opacity: ${opacity / 100};" alt="Watermark">
-
-          <!-- Main Text Area (Free of bottom cut-off!) -->
-          <div class="label-main-text-area">
-            <div class="label-header-block">
-              <div>
-                <div class="label-header-title">${displayTradeName}</div>
-                <div class="label-header-subtitle">${displayActive}</div>
-              </div>
-              ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
-            </div>
-
-            <div class="label-items-list">
-              ${pointsHtml}
-            </div>
-
-            <div class="label-footer-bar">
-              <span>${displayFooter}</span>
-              ${totalPages > 1 ? `<span style="font-weight:900;">${pageNum}/${totalPages}</span>` : ''}
-            </div>
-          </div>
-
-          <!-- Vertical Barcode Column on the Side Margin -->
-          <div class="label-vertical-barcode-col" dir="ltr">
-            <span class="vertical-barcode-number">#${currentMedication.code}</span>
-            ${verticalBarcodeSvg}
-          </div>
-        `;
-
-        container.appendChild(card);
-      });
-    }
-
-    // =========================================================
-    // K) Browser Printing for 3" x 2" Thermal Printer
-    // =========================================================
-    async function executeBrowserPrint() {
-      if (currentLabelLang === 'ar') {
-        await ensureAllCheckedInstructionsTranslated();
-        renderModalLabels();
-      }
-      const fontSize = parseFloat(document.getElementById("modalFontSizeRange").value) || 9;
-      const maxPerLabelVal = document.getElementById("modalMaxPerLabel").value;
-      const opacity = parseInt(document.getElementById("modalWatermarkOpacity").value) || 12;
-
-      const selected = workingInstructions.filter(i => i.checked);
-      if (selected.length === 0) {
-        alert("Please select at least one instruction before printing!");
+        }
+        if (totalBadge) totalBadge.innerText = `الإجمالي: 0 كروت`;
         return;
       }
 
-      let itemsPerLabel = 4;
-      if (maxPerLabelVal === "auto") {
-        itemsPerLabel = (fontSize >= 11) ? 3 : (selected.length <= 4 ? 4 : 4);
-      } else {
-        itemsPerLabel = parseInt(maxPerLabelVal);
+      if (container) container.innerHTML = html;
+      if (totalBadge) {
+        totalBadge.innerText = `إجمالي الطباعة: ${totalLabels} كارت (3" × 2") لـ ${batchMedicationQueue.length} أصناف`;
       }
+    }
 
-      const pages = [];
-      for (let i = 0; i < selected.length; i += itemsPerLabel) {
-        pages.push(selected.slice(i, i + itemsPerLabel));
-      }
-
-      const totalPages = pages.length;
-      const isRtl = (currentLabelLang === 'ar');
-
-      const printContainer = document.getElementById("printExecutionSandbox");
-      printContainer.innerHTML = "";
-
-      const displayTradeName = isRtl ? (currentMedication.tradeNameAr || currentMedication.tradeNameEn) : currentMedication.tradeNameEn;
-      const displayActive = isRtl ? `المادة الفعالة: ${currentMedication.activeIngredient}` : `Active: ${currentMedication.activeIngredient}`;
-      const displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
-
-      const verticalBarcodeSvg = generateCode128Svg(currentMedication.code, { vertical: true, width: 0.8, height: 14 });
-
-      pages.forEach((pageItems, pIndex) => {
-        const pageNum = pIndex + 1;
-        const pageEl = document.createElement("div");
-        pageEl.className = `print-label-page ${isRtl ? 'is-rtl' : 'is-ltr'}`;
-
-        let pointsHtml = "";
-        pageItems.forEach((inst) => {
-          pointsHtml += `
-            <div class="label-point-row" style="font-size: ${fontSize}pt; line-height: 1.25; margin-bottom: 2px;">
-              <span class="label-point-bullet">•</span>
-              <span>${inst.text}</span>
-            </div>
-          `;
-        });
-
-        pageEl.innerHTML = `
-          <!-- Faded Watermark Image -->
-          <img class="print-watermark" src="${currentMedication.imageUrl}" 
-               style="opacity: ${opacity / 100} !important;" alt="Watermark">
-
-          <!-- Main Text Area (Free of bottom cut-off!) -->
-          <div class="label-main-text-area">
-            <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 2px;">
-              <div>
-                <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900;">${displayTradeName}</div>
-                <div class="label-header-subtitle" style="font-size: 7.5pt; font-weight: 800;">${displayActive}</div>
-              </div>
-              ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
-            </div>
-
-            <div class="label-items-list" style="flex:1; justify-content:center; padding: 2px 0;">
-              ${pointsHtml}
-            </div>
-
-            <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7pt;">
-              <span>${displayFooter}</span>
-              ${totalPages > 1 ? `<span style="font-weight:900;">${pageNum}/${totalPages}</span>` : ''}
-            </div>
-          </div>
-
-          <!-- Vertical Barcode Column on the Side Margin -->
-          <div class="label-vertical-barcode-col" dir="ltr">
-            <span class="vertical-barcode-number">#${currentMedication.code}</span>
-            ${verticalBarcodeSvg}
-          </div>
-        `;
-
-        printContainer.appendChild(pageEl);
-      });
-
-      window.print();
+    async function executeBrowserPrint() {
+      await triggerDirectBatchPrint();
     }
 
     // =========================================================
@@ -3330,24 +3981,34 @@
       } catch(e) {}
     }
 
+    let lastScannedCode = null;
+    let lastScannedTime = 0;
+
     function handleScannedBarcode(decoded) {
       if (!decoded) return;
-      playBeepTone();
-
+      const now = Date.now();
       const parsed = parseBarcodeGS1(decoded);
       const codeOrGtin = parsed.gtin14 || parsed.gtin13 || parsed.gtin || decoded;
 
-      const found = findProductInDB(codeOrGtin);
-      if (found) {
-        selectMedicationItem(found);
-      } else {
-        selectMedicationItem({
-          Code: codeOrGtin,
-          "Item Description": `Scanned Product #${codeOrGtin}`,
-          "أسم المنتج": `صنف ممسوح #${codeOrGtin}`,
-          "Unit Price": 0
-        });
+      // Debounce identical scans within 1.5 seconds
+      if (lastScannedCode === codeOrGtin && (now - lastScannedTime) < 1500) {
+        return;
       }
+      lastScannedCode = codeOrGtin;
+      lastScannedTime = now;
+
+      playBeepTone();
+
+      const found = findProductInDB(codeOrGtin);
+      const prod = found || {
+        Code: codeOrGtin,
+        "Item Description": `Scanned Product #${codeOrGtin}`,
+        "أسم المنتج": `صنف ممسوح #${codeOrGtin}`,
+        "Unit Price": 0
+      };
+
+      selectMedicationItem(prod, true);
+      showToast(`✓ تم مسح: ${prod["Item Description"] || prod["أسم المنتج"]} وإضافته لقائمة الطباعة`);
     }
 
     function submitManualScannerCode() {
@@ -3454,11 +4115,14 @@
     // N) Bootstrap on Page Load
     // =========================================================
     window.addEventListener("DOMContentLoaded", () => {
-      // Initialize with current selected medication
-      selectMedicationItem(currentMedication);
+      // Initialize with current selected medication and add to batch queue
+      selectMedicationItem(currentMedication, true);
 
       // Initialize Master Database
       initMasterDatabase();
+
+      // Render initial Batch Queue Tray
+      updateBatchQueueUI();
 
       // Close dropdowns on outside click
       document.addEventListener("click", (e) => {
