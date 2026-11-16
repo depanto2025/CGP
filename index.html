@@ -18,6 +18,8 @@
   <script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
   <!-- Dynamedex Administration Instructions Database (2,917 Drugs) -->
   <script src="dynamedex_instructions.js"></script>
+  <!-- Lexi-Drugs Administration Instructions Database (3,012 Drugs) -->
+  <script src="lexidrugs_instructions.js"></script>
 
   <style>
     :root {
@@ -969,6 +971,61 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    
+    /* Database Source Switcher (Lexi-Drugs vs DynaMedex) */
+    .db-source-toggle-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--navy-50);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 3px 6px;
+    }
+
+    .db-source-label {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-left: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .db-source-btn {
+      padding: 6px 13px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--navy-700);
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .db-source-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .db-source-btn.active {
+      background: var(--navy-900);
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(10, 25, 47, 0.2);
+    }
+
+    .db-source-btn#btnSourceLexidrugs.active i {
+      color: var(--orange-400);
+    }
+
+    .db-source-btn#btnSourceDynamedex.active i {
+      color: #38bdf8;
     }
 
     /* Language Switcher for Printed Label */
@@ -1963,15 +2020,28 @@
             <span>Instructions & Label Customizer</span>
           </h2>
 
-          <!-- Label Output Language Selector (Requested by User) -->
-          <div class="label-lang-toggle-box">
-            <span style="font-size:11.5px; font-weight:800; color:var(--text-muted); margin-left:6px;">Print Language:</span>
-            <button id="btnLangAr" class="lang-toggle-btn active" onclick="setLabelLanguage('ar')">
-              🇸🇦 العربية (Arabic)
-            </button>
-            <button id="btnLangEn" class="lang-toggle-btn" onclick="setLabelLanguage('en')">
-              🇬🇧 English
-            </button>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <!-- Database Source Selector: Lexi-Drugs (Default) vs DynaMedex -->
+            <div class="db-source-toggle-box">
+              <span class="db-source-label"><i class="fas fa-database"></i> Source:</span>
+              <button type="button" id="btnSourceLexidrugs" class="db-source-btn active" onclick="setInstructionsSource('lexidrugs')" title="Lexicomp Patient Administration Instructions">
+                <i class="fas fa-book-medical"></i> Lexi-Drugs
+              </button>
+              <button type="button" id="btnSourceDynamedex" class="db-source-btn" onclick="setInstructionsSource('dynamedex')" title="DynaMedex Patient Administration Instructions">
+                <i class="fas fa-stethoscope"></i> DynaMedex
+              </button>
+            </div>
+
+            <!-- Label Output Language Selector (Requested by User) -->
+            <div class="label-lang-toggle-box">
+              <span style="font-size:11.5px; font-weight:800; color:var(--text-muted); margin-left:6px;">Print Language:</span>
+              <button id="btnLangAr" class="lang-toggle-btn active" onclick="setLabelLanguage('ar')">
+                🇸🇦 العربية (Arabic)
+              </button>
+              <button id="btnLangEn" class="lang-toggle-btn" onclick="setLabelLanguage('en')">
+                🇬🇧 English
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2992,12 +3062,107 @@
     };
 
     const COMMON_SALTS = [
-      'sodium', 'potassium', 'calcium', 'hydrochloride', 'hcl', 'maleate', 'fumarate',
+      'sodium', 'monosodium', 'disodium', 'trisodium', 'potassium', 'calcium', 'hydrochloride', 'hcl', 'maleate', 'fumarate',
       'tartrate', 'succinate', 'phosphate', 'sulfate', 'sulphate', 'mesylate', 'besylate',
       'trihydrate', 'monohydrate', 'dihydrate', 'hydrate', 'dipivoxil', 'valerate',
       'propionate', 'acetate', 'citrate', 'gluconate', 'nitrate', 'mononitrate',
       'bitartrate', 'besilate', 'tromethamine', 'magnesium', 'trihydr'
     ];
+
+    
+    // Current Active Instructions Source ('lexidrugs' by default, or 'dynamedex')
+    let currentInstructionsSource = 'lexidrugs';
+
+    const lexidrugsNameIndex = new Map();
+    let isLexidrugsIndexBuilt = false;
+
+    function buildLexidrugsIndex() {
+      if (isLexidrugsIndexBuilt || !window.LEXIDRUGS_INSTRUCTIONS) return;
+      const db = window.LEXIDRUGS_INSTRUCTIONS;
+      for (const [slug, item] of Object.entries(db)) {
+        if (!item) continue;
+        const cleanSlug = slug.replace(/[^a-z0-9]/g, '');
+        lexidrugsNameIndex.set(cleanSlug, slug);
+
+        if (item.name) {
+          const cleanName = item.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          lexidrugsNameIndex.set(cleanName, slug);
+        }
+
+        if (Array.isArray(item.synonyms)) {
+          item.synonyms.forEach(syn => {
+            if (!syn) return;
+            const cleanSyn = syn.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (cleanSyn.length >= 3) {
+              lexidrugsNameIndex.set(cleanSyn, slug);
+            }
+          });
+        }
+      }
+      isLexidrugsIndexBuilt = true;
+    }
+
+    function findLexidrug(product) {
+      if (!product || !window.LEXIDRUGS_INSTRUCTIONS) return null;
+      buildLexidrugsIndex();
+
+      const p = normalizeProductFields(product);
+      const lexiDb = window.LEXIDRUGS_INSTRUCTIONS;
+
+      // 1. Match from active ingredient tokens (Category Level E)
+      const tokens = p.active.split(/[,&/+\\]+/);
+      for (let tok of tokens) {
+        let clean = tok.replace(/\(.*?\)/g, '').toLowerCase();
+        for (let s of COMMON_SALTS) {
+          clean = clean.replace(new RegExp('\\b' + s + '\\b', 'gi'), '');
+        }
+        const alphanumeric = clean.replace(/[^a-z0-9]/g, '').trim();
+        if (!alphanumeric) continue;
+
+        if (lexiDb[alphanumeric]) return lexiDb[alphanumeric];
+        if (lexidrugsNameIndex.has(alphanumeric)) return lexiDb[lexidrugsNameIndex.get(alphanumeric)];
+
+        const hyphen = clean.trim().replace(/\s+/g, '-');
+        if (lexiDb[hyphen]) return lexiDb[hyphen];
+
+        for (let slug in lexiDb) {
+          if (slug.startsWith(alphanumeric) || alphanumeric.startsWith(slug.replace(/-/g, ''))) {
+            return lexiDb[slug];
+          }
+        }
+      }
+
+      // 2. Check Brand and Descriptions against lexidrugsNameIndex
+      const descTokens = (p.descEn + ' ' + p.brand).toLowerCase().split(/[\s,]+/);
+      for (let w of descTokens) {
+        const cleanW = w.replace(/[^a-z0-9]/g, '');
+        if (cleanW.length >= 4 && lexidrugsNameIndex.has(cleanW)) {
+          return lexiDb[lexidrugsNameIndex.get(cleanW)];
+        }
+      }
+
+      return null;
+    }
+
+    function setInstructionsSource(source) {
+      currentInstructionsSource = source;
+
+      const btnLexi = document.getElementById("btnSourceLexidrugs");
+      const btnDyna = document.getElementById("btnSourceDynamedex");
+      if (btnLexi) btnLexi.classList.toggle("active", source === 'lexidrugs');
+      if (btnDyna) btnDyna.classList.toggle("active", source === 'dynamedex');
+
+      const p = currentLoadedProduct || currentMedication;
+      if (p) {
+        let matchedDrug = null;
+        if (source === 'lexidrugs') {
+          matchedDrug = findLexidrug(p) || findDynamedexDrug(p);
+        } else {
+          matchedDrug = findDynamedexDrug(p) || findLexidrug(p);
+        }
+        switchActiveIngredientPreset(matchedDrug, p);
+      }
+    }
 
     const dynamedexNameIndex = new Map();
     let isDynamedexIndexBuilt = false;
@@ -3035,6 +3200,24 @@
     }
 
     const COMMON_PHRASES_DICT = {
+      "Infuse over 1 hour (2 mg/mL infusion) or over 3 hours (1 mg/mL infusion). Not for IM or IV bolus administration.": "يعطى بالتنقيط الوريدي البطيء على مدى ساعة إلى 3 ساعات؛ وليس للحقن العضلي أو الوريدي السريع.",
+      "Immediate release suspension and tablet may be taken without regard to food; extended release suspension should be taken on an empty stomach (at least 1 hour before or 2 hours following a meal), within 12 hours of reconstitution.": "المعلق والأقراص سريعة المفعول يمكن تناولها مع الطعام أو بدونه؛ أما المعلق ممتد المفعول فيؤخذ على معدة فارغة (قبل الأكل بساعة أو بعده بساعتين).",
+      "For nonvalvular atrial fibrillation, administer with the evening meal.": "لعلاج الرجفان الأذيني: تؤخذ الجرعة اليومية مع وجبة العشاء.",
+      "Administer doses ≥15 mg with food; doses of 2.5 mg and 10 mg may be administered without regard to meals.": "جرعات 15 ملجم و 20 ملجم يجب أخذها حتماً مع الطعام؛ وجرعات 2.5 و 10 ملجم يمكن أخذها مع الطعام أو بدونه.",
+      "ER tablets: Swallow whole; do not crush, cut, or chew. Administer once-daily doses with the evening meal.": "أقراص ممتدة المفعول (XR): تبلع كاملة مع الماء وممنوع كسرها أو طحنها أو مضغها نهائياً؛ وتؤخذ الجرعة اليومية مع وجبة العشاء.",
+      "Administer with a meal (to decrease GI upset).": "يؤخذ مع وجبة طعام رئيسية لتقليل اضطراب المعدة.",
+      "Dissolve one tablet in 4 oz of room temperature plain water only; once effervescence stops, wait ≥5 minutes and stir the solution for ~10 seconds and then drink.": "أذب القرص في نصف كوب ماء عادي بدرجة حرارة الغرفة فقط؛ وبعد انتهاء الفوران انتظر 5 دقائق وحركه لمدة 10 ثوانٍ ثم اشربه فوراً.",
+      "Tablet, effervescent (Binosto): Do not swallow, chew, or allow undissolved tablet to dissolve in mouth.": "أقراص فوارة: ممنوع بلع الحبة جافة أو مضغها أو تركها تتحلل بالفم.",
+      "Tablet (Fosamax): Must be taken with 6 to 8 oz of plain water. The tablet should be swallowed whole; do not chew or suck.": "أقراص (فوساماكس): تبلع الحبة كاملة مع كاسة ماء عادي كبيرة (200 إلى 240 مل)؛ وممنوع كسر الحبة أو مضغها أو مصها نهائياً.",
+      "Oral solution: Administer oral solution, followed with ≥2 oz of plain water.": "المحلول الفموي: يؤخذ المحلول متبوعاً بكوب ماء عادي على الأقل.",
+      "Patients should be instructed to stay upright (not to lie down) for ≥30 minutes and until after first food of the day (to reduce esophageal irritation).": "يجب البقاء في وضع قائم (عدم الاستلقاء أو النوم) لمدة 30 دقيقة على الأقل وحتى بعد تناول أول وجبة طعام (لحماية المريء من الالتهاب والتقرحات).",
+      "Do not take with mineral water or with other beverages.": "لا تتناول الدواء مع المياه المعدنية أو المشروبات الأخرى.",
+      "Administer first thing in the morning and ≥30 minutes before the first food, beverage (except plain water), or other medication(s) of the day.": "يؤخذ أول شيء في الصباح على الريق قبل 30 دقيقة على الأقل من أول وجبة أو مشروب (باستثناء الماء العادي) أو أي دواء آخر.",
+      "Remove tablet from individual blister and place immediately on tongue; tablet will disintegrate with or without water (do not administer with fruit juices).": "أخرج القرص من الشريط وضعه فوراً على اللسان؛ سيتحلل القرص مع الماء أو بدونه (تجنب تناوله مع عصائر الفواكه).",
+      "Use suspension only with enclosed dosing cup.": "استخدم المعلق فقط مع كوب القياس المرفق.",
+      "Shake suspension well before use.": "رج المعلق جيداً قبل الاستخدام.",
+      "Administer with water only; do not administer with fruit juices.": "يؤخذ مع الماء العادي فقط؛ وتجنب تناوله مع عصائر الفواكه.",
+      "Administer on an empty stomach.": "يؤخذ على معدة فارغة.",
       "Take with water.": "تناول الدواء مع الماء.",
       "Do not take within 1 hour after taking an antacid or milk.": "لا تتناول الدواء خلال ساعة واحدة من تناول مضادات الحموضة أو الحليب.",
       "Swallow tablets whole, do not chew or crush.": "يجب بلع الأقراص كاملة، ولا تمضغ أو تسحق.",
@@ -3297,16 +3480,24 @@
 
       const isAr = (currentLabelLang === 'ar');
 
-      // Resolve drug from window.DYNAMEDEX_INSTRUCTIONS
+      // Resolve drug from selected source (Lexi-Drugs by default, or DynaMedex)
       let drug = null;
       if (drugOrSlug && typeof drugOrSlug === 'object') {
         drug = drugOrSlug;
-      } else if (drugOrSlug && typeof drugOrSlug === 'string' && window.DYNAMEDEX_INSTRUCTIONS) {
-        drug = window.DYNAMEDEX_INSTRUCTIONS[drugOrSlug];
+      } else if (drugOrSlug && typeof drugOrSlug === 'string') {
+        if (currentInstructionsSource === 'lexidrugs') {
+          drug = (window.LEXIDRUGS_INSTRUCTIONS && window.LEXIDRUGS_INSTRUCTIONS[drugOrSlug]) || (window.DYNAMEDEX_INSTRUCTIONS && window.DYNAMEDEX_INSTRUCTIONS[drugOrSlug]);
+        } else {
+          drug = (window.DYNAMEDEX_INSTRUCTIONS && window.DYNAMEDEX_INSTRUCTIONS[drugOrSlug]) || (window.LEXIDRUGS_INSTRUCTIONS && window.LEXIDRUGS_INSTRUCTIONS[drugOrSlug]);
+        }
       }
 
       if (!drug && p) {
-        drug = findDynamedexDrug(p);
+        if (currentInstructionsSource === 'lexidrugs') {
+          drug = findLexidrug(p) || findDynamedexDrug(p);
+        } else {
+          drug = findDynamedexDrug(p) || findLexidrug(p);
+        }
       }
 
       currentActiveDrug = drug;
@@ -3322,7 +3513,9 @@
           formBadgeEl.innerText = (isAr ? formInfo.formNameAr : formInfo.formNameEn) + sLabel;
         }
         if (classBadgeEl) {
-          classBadgeEl.innerText = (drug.classes && drug.classes.length > 0) ? drug.classes.slice(0, 2).join(' / ') : (norm.catD || 'THERAPEUTIC AGENT');
+          const sourceBadge = (drug.globalid) ? 'Lexi-Drugs' : 'DynaMedex';
+          const classText = (drug.classes && drug.classes.length > 0) ? drug.classes.slice(0, 2).join(' / ') : (norm.catD || 'THERAPEUTIC AGENT');
+          classBadgeEl.innerText = `${classText} • [${sourceBadge}]`;
         }
 
         // Determine matching route based on dosage form
@@ -3546,8 +3739,10 @@
           };
         }
 
-        // 2. Automatically link Active Ingredient & Instructions IMMEDIATELY!
-        const matchedDrug = findDynamedexDrug(p);
+        // 2. Automatically link Active Ingredient & Instructions IMMEDIATELY! (Lexi-Drugs by default)
+        const matchedDrug = (currentInstructionsSource === 'lexidrugs')
+          ? (findLexidrug(p) || findDynamedexDrug(p))
+          : (findDynamedexDrug(p) || findLexidrug(p));
         switchActiveIngredientPreset(matchedDrug, p);
 
         // 3. Batch Queue Integration
