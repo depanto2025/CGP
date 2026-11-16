@@ -20,6 +20,8 @@
   <script src="dynamedex_instructions.js"></script>
   <!-- Lexi-Drugs Administration Instructions Database (3,012 Drugs) -->
   <script src="lexidrugs_instructions.js"></script>
+  <!-- High-Contrast Monochrome Vector Pictograms & Auto-Detector -->
+  <script src="pictograms.js"></script>
 
   <style>
     :root {
@@ -1495,21 +1497,76 @@
       justify-content: center;
     }
 
+    /* Monochrome Vector Pictograms & Numbered Badges */
+    .instruction-checklist-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      color: #0f172a;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+
+    .instruction-checklist-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
     .label-point-row {
       display: flex;
       align-items: flex-start;
-      gap: 4px;
-      font-size: 9pt;
-      line-height: 1.25;
+      gap: 5px;
+      font-size: 8.5pt;
+      line-height: 1.22;
       color: #000000;
       font-weight: 700;
+      margin-bottom: 2.5px;
     }
 
-    .label-point-bullet {
-      font-size: 8.5px;
-      color: #000000;
+    .label-point-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2.5px;
       flex-shrink: 0;
-      margin-top: 1px;
+      margin-top: 0.5px;
+    }
+
+    .label-point-num {
+      font-size: inherit;
+      font-weight: 900;
+      font-family: Arial, sans-serif;
+      color: #000000;
+      line-height: 1;
+      display: inline-block;
+      min-width: 14px;
+    }
+
+    .label-point-icon-svg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+      color: #000000;
+    }
+
+    .label-point-icon-svg svg {
+      width: 19px;
+      height: 19px;
+      display: block;
+    }
+
+    .label-point-text {
+      flex: 1;
+      word-break: break-word;
+      line-height: 1.22;
     }
 
     .label-footer-bar {
@@ -1739,98 +1796,149 @@
     }
 
     @media print {
-      html, body {
-        width: 3in;
-        height: 2in;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        color: #000000 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      body > *:not(#printExecutionSandbox) {
-        display: none !important;
-      }
-
-      #printExecutionSandbox {
-        display: block !important;
-        width: 3in;
-        height: 2in;
-        margin: 0;
-        padding: 0;
-      }
-
-      .print-label-page {
-        width: 3in;
-        height: 2in;
-        max-width: 3in;
-        max-height: 2in;
-        page-break-after: always;
-        page-break-inside: avoid;
-        break-inside: avoid;
-        box-sizing: border-box;
-        padding: 1.8mm 2.2mm;
-        display: flex;
-        flex-direction: row; /* Horizontal flex for text + vertical barcode */
-        position: relative;
-        overflow: hidden;
-        background: #ffffff;
-        color: #000000;
-      }
-
-      .print-label-page.is-rtl {
-        direction: rtl;
-        font-family: 'Cairo', sans-serif;
-      }
-
-      .print-watermark {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        z-index: 1;
-        opacity: 0.12 !important;
-        filter: grayscale(100%) contrast(150%) !important;
-      }
-
-      .print-label-page .label-vertical-barcode-col {
-        width: 32px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        flex-shrink: 0;
-        position: relative;
-        z-index: 2;
-      }
-
-      .print-label-page.is-rtl .label-vertical-barcode-col {
-        border-right: 1px dashed #444;
-        margin-right: 5px;
-        padding-right: 2px;
-      }
-
-      .print-label-page.is-ltr .label-vertical-barcode-col {
-        border-left: 1px dashed #444;
-        margin-left: 5px;
-        padding-left: 2px;
-      }
-
-      .print-label-page .label-main-text-area {
-        flex: 1;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-        z-index: 2;
-        overflow: hidden;
-      }
+    html, body {
+      width: 3in;
+      height: 2in;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
+
+    body > *:not(#printExecutionSandbox) {
+      display: none !important;
+    }
+
+    #printExecutionSandbox {
+      display: block !important;
+      width: 3in;
+      height: 2in;
+      margin: 0;
+      padding: 0;
+    }
+
+    .print-label-page {
+      width: 3in;
+      height: 2in;
+      max-width: 3in;
+      max-height: 2in;
+      page-break-after: always;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      box-sizing: border-box;
+      padding: 1.6mm 2.0mm;
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      overflow: hidden;
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .print-label-page.is-rtl {
+      direction: rtl;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .print-watermark {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 1;
+      opacity: 0.12 !important;
+      filter: grayscale(100%) contrast(150%) !important;
+    }
+
+    .print-label-page .label-vertical-barcode-col {
+      width: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .print-label-page.is-rtl .label-vertical-barcode-col {
+      border-right: 1px dashed #444;
+      margin-right: 5px;
+      padding-right: 2px;
+    }
+
+    .print-label-page.is-ltr .label-vertical-barcode-col {
+      border-left: 1px dashed #444;
+      margin-left: 5px;
+      padding-left: 2px;
+    }
+
+    .print-label-page .label-main-text-area {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .print-label-page .label-items-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 2px 0;
+      overflow: hidden;
+    }
+
+    .print-label-page .label-point-row {
+      display: flex !important;
+      align-items: flex-start !important;
+      gap: 4px !important;
+      margin-bottom: 2px !important;
+      color: #000000 !important;
+    }
+
+    .print-label-page .label-point-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 2px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .print-label-page .label-point-num {
+      font-weight: 900 !important;
+      color: #000000 !important;
+      line-height: 1 !important;
+      font-size: inherit !important;
+      display: inline-block !important;
+      min-width: 14px !important;
+    }
+
+    .print-label-page .label-point-icon-svg {
+      width: 18px !important;
+      height: 18px !important;
+      color: #000000 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .print-label-page .label-point-icon-svg svg {
+      width: 18px !important;
+      height: 18px !important;
+      display: block !important;
+    }
+
+    .print-label-page .label-point-text {
+      flex: 1 !important;
+      color: #000000 !important;
+    }
+  }
 
     #printExecutionSandbox {
       display: none;
@@ -2132,11 +2240,11 @@
         <div class="toolbar-option">
           <span><i class="fas fa-layer-group"></i> Max Per Label:</span>
           <select id="modalMaxPerLabel" class="toolbar-select-box" onchange="renderModalLabels()">
-            <option value="auto">Auto Fit (1 Page Preferred)</option>
-            <option value="3">3 Points</option>
-            <option value="4" selected>4 Points (Balanced)</option>
-            <option value="5">5 Points</option>
-            <option value="6">6 Points</option>
+            <option value="auto" selected>تلقائي ذكي لمنع القص (Auto - Zero Cut-Off)</option>
+            <option value="2">نقطتان (2 Points - للفقرات الطويلة)</option>
+            <option value="3">3 نقاط (3 Points - متوازن)</option>
+            <option value="4">4 نقاط (4 Points - للسطور القصيرة)</option>
+            <option value="5">5 نقاط (5 Points)</option>
           </select>
         </div>
 
@@ -3601,13 +3709,24 @@
       workingInstructions.forEach((item, index) => {
         const row = document.createElement("div");
         row.className = `instruction-card-row ${item.checked ? 'is-checked' : ''}`;
+        const textVal = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+        const iconName = (typeof detectInstructionIcon === 'function') 
+          ? detectInstructionIcon(textVal) 
+          : 'medical_shield';
+        const iconSvg = (typeof getInstructionPictogramSvg === 'function') 
+          ? getInstructionPictogramSvg(iconName) 
+          : '';
+
         row.innerHTML = `
           <input type="checkbox" class="instruction-checkbox" ${item.checked ? 'checked' : ''} 
                  onchange="toggleInstructionChecked(${index}, this.checked)">
           <div class="instruction-body">
-            <span class="instruction-tag-label">${item.tag || 'Instruction'}</span>
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+              <span class="instruction-checklist-icon" title="رمز الإرشاد">${iconSvg}</span>
+              <span class="instruction-tag-label">${item.tag || 'Instruction'}</span>
+            </div>
             <div class="instruction-editable-text ${isRtl ? 'rtl-text' : ''}" contenteditable="true" 
-                 onblur="updateInstructionText(${index}, this.innerText)">${item.text || item.textEn || ''}</div>
+                 onblur="updateInstructionText(${index}, this.innerText)">${textVal}</div>
           </div>
           <button class="btn-delete-instruction" title="Remove" onclick="deleteInstructionItem(${index})">
             <i class="fas fa-trash"></i>
@@ -3881,8 +4000,89 @@
       if (transIndicator) transIndicator.style.display = "none";
     }
 
+    function estimateLinesForFont(text, fontSize, isRtl) {
+      if (!text) return 1;
+      const charsPerLine = Math.round(235 / (fontSize * 0.52));
+      return Math.max(1, Math.ceil(text.trim().length / charsPerLine));
+    }
+
+    function calculateCardLines(items, fontSize, isRtl) {
+      let totalLines = 0;
+      items.forEach(inst => {
+        const text = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
+        totalLines += estimateLinesForFont(text, fontSize, isRtl);
+      });
+      return totalLines;
+    }
+
+    function paginateInstructionsSmart(instructions, options = {}) {
+      const { maxPerLabelVal = "auto", isRtl = true } = options;
+      const MAX_POINTS_LIMIT = (maxPerLabelVal !== "auto") ? parseInt(maxPerLabelVal) : 99;
+      // At 8.0pt font, a 3" x 2" label comfortably holds up to 10 lines of text
+      const MAX_SAFE_LINES = 10; 
+
+      const pages = [];
+      let currentPage = [];
+
+      for (let i = 0; i < instructions.length; i++) {
+        const inst = instructions[i];
+        const candidatePage = [...currentPage, inst];
+
+        const linesAt8pt = calculateCardLines(candidatePage, 8.0, isRtl);
+        const countOverflow = (candidatePage.length > MAX_POINTS_LIMIT);
+
+        if (currentPage.length > 0 && (linesAt8pt > MAX_SAFE_LINES || countOverflow)) {
+          pages.push(currentPage);
+          currentPage = [inst];
+        } else {
+          currentPage.push(inst);
+        }
+      }
+
+      if (currentPage.length > 0) {
+        pages.push(currentPage);
+      }
+
+      return pages;
+    }
+
+    function getAdaptiveCardStyle(pageItems, userFontSize = 8.5, isRtl = true) {
+      const base = parseFloat(userFontSize) || 8.5;
+      const linesAtBase = calculateCardLines(pageItems, base, isRtl);
+
+      if (linesAtBase <= 4.5) {
+        // Short content: expand font slightly, increase line-height and gap, center vertically to fill the card nicely
+        return {
+          fontSize: Math.min(10.5, base + 1.0),
+          lineHeight: 1.32,
+          gap: 6,
+          padding: '4px 0',
+          justify: 'center'
+        };
+      } else if (linesAtBase <= 7.5) {
+        // Balanced content: use base font size
+        return {
+          fontSize: base,
+          lineHeight: 1.22,
+          gap: 3.5,
+          padding: '3px 0',
+          justify: 'flex-start'
+        };
+      } else {
+        // Dense content (8 to 10 lines): scale down font slightly to guarantee ZERO cut-off
+        const scaledDown = Math.max(7.6, base - 0.7);
+        return {
+          fontSize: scaledDown,
+          lineHeight: 1.18,
+          gap: 2.2,
+          padding: '2px 0',
+          justify: 'flex-start'
+        };
+      }
+    }
+
     function generateLabelsHtmlForBatch(options = {}) {
-      const { fontSize = 9, opacity = 12, maxPerLabelVal = "auto", isPrint = true } = options;
+      const { fontSize = 8.5, opacity = 12, maxPerLabelVal = "auto", isPrint = true } = options;
       const isRtl = (currentLabelLang === 'ar');
       
       const queueToPrint = (batchMedicationQueue.length > 0) 
@@ -3903,17 +4103,8 @@
 
         const qty = Math.max(1, parseInt(batchItem.quantity) || 1);
 
-        let itemsPerLabel = 4;
-        if (maxPerLabelVal === "auto") {
-          itemsPerLabel = (fontSize >= 11) ? 3 : (instructions.length <= 4 ? 4 : 4);
-        } else {
-          itemsPerLabel = parseInt(maxPerLabelVal);
-        }
-
-        const pages = [];
-        for (let i = 0; i < instructions.length; i += itemsPerLabel) {
-          pages.push(instructions.slice(i, i + itemsPerLabel));
-        }
+        // Smart adaptive pagination that fills available space and guarantees ZERO text cut-off
+        const pages = paginateInstructionsSmart(instructions, { maxPerLabelVal, isRtl });
 
         const totalPages = pages.length;
         const displayTradeName = isRtl ? (med.tradeNameAr || med.tradeNameEn) : (med.tradeNameEn || med.tradeNameAr);
@@ -3922,28 +4113,33 @@
         const verticalBarcodeSvg = generateCode128Svg(med.code, { vertical: true, width: 0.8, height: 14 });
 
         for (let q = 0; q < qty; q++) {
+          let pointCounter = 1;
+
           pages.forEach((pageItems, pIndex) => {
             grandTotalLabels++;
             const pageNum = pIndex + 1;
+            const cardStyle = getAdaptiveCardStyle(pageItems, fontSize, isRtl);
 
             let pointsHtml = "";
             pageItems.forEach((inst) => {
+              const currentPointNum = pointCounter++;
               const textToShow = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
-              if (isPrint) {
-                pointsHtml += `
-                  <div class="label-point-row" style="font-size: ${fontSize}pt; line-height: 1.25; margin-bottom: 2px;">
-                    <span class="label-point-bullet">•</span>
-                    <span>${textToShow}</span>
+              const iconName = (typeof detectInstructionIcon === 'function') 
+                ? detectInstructionIcon(textToShow) 
+                : 'medical_shield';
+              const iconSvg = (typeof getInstructionPictogramSvg === 'function') 
+                ? getInstructionPictogramSvg(iconName) 
+                : '';
+
+              pointsHtml += `
+                <div class="label-point-row" style="font-size: ${cardStyle.fontSize}pt; line-height: ${cardStyle.lineHeight}; margin-bottom: 2px;">
+                  <div class="label-point-badge">
+                    <bdi class="label-point-num" dir="ltr">${currentPointNum}.</bdi>
+                    <span class="label-point-icon-svg">${iconSvg}</span>
                   </div>
-                `;
-              } else {
-                pointsHtml += `
-                  <div class="label-point-row" style="font-size: ${fontSize}pt;">
-                    <span class="label-point-bullet">•</span>
-                    <span>${textToShow}</span>
-                  </div>
-                `;
-              }
+                  <div class="label-point-text">${textToShow}</div>
+                </div>
+              `;
             });
 
             if (isPrint) {
@@ -3958,7 +4154,7 @@
                       </div>
                       ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
                     </div>
-                    <div class="label-items-list" style="flex:1; justify-content:center; padding: 2px 0;">
+                    <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden;">
                       ${pointsHtml}
                     </div>
                     <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7pt;">
@@ -3987,7 +4183,7 @@
                         ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-items-list">
+                    <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden;">
                       ${pointsHtml}
                     </div>
                     <div class="label-footer-bar">
