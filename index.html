@@ -1281,33 +1281,7 @@ function detectInstructionIcon(text) {
       box-shadow: 0 8px 22px rgba(234, 88, 12, 0.45);
     }
 
-    /* =========================================================
-       2. Floating Print Action Button (FAB)
-       ========================================================= */
-    .floating-print-fab {
-      position: fixed;
-      bottom: 24px;
-      right: 28px;
-      background: linear-gradient(135deg, var(--orange-500) 0%, var(--orange-600) 100%);
-      color: #ffffff;
-      border: 2px solid #ffffff;
-      border-radius: 50px;
-      padding: 13px 24px;
-      font-size: 14.5px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 25px rgba(234, 88, 12, 0.45);
-      cursor: pointer;
-      z-index: 999;
-      transition: all 0.25s ease;
-    }
-
-    .floating-print-fab:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 14px 30px rgba(234, 88, 12, 0.6);
-    }
+    /* Floating Print FAB removed for clean international clinical UX */
 
     /* =========================================================
        3. Main Workspace Layout
@@ -2647,11 +2621,7 @@ function detectInstructionIcon(text) {
 </head>
 <body>
 
-  <!-- Floating Print Button (Always Accessible as requested) -->
-  <button class="floating-print-fab" onclick="triggerDirectBatchPrint()" title="طباعة مجمعة فورية لجميع الأصناف">
-    <i class="fas fa-print"></i>
-    <span>طباعة فورية (Print)</span>
-  </button>
+  
 
   <!-- =========================================================
        1. Top Navbar (English UI + Dual Buttons)
@@ -3120,7 +3090,7 @@ function detectInstructionIcon(text) {
         };
         batchMedicationQueue.push(newItem);
         currentBatchActiveId = newItem.id;
-        if (showAlert) showToast(`✓ تمت إضافة: ${currentMedication.tradeNameEn || currentMedication.tradeNameAr} إلى قائمة الطباعة`);
+        showToast(`✓ تمت إضافة: ${currentMedication.tradeNameEn || currentMedication.tradeNameAr} إلى قائمة الطباعة المجمعة`);
       }
       updateBatchQueueUI();
     }
@@ -4570,6 +4540,8 @@ function detectInstructionIcon(text) {
     const selectAndDisplayProduct = selectMedicationItem;
     function selectMedicationItem(p, autoAddToBatch = true) {
       if (!p) return;
+      currentLoadedProduct = p;
+      if (!p) return;
       try {
         const code = String(p.Code || p.code || '100929');
         const cleanCodeStr = code.trim();
@@ -4643,9 +4615,14 @@ function detectInstructionIcon(text) {
         }
 
         // 2. Automatically link Active Ingredient & Instructions IMMEDIATELY! (Lexi-Drugs by default)
-        const matchedDrug = (currentInstructionsSource === 'lexidrugs')
-          ? (findLexidrug(p) || findDynamedexDrug(p))
-          : (findDynamedexDrug(p) || findLexidrug(p));
+        let matchedDrug = null;
+        if (currentInstructionsSource === 'lexidrugs') {
+          matchedDrug = findLexidrug(p) || findDynamedexDrug(p);
+        } else if (currentInstructionsSource === 'dynamedex') {
+          matchedDrug = findDynamedexDrug(p) || findLexidrug(p);
+        } else if (currentInstructionsSource === 'mix') {
+          matchedDrug = getMixedDrug(p);
+        }
         switchActiveIngredientPreset(matchedDrug, p);
 
         // 3. Batch Queue Integration
@@ -4730,7 +4707,7 @@ function detectInstructionIcon(text) {
           document.getElementById("quickSearchDropdown").style.display = "none";
           const inputEl = document.getElementById("globalProductSearchInput");
           if (inputEl) inputEl.value = p["Item Description"] || p["أسم المنتج"] || "";
-          selectMedicationItem(p, false);
+          selectMedicationItem(p, true);
         };
         box.appendChild(itemEl);
       });
@@ -4742,7 +4719,7 @@ function detectInstructionIcon(text) {
       const val = document.getElementById("globalProductSearchInput").value;
       const found = findProductInDB(val);
       if (found) {
-        selectMedicationItem(found, false);
+        selectMedicationItem(found, true);
       } else {
         alert("⚠️ Item not found in Master Database!");
       }
@@ -5311,7 +5288,7 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
     // =========================================================
     window.addEventListener("DOMContentLoaded", () => {
       // Initialize with current selected medication and add to batch queue
-      selectMedicationItem(currentMedication, true);
+      selectMedicationItem(currentMedication, false);
 
       // Initialize Master Database
       initMasterDatabase();
