@@ -482,38 +482,82 @@
       font-weight: 700;
     }
 
-    /* Floating WhatsApp Button on Mobile & Desktop */
-    .floating-whatsapp-btn {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      width: 58px;
-      height: 58px;
-      background: #25D366;
-      color: #fff !important;
-      border-radius: 50%;
+    /* Pharmacy Branch & Contact Card */
+    .branch-info-card {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.25);
+    }
+    .branch-card-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 30px;
-      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
-      z-index: 1000;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .branch-brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .branch-brand-title i {
+      color: #38bdf8;
+      font-size: 18px;
+    }
+    .branch-num-chip {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .branch-actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .branch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
       text-decoration: none;
-      transition: transform 0.25s, box-shadow 0.25s;
-      animation: pulseWhatsApp 2.2s infinite;
+      transition: all 0.2s ease;
+      flex: 1;
+      justify-content: center;
+      min-width: 140px;
     }
-    body[dir="ltr"] .floating-whatsapp-btn {
-      left: auto;
-      right: 24px;
+    .branch-btn.btn-call {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
     }
-    .floating-whatsapp-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 10px 28px rgba(37, 211, 102, 0.65);
+    .branch-btn.btn-call:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-1px);
     }
-    @keyframes pulseWhatsApp {
-      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
-      70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    .branch-btn.btn-location {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+    }
+    .branch-btn.btn-location:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: translateY(-1px);
     }
 
     /* Footer Disclaimer */
@@ -529,7 +573,7 @@
     }
 
     @media print {
-      .top-header, .quick-nav-bar, .lang-pill, .floating-whatsapp-btn {
+      .top-header, .quick-nav-bar, .lang-pill {
         display: none !important;
       }
       body { background: #fff; }
@@ -578,17 +622,38 @@
       </div>
     </div>
 
-    <!-- Pharmacist Consultation Card with Photo -->
-    <div class="pharmacist-consult-card">
+    <!-- Pharmacy Branch & Contact Card -->
+    <div class="branch-info-card" id="branchInfoCard">
+      <div class="branch-card-header">
+        <div class="branch-brand-title">
+          <i class="fas fa-clinic-medical"></i>
+          <span id="branchBrandName">صيدليات الدواء</span>
+          <span class="branch-num-chip" id="branchNumChip">فرع رقم 104</span>
+        </div>
+      </div>
+      <div class="branch-actions-row">
+        <a href="tel:0541932559" id="btnCallPharmacy" class="branch-btn btn-call" title="اتصل بالصيدلية">
+          <i class="fas fa-phone-alt"></i>
+          <span id="btnCallText">اتصل بالصيدلية (0541932559)</span>
+        </a>
+        <a href="https://maps.google.com" id="btnMapLocation" target="_blank" class="branch-btn btn-location" title="موقع الفرع على الخريطة">
+          <i class="fas fa-map-marker-alt"></i>
+          <span id="btnMapText">موقع الفرع (اللوكيشن)</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Pharmacist Consultation Card with Photo (Toggleable) -->
+    <div class="pharmacist-consult-card" id="pharmacistConsultCard">
       <div class="ph-profile-wrap">
-        <div class="ph-avatar-box">
-          <img src="pharmacist_photo.png" onerror="this.src='https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/6_20251129_184528_0005.png'" class="ph-avatar-img" alt="Ph Mohamed Kholeif">
+        <div class="ph-avatar-box" id="phAvatarBox">
+          <img src="pharmacist_photo.png" onerror="this.src='https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/6_20251129_184528_0005.png'" class="ph-avatar-img" id="phAvatarImg" alt="Pharmacist">
           <span class="ph-online-dot" title="متصل الآن لخدمتك"></span>
         </div>
         <div class="ph-details">
           <span class="ph-name" id="phNameLabel">د. محمد خليف | صيدلي استشاري</span>
           <span class="ph-title" id="phTitleLabel">استشارات دوائية ومتابعة الخطة العلاجية</span>
-          <span class="ph-callout" id="phCalloutLabel">لديك أي استفسار حول دوائك؟ تواصل معي مباشرة عبر أيقونة واتساب</span>
+          <span class="ph-callout" id="phCalloutLabel">لديك أي استفسار حول دوائك؟ تفضل بزيارة الفرع أو الاتصال بالصيدلي مباشرة</span>
         </div>
       </div>
     </div>
@@ -675,11 +740,6 @@
     </div>
 
   </div>
-
-  <!-- Floating Quick WhatsApp Button -->
-  <a href="https://wa.me/966541932559" id="floatingWhatsAppBtn" target="_blank" class="floating-whatsapp-btn" title="تواصل مع الصيدلي عبر واتساب">
-    <i class="fab fa-whatsapp"></i>
-  </a>
 
   <!-- Load Separate & Master Patient Education Datasets -->
   <script src="lexidrugs_patient_education.js"></script>
@@ -996,20 +1056,97 @@
       return val;
     }
 
-    function updateWhatsAppLinks() {
-      const activeName = currentDrug ? currentDrug.name : '';
-      const tradeTxt = scannedProduct ? (scannedProduct.tradeAr || scannedProduct.trade || '') : '';
-      
-      const greeting = currentLang === 'ar' 
-        ? `السلام عليكم دكتور محمد، أستشيرك بخصوص دوائي: ${tradeTxt} (${activeName})`
-        : `Hello Dr. Mohamed, I have a question regarding my medication: ${tradeTxt} (${activeName})`;
+    function updateBranchAndContactUI() {
+      const branchParam = getUrlParam("b") || getUrlParam("branch");
+      const phoneParam = getUrlParam("p") || getUrlParam("phone");
+      const hidePharmParam = getUrlParam("hp");
+      const hidePhotoParam = getUrlParam("hpo");
+      const pharmNameParam = getUrlParam("pn") || getUrlParam("name");
+      const locParam = getUrlParam("loc") || getUrlParam("map");
 
-      const waUrl = `https://wa.me/966541932559?text=${encodeURIComponent(greeting)}`;
-      
-      const btnTop = document.getElementById("btnWhatsAppConsult");
-      if (btnTop) btnTop.href = waUrl;
-      const btnFloat = document.getElementById("floatingWhatsAppBtn");
-      if (btnFloat) btnFloat.href = waUrl;
+      let localSettings = null;
+      try {
+        const raw = localStorage.getItem("rx_branch_settings");
+        if (raw) localSettings = JSON.parse(raw);
+      } catch (e) {}
+
+      const branch = branchParam || (localSettings ? localSettings.branch : "104");
+      const phone = phoneParam || (localSettings ? localSettings.phone : "0541932559");
+      const locationUrl = locParam || (localSettings ? localSettings.locationUrl : "");
+      const hidePharm = (hidePharmParam === "1" || hidePharmParam === "true") || (!branchParam && localSettings && localSettings.hidePharmacistCard);
+      const hidePhoto = (hidePhotoParam === "1" || hidePhotoParam === "true") || (!branchParam && localSettings && localSettings.hidePhotoOnly);
+      const pharmName = pharmNameParam || (localSettings ? localSettings.pharmacistName : "د. محمد خليف | صيدلي استشاري");
+
+      // 1. Branch Brand Title & Chip
+      const brandNameEl = document.getElementById("branchBrandName");
+      if (brandNameEl) {
+        brandNameEl.textContent = (currentLang === 'ar') ? "صيدليات الدواء" : "Al-Dawaa Pharmacies";
+      }
+
+      const branchChipEl = document.getElementById("branchNumChip");
+      if (branchChipEl) {
+        if (branch) {
+          branchChipEl.textContent = (currentLang === 'ar') ? `فرع رقم ${branch}` : `Branch #${branch}`;
+          branchChipEl.style.display = "inline-block";
+        } else {
+          branchChipEl.style.display = "none";
+        }
+      }
+
+      // 2. Call Button
+      const btnCallEl = document.getElementById("btnCallPharmacy");
+      const btnCallText = document.getElementById("btnCallText");
+      if (btnCallEl && btnCallText) {
+        if (phone) {
+          btnCallEl.href = `tel:${phone}`;
+          btnCallText.textContent = (currentLang === 'ar') ? `اتصل بالصيدلية (${phone})` : `Call Pharmacy (${phone})`;
+          btnCallEl.style.display = "inline-flex";
+        } else {
+          btnCallEl.style.display = "none";
+        }
+      }
+
+      // 3. Location / Google Maps Button
+      const btnMapEl = document.getElementById("btnMapLocation");
+      const btnMapText = document.getElementById("btnMapText");
+      if (btnMapEl && btnMapText) {
+        btnMapText.textContent = (currentLang === 'ar') ? "موقع الفرع (اللوكيشن)" : "Branch Location (Map)";
+        if (locationUrl && locationUrl.trim()) {
+          btnMapEl.href = locationUrl.trim();
+          btnMapEl.style.display = "inline-flex";
+        } else if (branch) {
+          btnMapEl.href = `https://www.google.com/maps/search/${encodeURIComponent('صيدلية الدواء فرع ' + branch)}`;
+          btnMapEl.style.display = "inline-flex";
+        } else {
+          btnMapEl.href = `https://www.al-dawaa.com/${currentLang === 'ar' ? 'ar' : 'en'}/store-finder`;
+          btnMapEl.style.display = "inline-flex";
+        }
+      }
+
+      // 4. Pharmacist Consultation Card (Visibility & Profile)
+      const consultCard = document.getElementById("pharmacistConsultCard");
+      const avatarBox = document.getElementById("phAvatarBox");
+      const nameLabel = document.getElementById("phNameLabel");
+      const calloutLabel = document.getElementById("phCalloutLabel");
+
+      if (consultCard) {
+        if (hidePharm) {
+          consultCard.style.display = "none";
+        } else {
+          consultCard.style.display = "block";
+          if (avatarBox) {
+            avatarBox.style.display = hidePhoto ? "none" : "block";
+          }
+          if (nameLabel && pharmName) {
+            nameLabel.textContent = pharmName;
+          }
+          if (calloutLabel) {
+            calloutLabel.textContent = (currentLang === 'ar')
+              ? "لديك أي استفسار حول دوائك؟ تفضل بزيارة الفرع أو الاتصال بالصيدلي مباشرة"
+              : "Have questions about your medication? Visit our branch or call our pharmacist directly";
+          }
+        }
+      }
     }
 
     async function renderDrug() {
@@ -1041,7 +1178,7 @@
         document.getElementById("uiHeaderSubtitle").textContent = "إرشادات استخدام دوائك بطريقة صحيحة وآمنة";
         document.getElementById("phNameLabel").textContent = "د. محمد خليف | صيدلي استشاري";
         document.getElementById("phTitleLabel").textContent = "استشارات دوائية ومتابعة الخطة العلاجية";
-        document.getElementById("phCalloutLabel").textContent = "لديك أي استفسار حول دوائك؟ تواصل معي مباشرة عبر أيقونة واتساب";
+        document.getElementById("phCalloutLabel").textContent = "لديك أي استفسار حول دوائك؟ تفضل بزيارة الفرع أو الاتصال بالصيدلي مباشرة";
         document.getElementById("hdrUses").textContent = "ما هي دواعي استخدام هذا الدواء؟";
         document.getElementById("hdrCounseling").textContent = "نصائح وإرشادات الاستخدام الهامة لك";
         document.getElementById("hdrSideEffects").textContent = "الآثار الجانبية الشائعة";
@@ -1056,7 +1193,7 @@
         document.getElementById("uiHeaderSubtitle").textContent = "Proper and Safe Guidelines for Your Treatment";
         document.getElementById("phNameLabel").textContent = "Ph. Mohamed Kholeif | Consultant Pharmacist";
         document.getElementById("phTitleLabel").textContent = "Medication Counseling & Therapy Management";
-        document.getElementById("phCalloutLabel").textContent = "Have any questions about your medication? Contact me directly via WhatsApp icon";
+        document.getElementById("phCalloutLabel").textContent = "Have questions about your medication? Visit our branch or call our pharmacist directly";
         document.getElementById("hdrUses").textContent = "What is this drug used for?";
         document.getElementById("hdrCounseling").textContent = "Important Usage Guidelines for You";
         document.getElementById("hdrSideEffects").textContent = "Common Side Effects";
@@ -1071,7 +1208,7 @@
       document.getElementById("drugNameMain").textContent = currentDrug.name;
       document.getElementById("drugNameSub").textContent = currentDrug.slug.replace(/-/g, ' ').toUpperCase();
 
-      updateWhatsAppLinks();
+      updateBranchAndContactUI();
 
       // Always show the best combined patient data (Clean, no source tabs)
       let lexiObj = (window.LEXIDRUGS_PATIENT_EDUCATION && window.LEXIDRUGS_PATIENT_EDUCATION[currentDrug.slug]) ? window.LEXIDRUGS_PATIENT_EDUCATION[currentDrug.slug] : (currentDrug.lexidrugs || {});
