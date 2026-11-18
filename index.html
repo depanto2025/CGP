@@ -1287,6 +1287,47 @@ function detectInstructionIcon(text) {
       box-shadow: 0 8px 22px rgba(234, 88, 12, 0.45);
     }
 
+    .btn-header-settings {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-header-settings:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.5);
+    }
+
+    .btn-preview-branch-settings {
+      background: #f1f5f9;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e293b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-preview-branch-settings:hover {
+      background: #e2e8f0;
+      border-color: #0284c7;
+    }
+
     /* Floating Print FAB removed for clean international clinical UX */
 
     /* =========================================================
@@ -2056,16 +2097,68 @@ function detectInstructionIcon(text) {
       flex-shrink: 0;
     }
 
+    /* Body Content Area (Holds Items and Optional Side QR Dock) */
+    .label-body-content {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 6px;
+      overflow: hidden;
+      min-height: 0;
+      width: 100%;
+      margin: 2px 0;
+    }
+
     .label-items-list {
       flex: 1;
       min-height: 0;
-      padding: 2px 0;
+      padding: 1px 0;
       display: flex;
       flex-direction: column;
       gap: 3.5px;
       justify-content: center;
       overflow: hidden;
-      margin-bottom: 2px;
+    }
+
+    /* Side QR Dock (Utilizes side space on card, leaving full height for text) */
+    .label-qr-side-dock {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 82px;
+      padding-left: 2px;
+    }
+
+    .qr-dock-frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #000000;
+      border-radius: 4px;
+      padding: 3px;
+      background: #ffffff;
+    }
+
+    .qr-dock-img {
+      width: 68px !important;
+      height: 68px !important;
+      image-rendering: pixelated;
+      display: block;
+      background: #ffffff;
+    }
+
+    .qr-dock-caption {
+      font-size: 6.5pt;
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      margin-top: 3px;
+      color: #000000;
+      letter-spacing: -0.2px;
     }
 
     /* Monochrome Vector Pictograms & Numbered Badges */
@@ -2448,14 +2541,60 @@ function detectInstructionIcon(text) {
       width: 100%;
     }
 
+    .print-label-page .label-body-content {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: stretch !important;
+      gap: 2mm !important;
+      overflow: hidden !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      margin: 1mm 0 !important;
+    }
+
     .print-label-page .label-items-list {
       flex: 1 !important;
       min-height: 0 !important;
       display: flex !important;
       flex-direction: column !important;
-      width: 100% !important;
       overflow: hidden !important;
-      margin-bottom: 1.5mm !important;
+    }
+
+    .print-label-page .label-qr-side-dock {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+      width: 22mm !important;
+    }
+
+    .print-label-page .qr-dock-frame {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: 1px solid #000 !important;
+      border-radius: 2px !important;
+      padding: 1mm !important;
+      background: #ffffff !important;
+    }
+
+    .print-label-page .qr-dock-img {
+      width: 18mm !important;
+      height: 18mm !important;
+      image-rendering: pixelated !important;
+      display: block !important;
+    }
+
+    .print-label-page .qr-dock-caption {
+      font-size: 5pt !important;
+      font-weight: 900 !important;
+      line-height: 1.05 !important;
+      text-align: center !important;
+      margin-top: 1mm !important;
+      color: #000000 !important;
     }
 
     .print-label-page .label-point-row {
@@ -2504,10 +2643,10 @@ function detectInstructionIcon(text) {
 
     .print-label-page .label-footer-bar {
       border-top: 1px dashed #444 !important;
-      padding-top: 1.5px !important;
-      font-size: 7pt !important;
+      padding-top: 1mm !important;
+      font-size: 6.8pt !important;
       display: flex !important;
-      justify-content: space-between !important;
+      justify-content: center !important;
       align-items: center !important;
       width: 100% !important;
       flex-shrink: 0 !important;
@@ -2560,10 +2699,10 @@ function detectInstructionIcon(text) {
       }
       .header-actions {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 6px;
       }
-      .btn-header-print, .btn-header-preview, .btn-scanner-trigger {
+      .btn-header-print, .btn-header-preview, .btn-scanner-trigger, .btn-header-settings {
         padding: 10px 6px;
         font-size: 11.5px;
         justify-content: center;
@@ -3119,6 +3258,12 @@ function detectInstructionIcon(text) {
         <i class="fas fa-qrcode"></i>
         <span>مسح باركود (Scan)</span>
       </button>
+
+      <!-- Branch & Pharmacist Settings Button -->
+      <button class="btn-header-settings" onclick="openBranchSettingsModal()" title="إعدادات الفرع ورقم الهاتف والصيدلي">
+        <i class="fas fa-store-alt"></i>
+        <span>إعدادات الفرع (Settings)</span>
+      </button>
     </div>
   </header>
 
@@ -3387,6 +3532,13 @@ function detectInstructionIcon(text) {
           </label>
         </div>
         <div class="toolbar-option">
+          <button type="button" class="btn-preview-branch-settings" onclick="openBranchSettingsModal()" title="تعديل رقم الفرع وهاتف الصيدلية قبل الطباعة">
+            <i class="fas fa-store-alt" style="color:#0284c7;"></i>
+            <span>فرع: <b id="previewBranchNumDisplay">104</b> • هاتف: <b id="previewPhoneDisplay">0541932559</b></span>
+            <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>
+          </button>
+        </div>
+        <div class="toolbar-option">
           <strong id="totalPagesBadge" style="color:var(--orange-600)">Total: 1 Label</strong>
         </div>
       </div>
@@ -3465,6 +3617,99 @@ function detectInstructionIcon(text) {
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       Branch & Pharmacist Settings Modal
+       ========================================================= -->
+  <div id="branchSettingsModalBackdrop" class="preview-modal-backdrop" style="display:none; z-index:99999;">
+    <div class="preview-modal-dialog" style="max-width: 580px; width: 92vw; border-radius: 16px;">
+      
+      <div class="preview-modal-header" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; padding: 16px 20px;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-sliders-h" style="color: #38bdf8;"></i>
+          <span>إعدادات الفرع وبيانات الصيدلية والتثقيف الدوائي</span>
+        </h3>
+        <button class="btn-close-modal" onclick="closeBranchSettingsModal()" style="color: #fff;">✕</button>
+      </div>
+
+      <div class="branch-settings-body" style="padding: 20px; display: flex; flex-direction: column; gap: 16px; background: #f8fafc; max-height: 75vh; overflow-y: auto;">
+        
+        <!-- Branch Number -->
+        <div class="setting-group" style="background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+          <label style="display: block; font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">
+            <i class="fas fa-store" style="color: #0284c7; margin-left: 6px;"></i>
+            رقم الفرع (Branch Number):
+          </label>
+          <input type="text" id="settingBranchNumber" class="form-input-styled" placeholder="مثال: 104" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700;">
+          <span style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">يظهر في بطاقة دليل المريض عند مسح الـ QR وفي تذييل كارت الطباعة الحرارية.</span>
+        </div>
+
+        <!-- Pharmacy Phone / Mobile -->
+        <div class="setting-group" style="background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+          <label style="display: block; font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">
+            <i class="fas fa-phone-alt" style="color: #10b981; margin-left: 6px;"></i>
+            رقم هاتف / جوال الصيدلية (Pharmacy Phone):
+          </label>
+          <input type="tel" id="settingPharmacyPhone" class="form-input-styled" placeholder="مثال: 0541932559" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700;" dir="ltr">
+          <span style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">يتمكن المريض من الضغط عليه للاتصال المباشر بالصيدلية لاستشارة الصيدلي.</span>
+        </div>
+
+        <!-- Branch Location (Google Maps) -->
+        <div class="setting-group" style="background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+          <label style="display: block; font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">
+            <i class="fas fa-map-marker-alt" style="color: #ef4444; margin-left: 6px;"></i>
+            موقع الفرع / اللوكيشن (Branch Location / Google Maps):
+          </label>
+          <input type="text" id="settingBranchLocation" class="form-input-styled" placeholder="رابط خرائط جوجل أو اسم الحي / الشارع" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 600;" dir="ltr">
+          <span style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">يفتح للمريض موقع الصيدلية على خرائط Google Maps بضغطة زر.</span>
+        </div>
+
+        <!-- Pharmacist Name & Title -->
+        <div class="setting-group" style="background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+          <label style="display: block; font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 6px;">
+            <i class="fas fa-user-md" style="color: #6366f1; margin-left: 6px;"></i>
+            اسم ولقب الصيدلي (Pharmacist Name):
+          </label>
+          <input type="text" id="settingPharmacistName" class="form-input-styled" placeholder="د. محمد خليف | صيدلي استشاري" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700;">
+        </div>
+
+        <!-- Display & Privacy Toggles -->
+        <div class="setting-group" style="background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px;">
+          <label style="font-size: 13px; font-weight: 800; color: #1e293b;">
+            <i class="fas fa-eye-slash" style="color: #ea580c; margin-left: 6px;"></i>
+            خيارات العرض في صفحة دليل المريض:
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
+            <input type="checkbox" id="settingHidePharmacistCard" style="width: 17px; height: 17px; cursor: pointer;">
+            <span>إخفاء بطاقة الصيدلي كاملة (الاسم والصورة) وإظهار بيانات الفرع فقط</span>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
+            <input type="checkbox" id="settingHidePhotoOnly" style="width: 17px; height: 17px; cursor: pointer;">
+            <span>إخفاء صورة الصيدلي فقط مع إبقاء الاسم واللقب</span>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
+            <input type="checkbox" id="settingPrintFooterBranch" checked style="width: 17px; height: 17px; cursor: pointer;">
+            <span>طباعة رقم الفرع وهاتف الصيدلية في تذييل كروت الطباعة الحرارية</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="preview-modal-footer" style="padding: 14px 20px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn-delete-instruction" onclick="closeBranchSettingsModal()" style="padding: 10px 18px; font-weight: 700;">
+          إلغاء (Cancel)
+        </button>
+        <button type="button" class="btn-execute-print" onclick="saveBranchSettingsFromModal()" style="padding: 10px 22px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1);">
+          <i class="fas fa-save"></i>
+          <span>حفظ الإعدادات (Save)</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -4691,20 +4936,79 @@ function detectInstructionIcon(text) {
       "Take with food.": "تناول الدواء مع الطعام.",
       "Take with meals.": "تناول الدواء مع وجبات الطعام.",
       "Take on an empty stomach.": "تناول الدواء على معدة فارغة.",
-      "Administer 30 minutes prior to the first meal of the day.": "يؤخذ قبل 30 دقيقة من تناول أول وجبة في اليوم."
+      "Administer 30 minutes prior to the first meal of the day.": "يؤخذ قبل 30 دقيقة من تناول أول وجبة في اليوم.",
+      "May be administered with or without food.": "يمكن تناول الدواء مع الطعام أو بدونه.",
+      "Administer with or without food.": "تناول الدواء مع الطعام أو بدونه.",
+      "Administer with food.": "تناول الدواء مع وجبة الطعام.",
+      "Administer with a meal.": "تناول الدواء مع وجبة الطعام.",
+      "Adcirca: Administer daily dose all at once; dividing doses throughout the day is not advised.": "Adcirca: تناول الجرعة اليومية دفعة واحدة؛ لا ينصح بتقسيم الجرعات على مدار اليوم.",
+      "Cialis: Do not split tablets; the entire dose should be taken. When used on an as-needed basis, should be taken at least 30 minutes prior to sexual activity. When used on a once-daily basis, should be taken at approximately the same time each day without regard to timing of sexual activity.": "سياليس: لا تقم بتقسيم الأقراص؛ ينبغي بلع الجرعة كاملة. عند استخدامه حسب الحاجة، يؤخذ قبل 30 دقيقة على الأقل من الجماع. وعند استخدامه مرة واحدة يومياً، يؤخذ في نفس التوقيت يومياً."
     };
+
+    function fixMedicalArabicTranslation(arabicText) {
+      if (!arabicText || typeof arabicText !== 'string') return '';
+      return arabicText
+        // Fix "إدارة" -> "تناول" / "يؤخذ" (Strictly avoiding institutional office translation)
+        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام أو بدونه')
+        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+وجبات\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام أو بدونه')
+        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+وجبة(?!\p{L})/gu, 'تناول الدواء مع وجبة أو بدونها')
+        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+أكل(?!\p{L})/gu, 'تناول الدواء مع الأكل أو بدونه')
+        .replace(/(?<!\p{L})إدارة\s+مع\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام')
+        .replace(/(?<!\p{L})إدارة\s+بدون\s+طعام(?!\p{L})/gu, 'تناول الدواء بدون طعام')
+        .replace(/(?<!\p{L})إدارة\s+على\s+معدة\s+فارغة(?!\p{L})/gu, 'تناول الدواء على معدة فارغة')
+        .replace(/(?<!\p{L})إدارة\s+(مع|بدون|على|قبل|بعد)(?!\p{L})/gu, 'تناول الدواء $1')
+        .replace(/(?<!\p{L})إدارة\s+الجرعة\s+اليومية(?!\p{L})/gu, 'تناول الجرعة اليومية')
+        .replace(/(?<!\p{L})إدارة\s+الجرعة(?!\p{L})/gu, 'تناول الجرعة')
+        .replace(/(?<!\p{L})إدارة\s+الجرعات(?!\p{L})/gu, 'تناول الجرعات')
+        .replace(/(?<!\p{L})إدارة\s+المعلق(?!\p{L})/gu, 'تناول المعلق')
+        .replace(/(?<!\p{L})إدارة\s+المحلول(?!\p{L})/gu, 'تناول المحلول')
+        .replace(/(?<!\p{L})إدارة\s+الأقراص(?!\p{L})/gu, 'تناول الأقراص')
+        .replace(/(?<!\p{L})إدارة\s+القرص(?!\p{L})/gu, 'تناول القرص')
+        .replace(/(?<!\p{L})إدارة\s+الكبسولات(?!\p{L})/gu, 'تناول الكبسولات')
+        .replace(/(?<!\p{L})إدارة\s+الكبسولة(?!\p{L})/gu, 'تناول الكبسولة')
+        .replace(/(?<!\p{L})إدارة\s+الدواء(?!\p{L})/gu, 'تناول الدواء')
+        .replace(/(?<!\p{L})إدارة\s+جرعة(?!\p{L})/gu, 'تناول جرعة')
+        .replace(/(?<!\p{L})إدارة\s+عن\s+طريق\s+الفم(?!\p{L})/gu, 'تناول عن طريق الفم')
+        .replace(/(?<!\p{L})إدارة\s+فموية(?!\p{L})/gu, 'تناول عن طريق الفم')
+        .replace(/(?<!\p{L})طريقة\s+الإدارة(?!\p{L})/gu, 'طريقة الاستعمال')
+        .replace(/(?<!\p{L})يمكن\s+إدارته(?!\p{L})/gu, 'يمكن تناوله')
+        .replace(/(?<!\p{L})يمكن\s+إدارتها(?!\p{L})/gu, 'يمكن تناولها')
+        .replace(/(?<!\p{L})يجب\s+إدارته(?!\p{L})/gu, 'يجب تناوله')
+        .replace(/(?<!\p{L})يجب\s+إدارتها(?!\p{L})/gu, 'يجب تناولها')
+        .replace(/(?<!\p{L})ينبغي\s+إدارته(?!\p{L})/gu, 'ينبغي تناوله')
+        .replace(/(?<!\p{L})ينبغي\s+إدارتها(?!\p{L})/gu, 'ينبغي تناولها')
+        .replace(/(?<!\p{L})تمت\s+إدارته(?!\p{L})/gu, 'تم تناوله')
+        .replace(/(?<!\p{L})تمت\s+إدارتها(?!\p{L})/gu, 'تم تناولها')
+        .replace(/(?<!\p{L})تم\s+إدارته(?!\p{L})/gu, 'تم تناوله')
+        .replace(/(?<!\p{L})لا\s+تقم\s+بإدارة(?!\p{L})/gu, 'لا تتناول')
+        .replace(/(?<!\p{L})لا\s+ينصح\s+بإدارة(?!\p{L})/gu, 'لا ينصح بتناول')
+        .replace(/(?<!\p{L})قبل\s+إدارة(?!\p{L})/gu, 'قبل تناول')
+        .replace(/(?<!\p{L})بعد\s+إدارة(?!\p{L})/gu, 'بعد تناول')
+        .replace(/(?<!\p{L})عند\s+إدارة(?!\p{L})/gu, 'عند تناول')
+        .replace(/(?<!\p{L})بإدارة\s+الدواء(?!\p{L})/gu, 'بتناول الدواء')
+        .replace(/(?<!\p{L})بإدارة(?!\p{L})/gu, 'بتناول')
+        .replace(/(?<!\p{L})لإدارة(?!\p{L})/gu, 'لتناول')
+        .replace(/(?<!\p{L})والإدارة(?!\p{L})/gu, 'والتناول')
+        .replace(/(?<!\p{L})فإدارة(?!\p{L})/gu, 'فتناول')
+        .replace(/(?<!\p{L})إدارتها(?!\p{L})/gu, 'تناولها')
+        .replace(/(?<!\p{L})إدارته(?!\p{L})/gu, 'تناوله')
+        .replace(/(?<!\p{L})إدارة\s*:(?!\p{L})/gu, 'طريقة الاستخدام:')
+        .replace(/(?<!\p{L})إدارة(?!\p{L})/gu, 'تناول الدواء')
+        .replace(/(?<!\p{L})على\s+معدتك\s+الفارغة(?!\p{L})/gu, 'على معدة فارغة')
+        .replace(/(?<!\p{L})الاستلقاء\s+لأسفل(?!\p{L})/gu, 'الاستلقاء');
+    }
 
     async function translateTextToAr(text) {
       if (!text || typeof text !== 'string') return text;
       const clean = text.trim();
       if (!clean) return clean;
-      if (/[\u0600-\u06FF]/.test(clean)) return clean;
+      if (/[\u0600-\u06FF]/.test(clean)) return fixMedicalArabicTranslation(clean);
 
       if (COMMON_PHRASES_DICT[clean]) {
-        return COMMON_PHRASES_DICT[clean];
+        return fixMedicalArabicTranslation(COMMON_PHRASES_DICT[clean]);
       }
       if (translationCache.has(clean)) {
-        return translationCache.get(clean);
+        return fixMedicalArabicTranslation(translationCache.get(clean));
       }
 
       try {
@@ -4715,9 +5019,10 @@ function detectInstructionIcon(text) {
           if (data && data[0]) {
             const translated = data[0].map(item => item[0]).join('');
             if (translated) {
-              translationCache.set(clean, translated);
+              const fixed = fixMedicalArabicTranslation(translated);
+              translationCache.set(clean, fixed);
               saveTranslationCache();
-              return translated;
+              return fixed;
             }
           }
         }
@@ -5063,7 +5368,8 @@ function detectInstructionIcon(text) {
       workingInstructions.forEach((item, index) => {
         const row = document.createElement("div");
         row.className = `instruction-card-row ${item.checked ? 'is-checked' : ''}`;
-        const textVal = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+        let textVal = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+        if (isRtl) textVal = fixMedicalArabicTranslation(textVal);
         const iconName = (typeof detectInstructionIcon === 'function') 
           ? detectInstructionIcon(textVal) 
           : 'medical_shield';
@@ -5360,6 +5666,7 @@ function detectInstructionIcon(text) {
               })
             );
           } else if (inst.checked && inst.textAr) {
+            inst.textAr = fixMedicalArabicTranslation(inst.textAr);
             inst.text = inst.textAr;
           }
         }
@@ -5544,7 +5851,17 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
         const totalPages = pages.length;
         const displayTradeName = isRtl ? (med.tradeNameAr || med.tradeNameEn) : (med.tradeNameEn || med.tradeNameAr);
         const displayActive = isRtl ? `المادة الفعالة: ${med.activeIngredient}` : `Active: ${med.activeIngredient}`;
-        const displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
+        const branchSettings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
+        let displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
+        if (branchSettings && branchSettings.printFooterBranch) {
+          const bNum = branchSettings.branch ? (isRtl ? `فرع ${branchSettings.branch}` : `Branch ${branchSettings.branch}`) : '';
+          const bPhone = branchSettings.phone ? (isRtl ? `هاتف: ${branchSettings.phone}` : `Tel: ${branchSettings.phone}`) : '';
+          if (bNum && bPhone) {
+            displayFooter = isRtl ? `صيدليات الدواء (${bNum}) • ${bPhone}` : `Al-Dawaa (${bNum}) • ${bPhone}`;
+          } else if (bNum) {
+            displayFooter = isRtl ? `صيدليات الدواء (${bNum}) | إرشادات الدواء` : `Al-Dawaa (${bNum}) | Patient Instructions`;
+          }
+        }
 
         for (let q = 0; q < qty; q++) {
           let pointCounter = 1;
@@ -5567,7 +5884,10 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
             let pointsHtml = "";
             pageItems.forEach((inst) => {
               const currentPointNum = pointCounter++;
-              const textToShow = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
+              let textToShow = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
+              if (isRtl) {
+                textToShow = fixMedicalArabicTranslation(textToShow);
+              }
               const iconName = (typeof detectInstructionIcon === 'function') 
                 ? detectInstructionIcon(textToShow) 
                 : 'medical_shield';
@@ -5601,37 +5921,26 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
                         ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden;">
-                      ${pointsHtml}
+                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:2mm; overflow:hidden; min-height:0; width:100%;">
+                      <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden; min-height:0;">
+                        ${pointsHtml}
+                      </div>
+                      ${qrDataUrl ? `
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:22mm; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #000; border-radius:2px; padding:1mm; background:#fff;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:18mm; height:18mm; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:5pt; font-weight:900; line-height:1.05; text-align:center; margin-top:1mm; color:#000;">
+                              ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
+                            </span>
+                          </div>
+                        </div>
+                      ` : ''}
                     </div>
-                    <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7pt; display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                      ${isRtl ? `
-                        ${qrDataUrl ? `
-                          <div class="label-qr-chip" style="margin-left: 6px;">
-                            <img src="${qrDataUrl}" alt="QR" />
-                            <span style="font-size: 5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
-                              امسح للتثقيف<br>الدوائي
-                            </span>
-                          </div>
-                        ` : ''}
-                        <div style="flex:1; overflow:hidden; font-size:6.8pt;">
-                          <span>${displayFooter}</span>
-                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
-                        </div>
-                      ` : `
-                        <div style="flex:1; overflow:hidden; font-size:6.8pt;">
-                          <span>${displayFooter}</span>
-                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
-                        </div>
-                        ${qrDataUrl ? `
-                          <div class="label-qr-chip" style="margin-left: 6px;">
-                            <span style="font-size: 5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
-                              Scan for<br>Patient Guide
-                            </span>
-                            <img src="${qrDataUrl}" alt="QR" />
-                          </div>
-                        ` : ''}
-                      `}
+                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:1mm; font-size:6.8pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:6.8pt; line-height:1.2;">
+                        <span>${displayFooter}</span>
+                        ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -5652,37 +5961,26 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
                         ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden;">
-                      ${pointsHtml}
+                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:8px; overflow:hidden; min-height:0; width:100%;">
+                      <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden; min-height:0;">
+                        ${pointsHtml}
+                      </div>
+                      ${qrDataUrl ? `
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:82px; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px solid #000; border-radius:4px; padding:3px; background:#fff;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:68px; height:68px; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:6.5pt; font-weight:800; line-height:1.1; text-align:center; margin-top:3px; color:#000;">
+                              ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
+                            </span>
+                          </div>
+                        </div>
+                      ` : ''}
                     </div>
-                    <div class="label-footer-bar">
-                      ${isRtl ? `
-                        ${qrDataUrl ? `
-                          <div class="label-qr-chip" style="margin-left: 6px;">
-                            <img src="${qrDataUrl}" alt="QR" />
-                            <span style="font-size: 5.5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
-                              امسح للتثقيف<br>الدوائي
-                            </span>
-                          </div>
-                        ` : ''}
-                        <div style="flex:1; overflow:hidden; font-size:7pt;">
-                          <span>${displayFooter}</span>
-                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
-                        </div>
-                      ` : `
-                        <div style="flex:1; overflow:hidden; font-size:7pt;">
-                          <span>${displayFooter}</span>
-                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
-                        </div>
-                        ${qrDataUrl ? `
-                          <div class="label-qr-chip" style="margin-left: 6px;">
-                            <span style="font-size: 5.5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
-                              Scan for<br>Patient Guide
-                            </span>
-                            <img src="${qrDataUrl}" alt="QR" />
-                          </div>
-                        ` : ''}
-                      `}
+                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:2px; font-size:7pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7pt;">
+                        <span>${displayFooter}</span>
+                        ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -5739,6 +6037,7 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
         await ensureAllBatchTranslated();
       }
 
+      updateBranchUIBadges();
       document.getElementById("printModalBackdrop").style.display = "flex";
       renderModalLabels();
     }
@@ -6098,23 +6397,121 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
       return null;
     }
 
+    const DEFAULT_BRANCH_SETTINGS = {
+      branch: "104",
+      phone: "0541932559",
+      locationUrl: "",
+      pharmacistName: "د. محمد خليف | صيدلي استشاري",
+      hidePharmacistCard: false,
+      hidePhotoOnly: false,
+      printFooterBranch: true
+    };
+
+    function getBranchSettings() {
+      try {
+        const raw = localStorage.getItem("rx_branch_settings");
+        if (raw) {
+          return { ...DEFAULT_BRANCH_SETTINGS, ...JSON.parse(raw) };
+        }
+      } catch (e) {}
+      return { ...DEFAULT_BRANCH_SETTINGS };
+    }
+
+    function saveBranchSettings(settings) {
+      try {
+        localStorage.setItem("rx_branch_settings", JSON.stringify(settings));
+      } catch (e) {}
+      updateBranchUIBadges();
+    }
+
+    function openBranchSettingsModal() {
+      const settings = getBranchSettings();
+      const bEl = document.getElementById("settingBranchNumber");
+      if (bEl) bEl.value = settings.branch || "";
+      const pEl = document.getElementById("settingPharmacyPhone");
+      if (pEl) pEl.value = settings.phone || "";
+      const locEl = document.getElementById("settingBranchLocation");
+      if (locEl) locEl.value = settings.locationUrl || "";
+      const pnEl = document.getElementById("settingPharmacistName");
+      if (pnEl) pnEl.value = settings.pharmacistName || DEFAULT_BRANCH_SETTINGS.pharmacistName;
+      const hcEl = document.getElementById("settingHidePharmacistCard");
+      if (hcEl) hcEl.checked = !!settings.hidePharmacistCard;
+      const hpoEl = document.getElementById("settingHidePhotoOnly");
+      if (hpoEl) hpoEl.checked = !!settings.hidePhotoOnly;
+      const pfEl = document.getElementById("settingPrintFooterBranch");
+      if (pfEl) pfEl.checked = settings.printFooterBranch !== false;
+
+      const modal = document.getElementById("branchSettingsModalBackdrop");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function closeBranchSettingsModal() {
+      const modal = document.getElementById("branchSettingsModalBackdrop");
+      if (modal) modal.style.display = "none";
+    }
+
+    function saveBranchSettingsFromModal() {
+      const settings = {
+        branch: (document.getElementById("settingBranchNumber")?.value || "").trim(),
+        phone: (document.getElementById("settingPharmacyPhone")?.value || "").trim(),
+        locationUrl: (document.getElementById("settingBranchLocation")?.value || "").trim(),
+        pharmacistName: (document.getElementById("settingPharmacistName")?.value || "").trim() || DEFAULT_BRANCH_SETTINGS.pharmacistName,
+        hidePharmacistCard: !!document.getElementById("settingHidePharmacistCard")?.checked,
+        hidePhotoOnly: !!document.getElementById("settingHidePhotoOnly")?.checked,
+        printFooterBranch: document.getElementById("settingPrintFooterBranch") ? document.getElementById("settingPrintFooterBranch").checked : true
+      };
+
+      saveBranchSettings(settings);
+      if (typeof patientEduQrCache !== 'undefined' && patientEduQrCache.clear) {
+        patientEduQrCache.clear();
+      }
+      closeBranchSettingsModal();
+
+      if (document.getElementById("printModalBackdrop")?.style.display === "flex") {
+        renderModalLabels();
+      }
+    }
+
+    function updateBranchUIBadges() {
+      const settings = getBranchSettings();
+      const bBadge = document.getElementById("previewBranchNumDisplay");
+      if (bBadge) bBadge.textContent = settings.branch || "104";
+      const pBadge = document.getElementById("previewPhoneDisplay");
+      if (pBadge) pBadge.textContent = settings.phone || "0541932559";
+    }
+
     function getPatientViewerUrl(matchedSlug, medObj, lang = 'ar') {
       const cleanSlug = (matchedSlug || 'bisacodyl').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      const tradeEn = medObj ? (medObj.tradeNameEn || '') : '';
-      const tradeAr = medObj ? (medObj.tradeNameAr || '') : '';
-      const queryParams = `drug=${encodeURIComponent(cleanSlug)}&trade=${encodeURIComponent(tradeEn)}&tradeAr=${encodeURIComponent(tradeAr)}&lang=${lang}`;
+      const settings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
+      
+      let queryParams = `d=${encodeURIComponent(cleanSlug)}`;
+
+      if (settings) {
+        if (settings.branch) queryParams += `&b=${encodeURIComponent(settings.branch)}`;
+        if (settings.phone) queryParams += `&p=${encodeURIComponent(settings.phone)}`;
+        if (settings.hidePharmacistCard) {
+          queryParams += `&hp=1`;
+        } else {
+          if (settings.hidePhotoOnly) queryParams += `&hpo=1`;
+          if (settings.pharmacistName && settings.pharmacistName !== DEFAULT_BRANCH_SETTINGS.pharmacistName) {
+            queryParams += `&pn=${encodeURIComponent(settings.pharmacistName)}`;
+          }
+        }
+        if (settings.locationUrl) queryParams += `&loc=${encodeURIComponent(settings.locationUrl)}`;
+      }
+
+      if (lang && lang !== 'ar') queryParams += `&l=${lang}`;
 
       const customBase = localStorage.getItem('rx_patient_edu_base_url');
       if (customBase && customBase.trim()) {
         let base = customBase.trim();
         if (!base.endsWith('/') && !base.endsWith('.html')) base += '/';
-        return `${base}edu.html?${queryParams}`;
+        const page = base.endsWith('.html') ? base : `${base}edu.html`;
+        return `${page}?${queryParams}`;
       }
       
-      let loc = window.location;
-      let path = loc.pathname;
-      let dir = path.substring(0, path.lastIndexOf('/') + 1);
-      return `${loc.origin}${dir}edu.html?${queryParams}`;
+      // Default to public live portal so phone scanning works reliably whether tested locally or in production
+      return `https://cgp-aldawaa.vercel.app/edu.html?${queryParams}`;
     }
 
     function getDrugQrDataUrl(matchedSlug, medObj, lang = 'ar') {
@@ -6136,9 +6533,9 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
 
         new QRCode(tempDiv, {
           text: url,
-          width: 130,
-          height: 130,
-          correctLevel: QRCode.CorrectLevel.M
+          width: 200,
+          height: 200,
+          correctLevel: QRCode.CorrectLevel.L
         });
 
         let dataUrl = "";
