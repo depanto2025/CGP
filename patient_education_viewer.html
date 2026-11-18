@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>دليل تثقيف المريض الدوائي | Patient Medication Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #10b981;
+      --accent-light: #d1fae5;
+      --whatsapp: #25D366;
+      --whatsapp-dark: #128C7E;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 18px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 14px -2px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 60px;
+    }
+
+    body[dir="ltr"] {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 16px 16px 30px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Top App Bar */
+    .top-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      padding: 18px 20px 16px;
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid #0284c7;
+    }
+
+    .header-content {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-pill {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .lang-pill:hover, .lang-pill:active {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0.97);
+    }
+
+    /* Scanned Product Banner (Directly matches the product scanned on label) */
+    .scanned-product-banner {
+      background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+      border: 1.5px solid #86efac;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .scanned-product-info {
+      flex: 1;
+    }
+
+    .scanned-label-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .scanned-trade-name {
+      font-size: 1.22rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.3;
+      unicode-bidi: plaintext;
+    }
+
+
+    /* Pharmacist Consultation Card */
+    .pharmacist-consult-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pharmacist-consult-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #25D366 0%, #0284c7 100%);
+    }
+
+    .ph-profile-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ph-avatar-box {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+    }
+
+    .ph-avatar-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      object-fit: cover;
+      display: block;
+    }
+
+    .ph-online-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 14px;
+      height: 14px;
+      background: #22c55e;
+      border: 2.5px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.4);
+      animation: pulseGreen 2s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+      70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    .ph-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ph-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+
+    .ph-title {
+      font-size: 0.8rem;
+      color: #0284c7;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .ph-callout {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* WhatsApp & Pharmacist Info */
+    .ph-profile-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+    }
+
+    /* Quick Navigation Bar (Fast Jump to Sections) */
+    .quick-nav-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+    @media (max-width: 640px) {
+      .quick-nav-bar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+    }
+    .quick-nav-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 800;
+      font-family: inherit;
+      color: #0f172a;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      user-select: none;
+    }
+    .quick-nav-pill:hover, .quick-nav-pill:active {
+      border-color: #0284c7;
+      color: #0284c7;
+      background: #f0f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.16);
+    }
+    .quick-nav-pill i {
+      font-size: 15px;
+      color: #0284c7;
+    }
+    .section-highlight-pulse {
+      animation: sectionGlow 1.4s ease;
+    }
+    @keyframes sectionGlow {
+      0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.5); border-color: #0284c7; }
+      50% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); border-color: #0284c7; }
+      100% { box-shadow: none; }
+    }
+
+    /* Drug Hero Card */
+    .hero-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-top: 14px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    }
+
+    .drug-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .drug-name-main {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 4px;
+      unicode-bidi: plaintext;
+    }
+
+    .drug-name-sub {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      unicode-bidi: plaintext;
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .sec-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .icon-uses { background: #dbeafe; color: #1d4ed8; }
+    .icon-tips { background: #dcfce7; color: #15803d; }
+    .icon-effects { background: #fef3c7; color: #b45309; }
+    .icon-warning { background: #fee2e2; color: #b91c1c; }
+
+    .sec-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .point-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .point-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.98rem;
+      color: #1e293b;
+      line-height: 1.65;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      unicode-bidi: plaintext;
+      text-align: start;
+    }
+
+    .point-item i {
+      margin-top: 4px;
+      font-size: 14px;
+      flex-shrink: 0;
+      color: var(--primary);
+    }
+
+    .point-item.warning-item {
+      background: #fff5f5;
+      border-color: #fecaca;
+      border-right: 4px solid var(--danger);
+    }
+    body[dir="ltr"] .point-item.warning-item {
+      border-right: 1px solid #fecaca;
+      border-left: 4px solid var(--danger);
+    }
+    .point-item.warning-item i {
+      color: var(--danger);
+    }
+
+    /* Translation Spinner */
+    .trans-loading {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-top: 8px;
+      font-weight: 700;
+    }
+
+    /* Floating WhatsApp Button on Mobile & Desktop */
+    .floating-whatsapp-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 58px;
+      height: 58px;
+      background: #25D366;
+      color: #fff !important;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+      z-index: 1000;
+      text-decoration: none;
+      transition: transform 0.25s, box-shadow 0.25s;
+      animation: pulseWhatsApp 2.2s infinite;
+    }
+    body[dir="ltr"] .floating-whatsapp-btn {
+      left: auto;
+      right: 24px;
+    }
+    .floating-whatsapp-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 28px rgba(37, 211, 102, 0.65);
+    }
+    @keyframes pulseWhatsApp {
+      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+      70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Footer Disclaimer */
+    .footer-note {
+      text-align: center;
+      margin-top: 26px;
+      padding: 16px;
+      background: #f1f5f9;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media print {
+      .top-header, .quick-nav-bar, .lang-pill, .floating-whatsapp-btn {
+        display: none !important;
+      }
+      body { background: #fff; }
+      .container { padding: 0; max-width: 100%; }
+      .section-card, .hero-card, .pharmacist-consult-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <div class="header-title-wrap">
+        <div class="header-icon">
+          <i class="fas fa-hand-holding-medical"></i>
+        </div>
+        <div>
+          <h1 class="header-title" id="uiHeaderTitle">دليل تثقيف المريض</h1>
+          <p class="header-subtitle" id="uiHeaderSubtitle">إرشادات استخدام دوائك بطريقة صحيحة وآمنة</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="lang-pill" id="btnToggleLang" onclick="toggleLanguage()">
+          <i class="fas fa-globe"></i>
+          <span id="lblLang">English</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Scanned Product Banner (Directly matches the product scanned on label) -->
+    <div class="scanned-product-banner" id="scannedProductBanner" style="display:none;">
+      <div class="scanned-product-info">
+        <div class="scanned-label-tag">
+          <i class="fas fa-barcode"></i>
+          <span id="scannedLabelTag">الدواء المصروف لك</span>
+        </div>
+        <div class="scanned-trade-name" id="scannedTradeName"></div>
+      </div>
+    </div>
+
+    <!-- Pharmacist Consultation Card with Photo -->
+    <div class="pharmacist-consult-card">
+      <div class="ph-profile-wrap">
+        <div class="ph-avatar-box">
+          <img src="pharmacist_photo.png" onerror="this.src='https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/6_20251129_184528_0005.png'" class="ph-avatar-img" alt="Ph Mohamed Kholeif">
+          <span class="ph-online-dot" title="متصل الآن لخدمتك"></span>
+        </div>
+        <div class="ph-details">
+          <span class="ph-name" id="phNameLabel">د. محمد خليف | صيدلي استشاري</span>
+          <span class="ph-title" id="phTitleLabel">استشارات دوائية ومتابعة الخطة العلاجية</span>
+          <span class="ph-callout" id="phCalloutLabel">لديك أي استفسار حول دوائك؟ تواصل معي مباشرة عبر أيقونة واتساب</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drug Hero Profile Card -->
+    <div class="hero-card">
+      <div class="drug-badge">
+        <i class="fas fa-capsules"></i>
+        <span id="drugProfileBadge">المادة الفعالة</span>
+      </div>
+      <h2 class="drug-name-main" id="drugNameMain">جاري التحميل...</h2>
+      <p class="drug-name-sub" id="drugNameSub"></p>
+      
+      <div class="trans-loading" id="transIndicator">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        <span>جاري مواءمة وتحديث الإرشادات الخاصة بك...</span>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Jump Pills (الوصول السريع للأقسام) -->
+    <div class="quick-nav-bar" id="quickNavBar">
+      <button type="button" class="quick-nav-pill" onclick="jumpToSection('secUses')">
+        <i class="fas fa-bullseye"></i>
+        <span id="pillUses">دواعي الاستعمال</span>
+      </button>
+      <button type="button" class="quick-nav-pill" onclick="jumpToSection('secCounseling')">
+        <i class="fas fa-clipboard-check"></i>
+        <span id="pillCounseling">إرشادات الاستخدام</span>
+      </button>
+      <button type="button" class="quick-nav-pill" onclick="jumpToSection('secSideEffects')">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="pillSideEffects">الآثار الجانبية</span>
+      </button>
+      <button type="button" class="quick-nav-pill" onclick="jumpToSection('secWarnings')">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span id="pillWarnings">تحذيرات هامة</span>
+      </button>
+    </div>
+
+    <!-- Content Sections (Unified & Directly Patient-Facing) -->
+
+    <!-- 1. What is this drug used for? -->
+    <div class="section-card" id="secUses">
+      <div class="section-header">
+        <div class="sec-icon icon-uses"><i class="fas fa-bullseye"></i></div>
+        <h3 class="sec-title" id="hdrUses">ما هي استخدامات هذا الدواء؟</h3>
+      </div>
+      <ul class="point-list" id="listUses"></ul>
+    </div>
+
+    <!-- 2. Usage Advice & Medication Counseling (Directed to the Patient) -->
+    <div class="section-card" id="secCounseling">
+      <div class="section-header">
+        <div class="sec-icon icon-tips"><i class="fas fa-clipboard-check"></i></div>
+        <h3 class="sec-title" id="hdrCounseling">نصائح وإرشادات الاستخدام الهامة لك</h3>
+      </div>
+      <ul class="point-list" id="listCounseling"></ul>
+    </div>
+
+    <!-- 3. Common Side Effects -->
+    <div class="section-card" id="secSideEffects">
+      <div class="section-header">
+        <div class="sec-icon icon-effects"><i class="fas fa-exclamation-circle"></i></div>
+        <h3 class="sec-title" id="hdrSideEffects">الآثار الجانبية الشائعة</h3>
+      </div>
+      <ul class="point-list" id="listSideEffects"></ul>
+    </div>
+
+    <!-- 4. Important Warnings & When to call doctor -->
+    <div class="section-card" id="secWarnings">
+      <div class="section-header">
+        <div class="sec-icon icon-warning"><i class="fas fa-triangle-exclamation"></i></div>
+        <h3 class="sec-title" id="hdrWarnings">تحذيرات هامة ومتى يجب مراجعة الطبيب</h3>
+      </div>
+      <ul class="point-list" id="listWarnings"></ul>
+    </div>
+
+    <!-- Footer Disclaimer -->
+    <div class="footer-note">
+      <i class="fas fa-info-circle"></i>
+      <span id="lblDisclaimer">
+        هذا الدليل مخصص لتثقيفك وإرشادك للاستخدام الصحيح للدواء. في حال واجهت أي أعراض غير معتادة، يرجى التواصل فوراً مع الصيدلي المشرف أو طبيبك المعالج.
+      </span>
+    </div>
+
+  </div>
+
+  <!-- Floating Quick WhatsApp Button -->
+  <a href="https://wa.me/966541932559" id="floatingWhatsAppBtn" target="_blank" class="floating-whatsapp-btn" title="تواصل مع الصيدلي عبر واتساب">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <!-- Load Separate & Master Patient Education Datasets -->
+  <script src="lexidrugs_patient_education.js"></script>
+  <script src="dynamedex_patient_education.js"></script>
+  <script src="patient_education_data.js"></script>
+
+  <script>
+    // State
+    let currentLang = 'ar';
+    let currentDrug = null;
+    let scannedProduct = null;
+    let translationCache = new Map();
+
+    const SALT_STOP_WORDS = /\b(monosodium|disodium|trisodium|sodium|potassium|calcium|hydrochloride|hcl|maleate|fumarate|sulfate|succinate|tartrate|citrate|acetate|phosphate|nitrate|trihydrate|dihydrate|monohydrate|anhydrous|hydrate|trihydr|trihyd|susp|tablet|tablets|capsule|capsules|oral|solution|injection|drops|syrup|once|weekly|daily|mg|ml|mcg|gm|g)\b/gi;
+
+    function cleanStringForMatching(str) {
+      if (!str) return '';
+      return str.toLowerCase()
+        .replace(SALT_STOP_WORDS, ' ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, '-');
+    }
+
+    function resolvePatientEduDrug(rawActive, rawTrade) {
+      const db = window.PATIENT_EDUCATION_DATA;
+      if (!db) return null;
+
+      const candidates = [rawActive, rawTrade].filter(Boolean);
+
+      // 1. Direct slug or key match
+      for (const c of candidates) {
+        const rawSlug = c.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const cleanSlug = cleanStringForMatching(c);
+        if (db[rawSlug]) return db[rawSlug];
+        if (db[cleanSlug]) return db[cleanSlug];
+      }
+
+      // 2. Synonyms match (exact)
+      for (const c of candidates) {
+        const rawClean = c.toLowerCase().trim();
+        const cleanSlug = cleanStringForMatching(c);
+        for (const [k, v] of Object.entries(db)) {
+          if (v.slug === cleanSlug || (v.name && v.name.toLowerCase() === rawClean)) return v;
+          if (v.synonyms && (v.synonyms.includes(rawClean) || v.synonyms.includes(cleanSlug))) {
+            return v;
+          }
+        }
+      }
+
+      // 3. Substring slug & token matching
+      for (const c of candidates) {
+        const cleanSlug = cleanStringForMatching(c);
+        const tokens = cleanSlug.split('-').filter(t => t.length >= 4);
+        
+        for (const tok of tokens) {
+          if (db[tok]) return db[tok];
+          for (const [k, v] of Object.entries(db)) {
+            if (k === tok || k.startsWith(tok) || (v.name && v.name.toLowerCase().startsWith(tok))) {
+              return v;
+            }
+          }
+        }
+
+        if (cleanSlug.length >= 4) {
+          for (const [k, v] of Object.entries(db)) {
+            if (k.includes(cleanSlug) || cleanSlug.includes(k)) {
+              return v;
+            }
+          }
+        }
+      }
+
+      // 4. Trade name substring match in synonyms
+      if (rawTrade) {
+        const tradeTokens = rawTrade.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(t => t.length >= 4);
+        for (const tok of tradeTokens) {
+          for (const [k, v] of Object.entries(db)) {
+            if (v.synonyms) {
+              for (const s of v.synonyms) {
+                if (s.includes(tok)) return v;
+              }
+            }
+          }
+        }
+      }
+
+      return null;
+    }
+
+    // Direct 2nd-Person Patient Voice Reformatter for English
+    function transformToPatientVoiceEn(text) {
+      if (!text) return '';
+      let t = text.trim();
+      t = t.replace(/^advise patient to report\s+/i, 'Report to your doctor immediately if you experience ');
+      t = t.replace(/^advise patient to avoid\s+/i, 'Avoid ');
+      t = t.replace(/^advise patient to\s+/i, 'Be sure to ');
+      t = t.replace(/^tell patient to avoid\s+/i, 'Avoid ');
+      t = t.replace(/^tell patient to report\s+/i, 'Report to your doctor if you experience ');
+      t = t.replace(/^tell patient to take\s+/i, 'Take ');
+      t = t.replace(/^tell patient to\s+/i, 'Please ');
+      t = t.replace(/^instruct patient to report\s+/i, 'Report to your doctor if you experience ');
+      t = t.replace(/^instruct patient to take\s+/i, 'Take ');
+      t = t.replace(/^instruct patient not to\s+/i, 'Do not ');
+      t = t.replace(/^instruct patient to\s+/i, 'Please ');
+      t = t.replace(/^warn patient to report\s+/i, 'Contact your doctor right away if you notice ');
+      t = t.replace(/^warn patient of\s+/i, 'Be aware of ');
+      t = t.replace(/^warn patient\s+/i, 'Notice: ');
+      t = t.replace(/^counsel patient to report\s+/i, 'Report to your doctor if you notice ');
+      t = t.replace(/^counsel patient to\s+/i, 'Make sure to ');
+      t = t.replace(/^counsel to optimize\s+/i, 'Maintain healthy lifestyle measures, including ');
+      t = t.replace(/^patient should not take\s+/i, 'Do not take ');
+      t = t.replace(/^patient should avoid\s+/i, 'Avoid ');
+      t = t.replace(/^patient should expect to\s+/i, 'You should expect to ');
+      t = t.replace(/^patient should\s+/i, 'You should ');
+      t = t.replace(/^patient must\s+/i, 'You must ');
+      return t;
+    }
+
+    // Direct 2nd-Person Patient Voice Reformatter for Arabic
+    function transformToPatientVoiceAr(text) {
+      if (!text) return '';
+      let t = text.trim();
+      t = t.replace(/^تقديم المشورة للمريض للإبلاغ عن\s*/i, 'أبلغ طبيبك المعالج فوراً في حال ظهور ');
+      t = t.replace(/^تقديم المشورة للمريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^تقديم المشورة للمريض\s*/i, 'احرص على ');
+      t = t.replace(/^حذر المريض من الإبلاغ عن\s*/i, 'أبلغ طبيبك فوراً في حال شعرت بـ ');
+      t = t.replace(/^حذر المريض من مضغ أو بلع أو مص\s*/i, 'لا تمضغ أو تسحق أو تمص ');
+      t = t.replace(/^حذر المريض من مضغ أو بلع\s*/i, 'لا تمضغ أو تبلع ');
+      t = t.replace(/^حذر المريض من مضغ\s*/i, 'لا تمضغ ');
+      t = t.replace(/^حذر المريض من\s*/i, 'تجنب تماماً ');
+      t = t.replace(/^حذر المريض\s*/i, 'تنبيه هـام: ');
+      t = t.replace(/^يُنصح المريض بتناوله فقط عند الاستيقاظ\s*/i, 'تناول الدواء في الصباح فور الاستيقاظ فقط ');
+      t = t.replace(/^يُنصح المريض بتناوله\s*/i, 'تناول الدواء ');
+      t = t.replace(/^ينصح المريض بتناوله\s*/i, 'تناول الدواء ');
+      t = t.replace(/^يُنصح المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^ينصح المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^يُنصح المريض\s*/i, 'احرص على ');
+      t = t.replace(/^ينصح المريض\s*/i, 'احرص على ');
+      t = t.replace(/^اطلب من المريض تناول الدواء\s*/i, 'تناول الدواء ');
+      t = t.replace(/^اطلب من المريض تناول\s*/i, 'تناول ');
+      t = t.replace(/^اطلب من المريض الإبلاغ عن\s*/i, 'أبلغ طبيبك المعالج في حال ظهور ');
+      t = t.replace(/^اطلب من المريض عدم\s*/i, 'لا تقم بـ ');
+      t = t.replace(/^اطلب من المريض\s*/i, 'احرص على ');
+      t = t.replace(/^انصح المريض بعدم الاستلقاء\s*/i, 'تجنب الاستلقاء ');
+      t = t.replace(/^انصح المريض بعدم\s*/i, 'تجنب ');
+      t = t.replace(/^انصح المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^انصح المريض\s*/i, 'احرص على ');
+      t = t.replace(/^أخبر المريض بتجنب\s*/i, 'تجنب ');
+      t = t.replace(/^أخبر المريض بالإبلاغ عن\s*/i, 'أبلغ الطبيب عن ');
+      t = t.replace(/^أخبر المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^أخبر المريض\s*/i, 'احرص على ');
+      t = t.replace(/^يجب على المريض تجنب\s*/i, 'يجب عليك تجنب ');
+      t = t.replace(/^يجب على المريض عدم\s*/i, 'يجب عليك عدم ');
+      t = t.replace(/^يجب على المريض\s*/i, 'يجب عليك ');
+      t = t.replace(/^يجب ألا يتناول المريض\s*/i, 'لا تتناول ');
+      t = t.replace(/^يجب أن يتوقع المريض\s*/i, 'من المتوقع حدوث ');
+      t = t.replace(/^قد تعطى لك لأسباب أخرى\s*/i, 'قد يُصرف لك هذا الدواء لأسباب أخرى بناءً على تشخيص الطبيب.');
+      return t;
+    }
+
+    // Fast In-Memory Pharmaceutical Translation Map
+    const PHARMA_DICT = {
+      "What is this drug used for?": "ما هي استخدامات هذا الدواء؟",
+      "Medication Counseling": "إرشادات الاستخدام ونصائح هامة",
+      "Common Side Effects": "الآثار الجانبية الشائعة",
+      "Important Warnings": "تحذيرات هامة ومتى يجب مراجعة الطبيب",
+      "It is used to prevent or treat soft, brittle bones (osteoporosis).": "يُستخدم لعلاج والوقاية من هشاشة وترقق العظام وزيادة كثافة العظام.",
+      "It is used to treat Pagets disease.": "يُستخدم لعلاج مرض باجيت الذي يصيب العظام.",
+      "It may be given to you for other reasons. Talk with the doctor.": "قد يُصرف لك هذا الدواء لأسباب علاجية أخرى؛ استشر طبيبك لمزيد من التفاصيل.",
+      "It is used to treat constipation.": "يُستخدم لعلاج الإمساك وتسهيل حركة الأمعاء.",
+      "It is used as a laxative to clean out the colon before an exam.": "يُستخدم كمليّن لتفريغ وتنظيف القولون قبل الفحوصات الطبية أو المناظير.",
+      "It is used to treat high blood pressure.": "يُستخدم لخفض ضغط الدم المرتفع.",
+      "It is used to treat heart failure (weak heart).": "يُستخدم لعلاج قصور عضلة القلب (ضعف القلب).",
+      "It is used to treat bacterial infections.": "يُستخدم لعلاج العدوى والالتهابات البكتيرية.",
+      "It is used to ease pain and fever.": "يُستخدم لتسكين الآلام وخفض درجة الحرارة.",
+      "Abdominal pain": "ألم في البطن",
+      "Abdominal cramps": "مغص وتقلصات في المعدة والبطن",
+      "Rectal burning": "شعور بحرقة أو وخز في منطقة الشرج",
+      "Diarrhea": "إسهال",
+      "Constipation": "إمساك",
+      "Nausea": "غثيان",
+      "Vomiting": "قيء",
+      "Headache": "صداع",
+      "Dizziness": "دوخة ودوار",
+      "Joint pain": "ألم في المفاصل",
+      "Fatigue": "تعب وإرهاق عام"
+    };
+
+    try {
+      const stored = localStorage.getItem("rx_patient_trans_cache");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        for (let k in parsed) translationCache.set(k, parsed[k]);
+      }
+    } catch(e) {}
+
+    function saveTransCache() {
+      try {
+        const obj = {};
+        let count = 0;
+        for (let [k, v] of translationCache.entries()) {
+          obj[k] = v;
+          if (++count > 1500) break;
+        }
+        localStorage.setItem("rx_patient_trans_cache", JSON.stringify(obj));
+      } catch(e) {}
+    }
+
+    async function translateText(text, targetLang) {
+      if (!text || typeof text !== 'string') return text;
+      const clean = text.trim();
+      if (!clean) return clean;
+      
+      const hasArabic = /[\u0600-\u06FF]/.test(clean);
+      if (targetLang === 'ar' && hasArabic) return transformToPatientVoiceAr(clean);
+      if (targetLang === 'en' && !hasArabic) return transformToPatientVoiceEn(clean);
+
+      if (targetLang === 'ar') {
+        if (PHARMA_DICT[clean]) return transformToPatientVoiceAr(PHARMA_DICT[clean]);
+        if (translationCache.has(clean)) return transformToPatientVoiceAr(translationCache.get(clean));
+
+        // Format English prompt first before translation to ensure patient voice
+        const patientClean = transformToPatientVoiceEn(clean);
+
+        try {
+          const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=" + encodeURIComponent(patientClean);
+          const resp = await fetch(url);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data && data[0]) {
+              let res = data[0].map(x => x[0]).join('');
+              if (res) {
+                res = transformToPatientVoiceAr(res);
+                translationCache.set(clean, res);
+                saveTransCache();
+                return res;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Translation failed:", e);
+        }
+      }
+      return targetLang === 'ar' ? transformToPatientVoiceAr(clean) : transformToPatientVoiceEn(clean);
+    }
+
+    function getUrlParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      let val = urlParams.get(name);
+      if (!val && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        val = hashParams.get(name);
+      }
+      return val;
+    }
+
+    function updateWhatsAppLinks() {
+      const activeName = currentDrug ? currentDrug.name : '';
+      const tradeTxt = scannedProduct ? (scannedProduct.tradeAr || scannedProduct.trade || '') : '';
+      
+      const greeting = currentLang === 'ar' 
+        ? `السلام عليكم دكتور محمد، أستشيرك بخصوص دوائي: ${tradeTxt} (${activeName})`
+        : `Hello Dr. Mohamed, I have a question regarding my medication: ${tradeTxt} (${activeName})`;
+
+      const waUrl = `https://wa.me/966541932559?text=${encodeURIComponent(greeting)}`;
+      
+      const btnTop = document.getElementById("btnWhatsAppConsult");
+      if (btnTop) btnTop.href = waUrl;
+      const btnFloat = document.getElementById("floatingWhatsAppBtn");
+      if (btnFloat) btnFloat.href = waUrl;
+    }
+
+    async function renderDrug() {
+      if (!currentDrug) {
+        document.getElementById("drugNameMain").textContent = "لم يتم العثور على المادة الفعالة";
+        document.getElementById("drugNameSub").textContent = "يرجى البحث بالاسم التجاري أو العلمي أعلاه";
+        hideAllSections();
+        return;
+      }
+
+      document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById("lblLang").textContent = currentLang === 'ar' ? 'English' : 'العربية';
+
+      // Scanned product banner (Direct medication name, 6-digit code omitted)
+      const bannerEl = document.getElementById("scannedProductBanner");
+      if (scannedProduct && (scannedProduct.trade || scannedProduct.tradeAr)) {
+        bannerEl.style.display = "flex";
+        const tradeTxt = (currentLang === 'ar' && scannedProduct.tradeAr) ? scannedProduct.tradeAr : (scannedProduct.trade || scannedProduct.tradeAr);
+        document.getElementById("scannedTradeName").textContent = tradeTxt;
+        const tag = document.getElementById("scannedLabelTag");
+        if (tag) tag.textContent = (currentLang === 'ar') ? 'الدواء المصروف لك' : 'Prescribed Medication';
+      } else {
+        bannerEl.style.display = "none";
+      }
+
+      // Pharmacist Card & Section Localization
+      if (currentLang === 'ar') {
+        document.getElementById("uiHeaderTitle").textContent = "دليل تثقيف المريض";
+        document.getElementById("uiHeaderSubtitle").textContent = "إرشادات استخدام دوائك بطريقة صحيحة وآمنة";
+        document.getElementById("phNameLabel").textContent = "د. محمد خليف | صيدلي استشاري";
+        document.getElementById("phTitleLabel").textContent = "استشارات دوائية ومتابعة الخطة العلاجية";
+        document.getElementById("phCalloutLabel").textContent = "لديك أي استفسار حول دوائك؟ تواصل معي مباشرة عبر أيقونة واتساب";
+        document.getElementById("hdrUses").textContent = "ما هي دواعي استخدام هذا الدواء؟";
+        document.getElementById("hdrCounseling").textContent = "نصائح وإرشادات الاستخدام الهامة لك";
+        document.getElementById("hdrSideEffects").textContent = "الآثار الجانبية الشائعة";
+        document.getElementById("hdrWarnings").textContent = "تحذيرات هامة ومتى يجب مراجعة الطبيب";
+        document.getElementById("pillUses").textContent = "دواعي الاستعمال";
+        document.getElementById("pillCounseling").textContent = "إرشادات الاستخدام";
+        document.getElementById("pillSideEffects").textContent = "الآثار الجانبية";
+        document.getElementById("pillWarnings").textContent = "تحذيرات هامة";
+        document.getElementById("lblDisclaimer").textContent = "هذا الدليل مخصص لتثقيفك وإرشادك للاستخدام الصحيح للدواء. في حال واجهت أي أعراض غير معتادة، يرجى التواصل فوراً مع الصيدلي الاستشاري أو طبيبك المعالج.";
+      } else {
+        document.getElementById("uiHeaderTitle").textContent = "Patient Medication Guide";
+        document.getElementById("uiHeaderSubtitle").textContent = "Proper and Safe Guidelines for Your Treatment";
+        document.getElementById("phNameLabel").textContent = "Ph. Mohamed Kholeif | Consultant Pharmacist";
+        document.getElementById("phTitleLabel").textContent = "Medication Counseling & Therapy Management";
+        document.getElementById("phCalloutLabel").textContent = "Have any questions about your medication? Contact me directly via WhatsApp icon";
+        document.getElementById("hdrUses").textContent = "What is this drug used for?";
+        document.getElementById("hdrCounseling").textContent = "Important Usage Guidelines for You";
+        document.getElementById("hdrSideEffects").textContent = "Common Side Effects";
+        document.getElementById("hdrWarnings").textContent = "Important Warnings / When to Contact Doctor";
+        document.getElementById("pillUses").textContent = "Uses & Indications";
+        document.getElementById("pillCounseling").textContent = "How to Use";
+        document.getElementById("pillSideEffects").textContent = "Side Effects";
+        document.getElementById("pillWarnings").textContent = "Warnings";
+        document.getElementById("lblDisclaimer").textContent = "This guide is intended for patient education and safe use. If you experience any unusual symptoms, please contact your consultant pharmacist or treating physician immediately.";
+      }
+
+      document.getElementById("drugNameMain").textContent = currentDrug.name;
+      document.getElementById("drugNameSub").textContent = currentDrug.slug.replace(/-/g, ' ').toUpperCase();
+
+      updateWhatsAppLinks();
+
+      // Always show the best combined patient data (Clean, no source tabs)
+      let lexiObj = (window.LEXIDRUGS_PATIENT_EDUCATION && window.LEXIDRUGS_PATIENT_EDUCATION[currentDrug.slug]) ? window.LEXIDRUGS_PATIENT_EDUCATION[currentDrug.slug] : (currentDrug.lexidrugs || {});
+      let dynaObj = (window.DYNAMEDEX_PATIENT_EDUCATION && window.DYNAMEDEX_PATIENT_EDUCATION[currentDrug.slug]) ? window.DYNAMEDEX_PATIENT_EDUCATION[currentDrug.slug] : (currentDrug.dynamedex || {});
+
+      let sourceData = currentDrug.mix || {
+        uses: lexiObj.uses || [],
+        counseling: dynaObj.counseling || [],
+        sideEffects: lexiObj.sideEffects || [],
+        warnings: lexiObj.warnings || []
+      };
+
+      const transIndicator = document.getElementById("transIndicator");
+      if (currentLang === 'ar') transIndicator.style.display = "inline-flex";
+      else transIndicator.style.display = "none";
+
+      await Promise.all([
+        renderList("secUses", "listUses", sourceData.uses || [], "fas fa-check-circle"),
+        renderList("secCounseling", "listCounseling", sourceData.counseling || [], "fas fa-clipboard-check"),
+        renderList("secSideEffects", "listSideEffects", sourceData.sideEffects || [], "fas fa-exclamation-circle"),
+        renderList("secWarnings", "listWarnings", sourceData.warnings || [], "fas fa-triangle-exclamation", true)
+      ]);
+
+      transIndicator.style.display = "none";
+    }
+
+    async function renderList(secId, listId, items, iconClass, isWarning = false) {
+      const secEl = document.getElementById(secId);
+      const listEl = document.getElementById(listId);
+      listEl.innerHTML = "";
+
+      if (!items || items.length === 0) {
+        secEl.style.display = "none";
+        return;
+      }
+      secEl.style.display = "block";
+
+      const renderedItems = await Promise.all(items.map(async (item) => {
+        let text = item;
+        if (currentLang === 'ar') {
+          text = await translateText(item, 'ar');
+        } else {
+          text = transformToPatientVoiceEn(item);
+        }
+        return text;
+      }));
+
+      renderedItems.forEach(text => {
+        const li = document.createElement("li");
+        li.className = "point-item" + (isWarning ? " warning-item" : "");
+        li.setAttribute("dir", "auto");
+        li.innerHTML = `<i class="${iconClass}"></i><span>${escapeHtml(text)}</span>`;
+        listEl.appendChild(li);
+      });
+    }
+
+    function hideAllSections() {
+      ['secUses', 'secCounseling', 'secSideEffects', 'secWarnings'].forEach(id => {
+        document.getElementById(id).style.display = "none";
+      });
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      renderDrug();
+    }
+
+    function jumpToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.classList.add('section-highlight-pulse');
+      setTimeout(() => el.classList.remove('section-highlight-pulse'), 1400);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Init
+    window.addEventListener("DOMContentLoaded", () => {
+      const drugParam = getUrlParam("drug") || getUrlParam("d") || "";
+      const tradeParam = getUrlParam("trade") || "";
+      const tradeArParam = getUrlParam("tradeAr") || "";
+      const codeParam = getUrlParam("code") || "";
+      const langParam = getUrlParam("lang") || "ar";
+
+      if (tradeParam || tradeArParam || codeParam) {
+        scannedProduct = {
+          trade: tradeParam,
+          tradeAr: tradeArParam,
+          code: codeParam
+        };
+      }
+
+      currentLang = langParam;
+      currentDrug = resolvePatientEduDrug(drugParam, tradeParam) || resolvePatientEduDrug("alendronate") || (window.PATIENT_EDUCATION_DATA ? Object.values(window.PATIENT_EDUCATION_DATA)[0] : null);
+      
+      renderDrug();
+    });
+  </script>
+</body>
+</html>

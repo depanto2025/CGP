@@ -20,6 +20,12 @@
   <script src="dynamedex_instructions.js"></script>
   <!-- Lexi-Drugs Administration Instructions Database (3,012 Drugs) -->
   <script src="lexidrugs_instructions.js"></script>
+  <!-- QR Code Generator Library (Offline, Fast & Thermal-Optimized) -->
+  <script src="qrcode.min.js"></script>
+  <!-- Full Patient Education Database (3,632 Drugs - Dynamedex & Lexidrugs & Intelligent Mix) -->
+  <script src="lexidrugs_patient_education.js"></script>
+  <script src="dynamedex_patient_education.js"></script>
+  <script src="patient_education_data.js"></script>
     <!-- External script link -->
   <script src="pictograms.js"></script>
   <!-- Inline Fallback for GitHub / Vercel deployments (guarantees icons load even if pictograms.js wasn't uploaded) -->
@@ -2052,11 +2058,14 @@ function detectInstructionIcon(text) {
 
     .label-items-list {
       flex: 1;
-      padding: 4px 0;
+      min-height: 0;
+      padding: 2px 0;
       display: flex;
       flex-direction: column;
       gap: 3.5px;
       justify-content: center;
+      overflow: hidden;
+      margin-bottom: 2px;
     }
 
     /* Monochrome Vector Pictograms & Numbered Badges */
@@ -2140,6 +2149,7 @@ function detectInstructionIcon(text) {
       font-size: 7px;
       font-weight: 700;
       color: #333333;
+      flex-shrink: 0;
     }
 
     .preview-modal-footer {
@@ -2439,11 +2449,13 @@ function detectInstructionIcon(text) {
     }
 
     .print-label-page .label-items-list {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      overflow: hidden;
+      flex: 1 !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      overflow: hidden !important;
+      margin-bottom: 1.5mm !important;
     }
 
     .print-label-page .label-point-row {
@@ -2491,13 +2503,14 @@ function detectInstructionIcon(text) {
     }
 
     .print-label-page .label-footer-bar {
-      border-top: 1px dashed #444;
-      padding-top: 2px;
-      font-size: 7pt;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
+      border-top: 1px dashed #444 !important;
+      padding-top: 1.5px !important;
+      font-size: 7pt !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      width: 100% !important;
+      flex-shrink: 0 !important;
     }
   }
 
@@ -2614,6 +2627,453 @@ function detectInstructionIcon(text) {
         flex-direction: column;
         align-items: stretch;
         gap: 8px;
+      }
+    }
+
+  
+    /* =========================================================
+       Patient Education Modal & QR Styles (UI / UX Premium)
+       ========================================================= */
+    .btn-patient-edu-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+    .btn-patient-edu-trigger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    }
+
+    .patient-edu-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .patient-edu-modal-dialog {
+      background: #ffffff;
+      border-radius: 20px;
+      width: 96vw;
+      max-width: 1350px;
+      height: 94vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      border: 2px solid #0284c7;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.97) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .patient-edu-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #334155;
+    }
+
+    .patient-edu-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .patient-edu-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    .patient-edu-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .patient-edu-title-row h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin: 0;
+      color: #f8fafc;
+    }
+
+    .patient-edu-badge {
+      background: rgba(2, 132, 199, 0.25);
+      border: 1px solid #0284c7;
+      color: #38bdf8;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 800;
+    }
+
+    .patient-edu-sub {
+      font-size: 12.5px;
+      color: #94a3b8;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .patient-edu-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .patient-edu-lang-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .patient-edu-lang-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Tabs (3 Boxes) */
+    .patient-edu-nav-tabs {
+      display: flex;
+      background: #f1f5f9;
+      padding: 8px 24px;
+      gap: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .edu-tab-btn {
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #64748b;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .edu-tab-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .patient-edu-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    .patient-edu-main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .patient-edu-trans-bar {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edu-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .edu-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .edu-card-header i {
+      font-size: 18px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-bg-blue i { background: #dbeafe; color: #1d4ed8; }
+    .icon-bg-green i { background: #dcfce7; color: #15803d; }
+    .icon-bg-orange i { background: #fef3c7; color: #b45309; }
+    .icon-bg-red i { background: #fee2e2; color: #b91c1c; }
+
+    .edu-card-header h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .edu-card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 0;
+      margin: 0;
+    }
+
+    .edu-card-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #1e293b;
+      border: 1px solid #f1f5f9;
+      unicode-bidi: plaintext;
+      text-align: start;
+    }
+
+    .edu-card-item.item-warning {
+      background: #fff5f5;
+      border-color: #fecaca;
+      border-right: 4px solid #ef4444;
+    }
+    body[dir="ltr"] .edu-card-item.item-warning {
+      border-right: 1px solid #fecaca;
+      border-left: 4px solid #ef4444;
+    }
+
+    .edu-card-item i {
+      margin-top: 4px;
+      font-size: 13px;
+      flex-shrink: 0;
+      color: #0284c7;
+    }
+    .edu-card-item.item-warning i {
+      color: #ef4444;
+    }
+
+    /* Sidebar Area */
+    .patient-edu-sidebar {
+      width: 340px;
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+    }
+    body[dir="ltr"] .patient-edu-sidebar {
+      border-right: none;
+      border-left: 1px solid #e2e8f0;
+    }
+
+    .patient-qr-box {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .qr-box-header {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .qr-canvas-wrapper {
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      min-height: 140px;
+    }
+    .qr-canvas-wrapper canvas, .qr-canvas-wrapper img {
+      display: block;
+      width: 130px;
+      height: 130px;
+    }
+
+    .qr-caption {
+      font-size: 11.5px;
+      color: #64748b;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .qr-url-row {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .qr-url-input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 11px;
+      background: #ffffff;
+      color: #475569;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .qr-actions-col {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn-qr-action {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-qr-open {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .btn-qr-open:hover { background: #0369a1; }
+
+    .btn-qr-copy {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-qr-copy:hover { background: #e2e8f0; }
+
+    .btn-qr-print {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .btn-qr-print:hover { background: #059669; }
+
+    .patient-edu-tips-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    /* Label QR Chip Style for 3" x 2" Sticker (Compact & Perfectly Proportionate) */
+    .label-qr-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .label-qr-chip img {
+      width: 9.5mm !important;
+      height: 9.5mm !important;
+      image-rendering: pixelated;
+      background: #fff;
+      padding: 0.5px;
+      border: 0.5px solid #000;
+      display: block;
+    }
+    .screen-label-card .label-qr-chip img {
+      width: 36px !important;
+      height: 36px !important;
+    }
+
+    @media (max-width: 900px) {
+      .patient-edu-modal-dialog {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+      }
+      .patient-edu-body {
+        flex-direction: column;
+      }
+      .patient-edu-sidebar {
+        width: 100%;
+        border-right: none;
+        border-top: 1px solid #e2e8f0;
       }
     }
 
@@ -2808,6 +3268,9 @@ function detectInstructionIcon(text) {
                 🇬🇧 English
               </button>
             </div>
+            <button type="button" id="btnTopOpenPatientEdu" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="فتح تثقيف المريض الشامل وقسم الـ Patient Education">
+              <i class="fas fa-graduation-cap"></i> تثقيف المريض (Patient Education)
+            </button>
           </div>
         </div>
 
@@ -2824,6 +3287,9 @@ function detectInstructionIcon(text) {
           </div>
           <div class="active-detected-right">
             <span id="detectedClinicalClass" class="active-class-pill">Bisphosphonate / Osteoporosis</span>
+            <button type="button" id="btnOpenPatientEducation" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="فتح تثقيف المريض الشامل وقسم الـ Patient Education">
+              <i class="fas fa-graduation-cap"></i> تثقيف المريض (Patient Education)
+            </button>
           </div>
         </div>
 
@@ -2913,6 +3379,13 @@ function detectInstructionIcon(text) {
           <span id="opacityValLabel">12%</span>
         </div>
 
+        <div class="toolbar-option" style="background: rgba(2, 132, 199, 0.1); padding: 5px 12px; border-radius: 8px; border: 1.5px solid #0284c7;">
+          <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:800; font-size:12px; color:#0f172a;">
+            <input type="checkbox" id="modalEnableQr" checked onchange="renderModalLabels()">
+            <i class="fas fa-qrcode" style="color:#0284c7; font-size:14px;"></i>
+            <span>طباعة QR التثقيف الدوائي</span>
+          </label>
+        </div>
         <div class="toolbar-option">
           <strong id="totalPagesBadge" style="color:var(--orange-600)">Total: 1 Label</strong>
         </div>
@@ -2996,6 +3469,141 @@ function detectInstructionIcon(text) {
   </div>
 
   <!-- Hidden container used strictly by @media print -->
+  
+  <!-- =========================================================
+       Patient Education Modal (Full-Screen Popup with 3 Boxes & Live QR)
+       ========================================================= -->
+  <div id="patientEduModal" class="patient-edu-modal-backdrop">
+    <div class="patient-edu-modal-dialog">
+      
+      <!-- Modal Header -->
+      <div class="patient-edu-header">
+        <div class="patient-edu-header-left">
+          <div class="patient-edu-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div>
+            <div class="patient-edu-title-row">
+              <h3 id="patientEduHeaderTitle">تثقيف وإرشادات المريض (Patient Education)</h3>
+              <span id="patientEduActiveBadge" class="patient-edu-badge">Active Profile</span>
+            </div>
+            <p id="patientEduHeaderSubtitle" class="patient-edu-sub">دليل شامل مبني على الأدلة السريرية من Dynamedex و Lexidrugs</p>
+          </div>
+        </div>
+        <div class="patient-edu-header-right">
+          <button type="button" id="btnTogglePatientEduLang" class="patient-edu-lang-btn" onclick="togglePatientEduLang()">
+            <i class="fas fa-globe"></i>
+            <span id="lblPatientEduLang">English</span>
+          </button>
+          <button type="button" class="btn-close-modal" onclick="closePatientEducationModal()">✕</button>
+        </div>
+      </div>
+
+      <!-- Source Selector Tabs (3 Boxes: Mix / Dynamedex / Lexidrugs) -->
+      <div class="patient-edu-nav-tabs">
+        <button type="button" id="tabEduMix" class="edu-tab-btn active" onclick="setPatientEduSource('mix')">
+          <i class="fas fa-layer-group" style="color:#f59e0b"></i>
+          <span>الدمج الشامل (Mix Box - موصى به)</span>
+        </button>
+        <button type="button" id="tabEduDyna" class="edu-tab-btn" onclick="setPatientEduSource('dynamedex')">
+          <i class="fas fa-stethoscope" style="color:#0284c7"></i>
+          <span>تعليمات دايناميدكس (Dynamedex Box)</span>
+        </button>
+        <button type="button" id="tabEduLexi" class="edu-tab-btn" onclick="setPatientEduSource('lexidrugs')">
+          <i class="fas fa-book-medical" style="color:#10b981"></i>
+          <span>تعليمات اليكسي دراج (Lexidrugs Box)</span>
+        </button>
+      </div>
+
+      <!-- Modal Body Split -->
+      <div class="patient-edu-body">
+        
+        <!-- Main Content Area (Scrollable Cards) -->
+        <div class="patient-edu-main-content">
+          <div id="patientEduTransStatus" class="patient-edu-trans-bar" style="display:none;">
+            <i class="fas fa-sync fa-spin"></i>
+            <span>جاري الترجمة الفورية للمحتوى باللغة العربية...</span>
+          </div>
+
+          <!-- Section 1: Uses / Indications -->
+          <div class="edu-card" id="cardEduUses">
+            <div class="edu-card-header icon-bg-blue">
+              <i class="fas fa-bullseye"></i>
+              <h4 id="hdrEduUses">ما هي دواعي واستخدامات هذا الدواء؟ (Uses)</h4>
+            </div>
+            <ul class="edu-card-list" id="listEduUses"></ul>
+          </div>
+
+          <!-- Section 2: Clinical Counseling & Administration Tips -->
+          <div class="edu-card" id="cardEduCounseling">
+            <div class="edu-card-header icon-bg-green">
+              <i class="fas fa-clipboard-check"></i>
+              <h4 id="hdrEduCounseling">نصائح الاستخدام والإرشادات الصيدلانية (Medication Counseling)</h4>
+            </div>
+            <ul class="edu-card-list" id="listEduCounseling"></ul>
+          </div>
+
+          <!-- Section 3: Common Side Effects -->
+          <div class="edu-card" id="cardEduSideEffects">
+            <div class="edu-card-header icon-bg-orange">
+              <i class="fas fa-exclamation-circle"></i>
+              <h4 id="hdrEduSideEffects">الآثار الجانبية الشائعة (Side Effects)</h4>
+            </div>
+            <ul class="edu-card-list" id="listEduSideEffects"></ul>
+          </div>
+
+          <!-- Section 4: Warnings / Seek Medical Attention -->
+          <div class="edu-card" id="cardEduWarnings">
+            <div class="edu-card-header icon-bg-red">
+              <i class="fas fa-triangle-exclamation"></i>
+              <h4 id="hdrEduWarnings">تحذيرات هامة ومتى يجب استشارة الطبيب فوراً (Warnings & Precautions)</h4>
+            </div>
+            <ul class="edu-card-list" id="listEduWarnings"></ul>
+          </div>
+        </div>
+
+        <!-- Sidebar / QR Code & Actions Area -->
+        <aside class="patient-edu-sidebar">
+          <div class="patient-qr-box">
+            <div class="qr-box-header">
+              <i class="fas fa-qrcode"></i>
+              <span>رمز التثقيف الدوائي المباشر (QR Code)</span>
+            </div>
+            <div class="qr-canvas-wrapper" id="patientEduQrContainer">
+              <!-- Rendered QR -->
+            </div>
+            <div class="qr-caption" id="qrCaptionText">امسح بكاميرا الهاتف لفتح دليل المريض المباشر</div>
+            
+            <div class="qr-url-row">
+              <input type="text" id="patientEduQrUrl" readonly class="qr-url-input">
+            </div>
+
+            <div class="qr-actions-col">
+              <button type="button" class="btn-qr-action btn-qr-open" onclick="openPatientEduPublicPage()">
+                <i class="fas fa-external-link-alt"></i> فتح صفحة المريض (عرض تجريبي)
+              </button>
+              <button type="button" class="btn-qr-action btn-qr-copy" onclick="copyPatientEduLink()">
+                <i class="fas fa-copy"></i> نسخ الرابط للمريض
+              </button>
+              <button type="button" class="btn-qr-action btn-qr-print" onclick="printPatientEducationA4()">
+                <i class="fas fa-print"></i> طباعة الدليل كامل (ورقة A4 / PDF)
+              </button>
+            </div>
+          </div>
+
+          <div class="patient-edu-tips-box">
+            <div style="font-weight:800; margin-bottom:4px; color:var(--navy-900); display:flex; align-items:center; gap:6px;">
+              <i class="fas fa-shield-alt" style="color:var(--emerald-600)"></i> خصوصية وأمان الرابط:
+            </div>
+            <div style="font-size:11.5px; line-height:1.5; color:var(--text-muted);">
+              هذا الرابط مستقل تماماً، لا يكشف أي مسارات أو أكواد خاصة بالنظام الداخلي للصيدلية أو شاشات الطباعة، بل يعرض فقط واجهة تثقيفية موثقة وأنيقة للمريض.
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </div>
+
   <div id="printExecutionSandbox"></div>
 
   <!-- =========================================================
@@ -4778,20 +5386,20 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
     }
 
     function paginateInstructionsSmart(instructions, options = {}) {
-      const { maxPerLabelVal = "auto", isRtl = true } = options;
+      const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
 
       // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card, KEEP ON 1 CARD!
-      if (maxPerLabelVal === "all" || maxPerLabelVal === "auto") {
-        const totalLinesAt75 = calculateTotalLinesFullWidth(instructions, 7.5, isRtl);
-        if (totalLinesAt75 <= 11.5 || maxPerLabelVal === "all") {
-          return [instructions];
-        }
+      // If QR is enabled, threshold is 9.2 lines so QR has room without cramping.
+      const singlePageMaxLines = enableQr ? 9.2 : 11.2;
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && calculateTotalLinesFullWidth(instructions, 7.5, isRtl) <= singlePageMaxLines)) {
+        return [instructions];
       }
 
       // 2. If user explicitly chooses fixed number of points (e.g. 1, 2, 3, 4 points)
       const MAX_POINTS_LIMIT = (maxPerLabelVal !== "auto" && maxPerLabelVal !== "all") 
         ? parseInt(maxPerLabelVal) 
         : 99;
+      // In multi-card labels, earlier cards have NO QR, so max lines capacity is 10.5
       const MAX_SAFE_LINES = 10.5;
 
       const pages = [];
@@ -4819,9 +5427,46 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
       return pages;
     }
 
-    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = 8.5, isRtl = true) {
+    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = 8.5, isRtl = true, hasQr = false) {
       const base = parseFloat(userFontSize) || 8.5;
       const linesAtBase = calculateTotalLinesFullWidth(pageItems, base, isRtl);
+
+      if (hasQr) {
+        if (linesAtBase <= 3.0) {
+          return {
+            fontSize: Math.min(10.0, base + 0.8),
+            lineHeight: 1.30,
+            gap: 5.5,
+            padding: '3px 0',
+            justify: 'center'
+          };
+        } else if (linesAtBase <= 5.5) {
+          return {
+            fontSize: Math.min(9.0, base + 0.2),
+            lineHeight: 1.22,
+            gap: 3.5,
+            padding: '2.5px 0',
+            justify: 'flex-start'
+          };
+        } else if (linesAtBase <= 7.5) {
+          return {
+            fontSize: Math.min(8.2, base - 0.2),
+            lineHeight: 1.16,
+            gap: 2.0,
+            padding: '2px 0',
+            justify: 'flex-start'
+          };
+        } else {
+          // Packed / dense card with QR: scale down slightly so text NEVER overlaps QR code
+          return {
+            fontSize: 7.2,
+            lineHeight: 1.12,
+            gap: 1.5,
+            padding: '1px 0',
+            justify: 'flex-start'
+          };
+        }
+      }
 
       if (linesAtBase <= 3.5) {
         return {
@@ -4883,6 +5528,9 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
       let allCardsHtml = '';
       let grandTotalLabels = 0;
 
+      const enableQrEl = document.getElementById('modalEnableQr');
+      const enableQr = enableQrEl ? enableQrEl.checked : true;
+
       queueToPrint.forEach((batchItem) => {
         const med = batchItem.medication || currentMedication;
         const instructions = (batchItem.instructions || []).filter(i => i.checked);
@@ -4891,7 +5539,7 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
         const qty = Math.max(1, parseInt(batchItem.quantity) || 1);
 
         // Smart full-width pagination (Single Page Preferred)
-        const pages = paginateInstructionsSmart(instructions, { maxPerLabelVal, isRtl });
+        const pages = paginateInstructionsSmart(instructions, { maxPerLabelVal, isRtl, enableQr });
 
         const totalPages = pages.length;
         const displayTradeName = isRtl ? (med.tradeNameAr || med.tradeNameEn) : (med.tradeNameEn || med.tradeNameAr);
@@ -4903,8 +5551,18 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
 
           pages.forEach((pageItems, pIndex) => {
             grandTotalLabels++;
+            const isLastPage = (pIndex === totalPages - 1);
+            let qrDataUrl = "";
+            // Rule: In multi-card labels (totalPages > 1), QR code renders ONLY on the last card!
+            if (enableQr && isLastPage && typeof getDrugQrDataUrl === 'function') {
+              const matchedDrug = (typeof resolvePatientEduDrug === 'function') 
+                ? resolvePatientEduDrug(med.activeIngredient, med.tradeNameEn) 
+                : null;
+              const drugSlug = matchedDrug ? matchedDrug.slug : (med.activeIngredient || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+              qrDataUrl = getDrugQrDataUrl(drugSlug, med, currentLabelLang);
+            }
             const pageNum = pIndex + 1;
-            const cardStyle = getAdaptiveCardStyleFullWidth(pageItems, fontSize, isRtl);
+            const cardStyle = getAdaptiveCardStyleFullWidth(pageItems, fontSize, isRtl, !!qrDataUrl);
 
             let pointsHtml = "";
             pageItems.forEach((inst) => {
@@ -4946,9 +5604,34 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
                     <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden;">
                       ${pointsHtml}
                     </div>
-                    <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7pt;">
-                      <span>${displayFooter}</span>
-                      <span>${totalPages > 1 ? `${pageNum}/${totalPages}` : 'إرشادات الاستخدام'}</span>
+                    <div class="label-footer-bar" style="border-top: 1px dashed #444; padding-top: 2px; font-size: 7pt; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                      ${isRtl ? `
+                        ${qrDataUrl ? `
+                          <div class="label-qr-chip" style="margin-left: 6px;">
+                            <img src="${qrDataUrl}" alt="QR" />
+                            <span style="font-size: 5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
+                              امسح للتثقيف<br>الدوائي
+                            </span>
+                          </div>
+                        ` : ''}
+                        <div style="flex:1; overflow:hidden; font-size:6.8pt;">
+                          <span>${displayFooter}</span>
+                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                        </div>
+                      ` : `
+                        <div style="flex:1; overflow:hidden; font-size:6.8pt;">
+                          <span>${displayFooter}</span>
+                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                        </div>
+                        ${qrDataUrl ? `
+                          <div class="label-qr-chip" style="margin-left: 6px;">
+                            <span style="font-size: 5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
+                              Scan for<br>Patient Guide
+                            </span>
+                            <img src="${qrDataUrl}" alt="QR" />
+                          </div>
+                        ` : ''}
+                      `}
                     </div>
                   </div>
                 </div>
@@ -4973,8 +5656,33 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
                       ${pointsHtml}
                     </div>
                     <div class="label-footer-bar">
-                      <span>${displayFooter}</span>
-                      <span>${totalPages > 1 ? `${pageNum}/${totalPages}` : 'إرشادات الاستخدام'}</span>
+                      ${isRtl ? `
+                        ${qrDataUrl ? `
+                          <div class="label-qr-chip" style="margin-left: 6px;">
+                            <img src="${qrDataUrl}" alt="QR" />
+                            <span style="font-size: 5.5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
+                              امسح للتثقيف<br>الدوائي
+                            </span>
+                          </div>
+                        ` : ''}
+                        <div style="flex:1; overflow:hidden; font-size:7pt;">
+                          <span>${displayFooter}</span>
+                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                        </div>
+                      ` : `
+                        <div style="flex:1; overflow:hidden; font-size:7pt;">
+                          <span>${displayFooter}</span>
+                          ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                        </div>
+                        ${qrDataUrl ? `
+                          <div class="label-qr-chip" style="margin-left: 6px;">
+                            <span style="font-size: 5.5pt; font-weight: 800; line-height: 1.1; margin-right: 2px;">
+                              Scan for<br>Patient Guide
+                            </span>
+                            <img src="${qrDataUrl}" alt="QR" />
+                          </div>
+                        ` : ''}
+                      `}
                     </div>
                   </div>
                 </div>
@@ -5303,7 +6011,405 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
         }
       });
     });
-  </script>
+  
+
+    // =========================================================
+    // Patient Education & QR Code Generation Logic (Integrated & Intelligent)
+    // =========================================================
+    const patientEduQrCache = new Map();
+    let currentEduDrug = null;
+    let currentEduSource = 'mix'; // 'mix', 'dynamedex', 'lexidrugs'
+    let currentEduLang = 'ar';
+
+    const SALT_STOP_WORDS = /\b(monosodium|disodium|trisodium|sodium|potassium|calcium|hydrochloride|hcl|maleate|fumarate|sulfate|succinate|tartrate|citrate|acetate|phosphate|nitrate|trihydrate|dihydrate|monohydrate|anhydrous|hydrate|trihydr|trihyd|susp|tablet|tablets|capsule|capsules|oral|solution|injection|drops|syrup|once|weekly|daily|mg|ml|mcg|gm|g)\b/gi;
+
+    function cleanStringForMatching(str) {
+      if (!str) return '';
+      return str.toLowerCase()
+        .replace(SALT_STOP_WORDS, ' ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, '-');
+    }
+
+    function resolvePatientEduDrug(rawActive, rawTrade) {
+      const db = window.PATIENT_EDUCATION_DATA;
+      if (!db) return null;
+
+      const candidates = [rawActive, rawTrade].filter(Boolean);
+
+      // 1. Direct slug or key match
+      for (const c of candidates) {
+        const rawSlug = c.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const cleanSlug = cleanStringForMatching(c);
+        if (db[rawSlug]) return db[rawSlug];
+        if (db[cleanSlug]) return db[cleanSlug];
+      }
+
+      // 2. Synonyms match (exact)
+      for (const c of candidates) {
+        const rawClean = c.toLowerCase().trim();
+        const cleanSlug = cleanStringForMatching(c);
+        for (const [k, v] of Object.entries(db)) {
+          if (v.slug === cleanSlug || (v.name && v.name.toLowerCase() === rawClean)) return v;
+          if (v.synonyms && (v.synonyms.includes(rawClean) || v.synonyms.includes(cleanSlug))) {
+            return v;
+          }
+        }
+      }
+
+      // 3. Substring slug & token matching (e.g. "alendronate" in "alendronate-monosodium-trihydr")
+      for (const c of candidates) {
+        const cleanSlug = cleanStringForMatching(c);
+        const tokens = cleanSlug.split('-').filter(t => t.length >= 4);
+        
+        for (const tok of tokens) {
+          if (db[tok]) return db[tok];
+          for (const [k, v] of Object.entries(db)) {
+            if (k === tok || k.startsWith(tok) || (v.name && v.name.toLowerCase().startsWith(tok))) {
+              return v;
+            }
+          }
+        }
+
+        if (cleanSlug.length >= 4) {
+          for (const [k, v] of Object.entries(db)) {
+            if (k.includes(cleanSlug) || cleanSlug.includes(k)) {
+              return v;
+            }
+          }
+        }
+      }
+
+      // 4. Trade name substring match in synonyms
+      if (rawTrade) {
+        const tradeTokens = rawTrade.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(t => t.length >= 4);
+        for (const tok of tradeTokens) {
+          for (const [k, v] of Object.entries(db)) {
+            if (v.synonyms) {
+              for (const s of v.synonyms) {
+                if (s.includes(tok)) return v;
+              }
+            }
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function getPatientViewerUrl(matchedSlug, medObj, lang = 'ar') {
+      const cleanSlug = (matchedSlug || 'bisacodyl').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const tradeEn = medObj ? (medObj.tradeNameEn || '') : '';
+      const tradeAr = medObj ? (medObj.tradeNameAr || '') : '';
+      const queryParams = `drug=${encodeURIComponent(cleanSlug)}&trade=${encodeURIComponent(tradeEn)}&tradeAr=${encodeURIComponent(tradeAr)}&lang=${lang}`;
+
+      const customBase = localStorage.getItem('rx_patient_edu_base_url');
+      if (customBase && customBase.trim()) {
+        let base = customBase.trim();
+        if (!base.endsWith('/') && !base.endsWith('.html')) base += '/';
+        return `${base}edu.html?${queryParams}`;
+      }
+      
+      let loc = window.location;
+      let path = loc.pathname;
+      let dir = path.substring(0, path.lastIndexOf('/') + 1);
+      return `${loc.origin}${dir}edu.html?${queryParams}`;
+    }
+
+    function getDrugQrDataUrl(matchedSlug, medObj, lang = 'ar') {
+      if (typeof QRCode === 'undefined') return "";
+      const cleanSlug = (matchedSlug || 'bisacodyl').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const code = medObj ? (medObj.code || '') : '';
+      const cacheKey = `${cleanSlug}_${code}_${lang}`;
+      if (patientEduQrCache.has(cacheKey)) {
+        return patientEduQrCache.get(cacheKey);
+      }
+
+      try {
+        const url = getPatientViewerUrl(cleanSlug, medObj, lang);
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '-9999px';
+        document.body.appendChild(tempDiv);
+
+        new QRCode(tempDiv, {
+          text: url,
+          width: 130,
+          height: 130,
+          correctLevel: QRCode.CorrectLevel.M
+        });
+
+        let dataUrl = "";
+        const canvas = tempDiv.querySelector('canvas');
+        if (canvas) {
+          dataUrl = canvas.toDataURL('image/png');
+        } else {
+          const img = tempDiv.querySelector('img');
+          if (img) dataUrl = img.src;
+        }
+
+        document.body.removeChild(tempDiv);
+        if (dataUrl) {
+          patientEduQrCache.set(cacheKey, dataUrl);
+          return dataUrl;
+        }
+      } catch(e) {
+        console.warn("QR code generation error:", e);
+      }
+      return "";
+    }
+
+    async function openPatientEducationModal(drugQuery) {
+      const modal = document.getElementById('patientEduModal');
+      if (!modal) return;
+
+      const activeName = drugQuery || (currentMedication ? currentMedication.activeIngredient : '');
+      const tradeName = currentMedication ? currentMedication.tradeNameEn : '';
+
+      currentEduDrug = resolvePatientEduDrug(activeName, tradeName) || 
+                       resolvePatientEduDrug(activeName) || 
+                       (window.PATIENT_EDUCATION_DATA ? window.PATIENT_EDUCATION_DATA['alendronate'] || Object.values(window.PATIENT_EDUCATION_DATA)[0] : null);
+
+      currentEduSource = 'mix';
+      currentEduLang = currentLabelLang || 'ar';
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      await renderPatientEducationModalContent();
+    }
+
+    function closePatientEducationModal() {
+      const modal = document.getElementById('patientEduModal');
+      if (modal) modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function setPatientEduSource(source) {
+      currentEduSource = source;
+      document.querySelectorAll('.edu-tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (source === 'mix') document.getElementById('tabEduMix').classList.add('active');
+      else if (source === 'dynamedex') document.getElementById('tabEduDyna').classList.add('active');
+      else if (source === 'lexidrugs') document.getElementById('tabEduLexi').classList.add('active');
+      renderPatientEducationModalContent();
+    }
+
+    function togglePatientEduLang() {
+      currentEduLang = currentEduLang === 'ar' ? 'en' : 'ar';
+      renderPatientEducationModalContent();
+    }
+
+    async function renderPatientEducationModalContent() {
+      if (!currentEduDrug) return;
+
+      const isAr = (currentEduLang === 'ar');
+      document.getElementById('lblPatientEduLang').textContent = isAr ? 'English' : 'العربية';
+      
+      const tradeLabel = currentMedication ? (isAr ? (currentMedication.tradeNameAr || currentMedication.tradeNameEn) : currentMedication.tradeNameEn) : '';
+      const displayTitle = tradeLabel ? `${tradeLabel} (${currentEduDrug.name})` : currentEduDrug.name;
+      
+      document.getElementById('patientEduActiveBadge').textContent = currentEduDrug.name;
+      
+      const targetUrl = getPatientViewerUrl(currentEduDrug.slug, currentMedication, currentEduLang);
+      document.getElementById('patientEduQrUrl').value = targetUrl;
+
+      // Render QR in sidebar container
+      const qrContainer = document.getElementById('patientEduQrContainer');
+      qrContainer.innerHTML = "";
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, {
+          text: targetUrl,
+          width: 130,
+          height: 130,
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+
+      // Title & Headings
+      if (isAr) {
+        document.getElementById('patientEduHeaderTitle').textContent = `تثقيف وإرشادات: ${displayTitle}`;
+        document.getElementById('hdrEduUses').textContent = "ما هي دواعي واستخدامات هذا الدواء؟ (Uses)";
+        document.getElementById('hdrEduCounseling').textContent = "نصائح الاستخدام والإرشادات الصيدلانية (Medication Counseling)";
+        document.getElementById('hdrEduSideEffects').textContent = "الآثار الجانبية الشائعة (Side Effects)";
+        document.getElementById('hdrEduWarnings').textContent = "تحذيرات هامة ومتى يجب استشارة الطبيب فوراً (Warnings & Precautions)";
+      } else {
+        document.getElementById('patientEduHeaderTitle').textContent = `Patient Counseling: ${displayTitle}`;
+        document.getElementById('hdrEduUses').textContent = "What is this drug used for? (Indications)";
+        document.getElementById('hdrEduCounseling').textContent = "Medication Counseling & Administration Tips";
+        document.getElementById('hdrEduSideEffects').textContent = "Common Side Effects";
+        document.getElementById('hdrEduWarnings').textContent = "Important Warnings / Seek Medical Attention";
+      }
+
+      // Separate datasets fallback
+      let lexiObj = (window.LEXIDRUGS_PATIENT_EDUCATION && window.LEXIDRUGS_PATIENT_EDUCATION[currentEduDrug.slug]) ? window.LEXIDRUGS_PATIENT_EDUCATION[currentEduDrug.slug] : (currentEduDrug.lexidrugs || {});
+      let dynaObj = (window.DYNAMEDEX_PATIENT_EDUCATION && window.DYNAMEDEX_PATIENT_EDUCATION[currentEduDrug.slug]) ? window.DYNAMEDEX_PATIENT_EDUCATION[currentEduDrug.slug] : (currentEduDrug.dynamedex || {});
+
+      // Source Data Selection
+      let data = { uses: [], counseling: [], sideEffects: [], warnings: [] };
+      if (currentEduSource === 'mix') {
+        data = currentEduDrug.mix || {
+          uses: lexiObj.uses || [],
+          counseling: dynaObj.counseling || [],
+          sideEffects: lexiObj.sideEffects || [],
+          warnings: lexiObj.warnings || []
+        };
+      } else if (currentEduSource === 'dynamedex') {
+        data = {
+          uses: [],
+          counseling: dynaObj.counseling || [],
+          sideEffects: [],
+          warnings: []
+        };
+      } else if (currentEduSource === 'lexidrugs') {
+        data = {
+          uses: lexiObj.uses || [],
+          counseling: [],
+          sideEffects: lexiObj.sideEffects || [],
+          warnings: lexiObj.warnings || []
+        };
+      }
+
+      const transBar = document.getElementById('patientEduTransStatus');
+      if (isAr) transBar.style.display = 'flex';
+      else transBar.style.display = 'none';
+
+      await Promise.all([
+        renderEduSectionList('cardEduUses', 'listEduUses', data.uses || [], 'fas fa-check-circle', isAr),
+        renderEduSectionList('cardEduCounseling', 'listEduCounseling', data.counseling || [], 'fas fa-info-circle', isAr),
+        renderEduSectionList('cardEduSideEffects', 'listEduSideEffects', data.sideEffects || [], 'fas fa-exclamation', isAr),
+        renderEduSectionList('cardEduWarnings', 'listEduWarnings', data.warnings || [], 'fas fa-triangle-exclamation', isAr, true)
+      ]);
+
+      transBar.style.display = 'none';
+    }
+
+    async 
+    function transformToPatientVoiceEn(text) {
+      if (!text) return '';
+      let t = text.trim();
+      t = t.replace(/^advise patient to report\s+/i, 'Report to your doctor immediately if you experience ');
+      t = t.replace(/^advise patient to avoid\s+/i, 'Avoid ');
+      t = t.replace(/^advise patient to\s+/i, 'Be sure to ');
+      t = t.replace(/^tell patient to avoid\s+/i, 'Avoid ');
+      t = t.replace(/^tell patient to report\s+/i, 'Report to your doctor if you experience ');
+      t = t.replace(/^tell patient to take\s+/i, 'Take ');
+      t = t.replace(/^tell patient to\s+/i, 'Please ');
+      t = t.replace(/^instruct patient to report\s+/i, 'Report to your doctor if you experience ');
+      t = t.replace(/^instruct patient to take\s+/i, 'Take ');
+      t = t.replace(/^instruct patient not to\s+/i, 'Do not ');
+      t = t.replace(/^instruct patient to\s+/i, 'Please ');
+      t = t.replace(/^warn patient to report\s+/i, 'Contact your doctor right away if you notice ');
+      t = t.replace(/^warn patient of\s+/i, 'Be aware of ');
+      t = t.replace(/^warn patient\s+/i, 'Notice: ');
+      t = t.replace(/^counsel patient to report\s+/i, 'Report to your doctor if you notice ');
+      t = t.replace(/^counsel patient to\s+/i, 'Make sure to ');
+      t = t.replace(/^counsel to optimize\s+/i, 'Maintain healthy lifestyle measures, including ');
+      t = t.replace(/^patient should not take\s+/i, 'Do not take ');
+      t = t.replace(/^patient should avoid\s+/i, 'Avoid ');
+      t = t.replace(/^patient should expect to\s+/i, 'You should expect to ');
+      t = t.replace(/^patient should\s+/i, 'You should ');
+      t = t.replace(/^patient must\s+/i, 'You must ');
+      return t;
+    }
+
+    function transformToPatientVoiceAr(text) {
+      if (!text) return '';
+      let t = text.trim();
+      t = t.replace(/^تقديم المشورة للمريض للإبلاغ عن\s*/i, 'أبلغ طبيبك المعالج فوراً في حال ظهور ');
+      t = t.replace(/^تقديم المشورة للمريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^تقديم المشورة للمريض\s*/i, 'احرص على ');
+      t = t.replace(/^حذر المريض من الإبلاغ عن\s*/i, 'أبلغ طبيبك فوراً في حال شعرت بـ ');
+      t = t.replace(/^حذر المريض من مضغ أو بلع أو مص\s*/i, 'لا تمضغ أو تسحق أو تمص ');
+      t = t.replace(/^حذر المريض من مضغ أو بلع\s*/i, 'لا تمضغ أو تبلع ');
+      t = t.replace(/^حذر المريض من مضغ\s*/i, 'لا تمضغ ');
+      t = t.replace(/^حذر المريض من\s*/i, 'تجنب تماماً ');
+      t = t.replace(/^حذر المريض\s*/i, 'تنبيه هـام: ');
+      t = t.replace(/^يُنصح المريض بتناوله فقط عند الاستيقاظ\s*/i, 'تناول الدواء في الصباح فور الاستيقاظ فقط ');
+      t = t.replace(/^يُنصح المريض بتناوله\s*/i, 'تناول الدواء ');
+      t = t.replace(/^ينصح المريض بتناوله\s*/i, 'تناول الدواء ');
+      t = t.replace(/^يُنصح المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^ينصح المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^يُنصح المريض\s*/i, 'احرص على ');
+      t = t.replace(/^ينصح المريض\s*/i, 'احرص على ');
+      t = t.replace(/^اطلب من المريض تناول الدواء\s*/i, 'تناول الدواء ');
+      t = t.replace(/^اطلب من المريض تناول\s*/i, 'تناول ');
+      t = t.replace(/^اطلب من المريض الإبلاغ عن\s*/i, 'أبلغ طبيبك المعالج في حال ظهور ');
+      t = t.replace(/^اطلب من المريض عدم\s*/i, 'لا تقم بـ ');
+      t = t.replace(/^اطلب من المريض\s*/i, 'احرص على ');
+      t = t.replace(/^انصح المريض بعدم الاستلقاء\s*/i, 'تجنب الاستلقاء ');
+      t = t.replace(/^انصح المريض بعدم\s*/i, 'تجنب ');
+      t = t.replace(/^انصح المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^انصح المريض\s*/i, 'احرص على ');
+      t = t.replace(/^أخبر المريض بتجنب\s*/i, 'تجنب ');
+      t = t.replace(/^أخبر المريض بالإبلاغ عن\s*/i, 'أبلغ الطبيب عن ');
+      t = t.replace(/^أخبر المريض بـ\s*/i, 'احرص على ');
+      t = t.replace(/^أخبر المريض\s*/i, 'احرص على ');
+      t = t.replace(/^يجب على المريض تجنب\s*/i, 'يجب عليك تجنب ');
+      t = t.replace(/^يجب على المريض عدم\s*/i, 'يجب عليك عدم ');
+      t = t.replace(/^يجب على المريض\s*/i, 'يجب عليك ');
+      t = t.replace(/^يجب ألا يتناول المريض\s*/i, 'لا تتناول ');
+      t = t.replace(/^يجب أن يتوقع المريض\s*/i, 'من المتوقع حدوث ');
+      t = t.replace(/^قد تعطى لك لأسباب أخرى\s*/i, 'قد يُصرف لك هذا الدواء لأسباب أخرى بناءً على تشخيص الطبيب.');
+      return t;
+    }
+
+    async function renderEduSectionList(cardId, listId, items, iconClass, isAr, isWarning = false) {
+      const card = document.getElementById(cardId);
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+
+      if (!items || items.length === 0) {
+        card.style.display = "none";
+        return;
+      }
+      card.style.display = "block";
+
+      const translatedItems = await Promise.all(items.map(async (txt) => {
+        if (isAr && typeof translateTextToAr === 'function') {
+          const rawTr = await translateTextToAr(transformToPatientVoiceEn(txt));
+          return transformToPatientVoiceAr(rawTr);
+        }
+        return transformToPatientVoiceEn(txt);
+      }));
+
+      translatedItems.forEach(text => {
+        const li = document.createElement('li');
+        li.className = 'edu-card-item' + (isWarning ? ' item-warning' : '');
+        li.setAttribute('dir', 'auto');
+        li.innerHTML = `<i class="${iconClass}"></i><span>${escapeHtml(text)}</span>`;
+        list.appendChild(li);
+      });
+    }
+
+    function openPatientEduPublicPage() {
+      if (!currentEduDrug) return;
+      const url = getPatientViewerUrl(currentEduDrug.slug, currentMedication, currentEduLang);
+      window.open(url, '_blank');
+    }
+
+    function copyPatientEduLink() {
+      if (!currentEduDrug) return;
+      const url = getPatientViewerUrl(currentEduDrug.slug, currentMedication, currentEduLang);
+      navigator.clipboard.writeText(url).then(() => {
+        showToast("✅ تم نسخ رابط صفحة المريض بنجاح!");
+      }).catch(() => {
+        prompt("رابط صفحة المريض:", url);
+      });
+    }
+
+    function printPatientEducationA4() {
+      if (!currentEduDrug) return;
+      const url = getPatientViewerUrl(currentEduDrug.slug, currentMedication, currentEduLang);
+      const win = window.open(url, '_blank');
+      if (win) {
+        win.focus();
+        setTimeout(() => win.print(), 1000);
+      }
+    }
+
+</script>
 </body>
 </html>
 
