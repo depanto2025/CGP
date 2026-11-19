@@ -2288,10 +2288,10 @@ function detectInstructionIcon(text) {
       width: 100%;
     }
 
-    /* Screen Representation of 3in x 2in label (Full Width - Relaxed Layout) */
+    /* Screen Representation of label (Default 100mm x 50mm / 4" x 2" - 2:1 aspect ratio) */
     .screen-label-card {
-      width: 360px;
-      height: 240px;
+      width: 460px;
+      height: 230px;
       background: #ffffff;
       border: 1.5px solid #0f172a;
       border-radius: 4px;
@@ -2301,7 +2301,7 @@ function detectInstructionIcon(text) {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 6px 8px;
+      padding: 6px 10px;
       box-sizing: border-box;
       user-select: none;
     }
@@ -2756,19 +2756,20 @@ function detectInstructionIcon(text) {
     /* =========================================================
        6. Thermal Label Print Engine (@media print)
        FULL WIDTH DYNAMIC EXTENSION: Fills sticker roll completely!
-       Eliminates blank side margins on 3", 4", and 80mm labels.
+       Default: 100mm x 50mm (4" x 2" standard Al-Dawaa pharmacy label)
+       Supports 80x50 and 76x50 via setLabelPrintSize()
        ========================================================= */
     @page {
-      size: 76.2mm 50.8mm; /* Standard 3" x 2" (76.2mm x 50.8mm) thermal sticker roll */
+      size: 100mm 50mm; /* Standard 100mm x 50mm (4" x 2") Al-Dawaa thermal sticker roll */
       margin: 0mm !important;
     }
 
     @media print {
       html, body {
-        width: 76.2mm !important;
-        min-width: 76.2mm !important;
-        height: 50.8mm !important;
-        min-height: 50.8mm !important;
+        width: 100mm !important;
+        min-width: 100mm !important;
+        height: 50mm !important;
+        min-height: 50mm !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
@@ -2783,19 +2784,19 @@ function detectInstructionIcon(text) {
 
       #printExecutionSandbox {
         display: block !important;
-        width: 76.2mm !important;
-        min-width: 76.2mm !important;
+        width: 100mm !important;
+        min-width: 100mm !important;
         margin: 0 !important;
         padding: 0 !important;
       }
 
       .print-label-page {
-        width: 76.2mm !important;
-        min-width: 76.2mm !important;
-        max-width: 76.2mm !important;
-        height: 50.8mm !important;
-        min-height: 50.8mm !important;
-        max-height: 50.8mm !important;
+        width: 100mm !important;
+        min-width: 100mm !important;
+        max-width: 100mm !important;
+        height: 50mm !important;
+        min-height: 48mm !important;
+        max-height: 50.5mm !important;
         page-break-after: always;
         page-break-inside: avoid;
         break-inside: avoid;
@@ -2889,7 +2890,7 @@ function detectInstructionIcon(text) {
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
-        width: 20mm !important;
+        width: 22mm !important;
       }
 
       .print-label-page .qr-dock-frame {
@@ -2897,14 +2898,15 @@ function detectInstructionIcon(text) {
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        border: none !important;
-        padding: 0 !important;
+        border: 1.5px solid #000000 !important;
+        border-radius: 3px !important;
+        padding: 1.0mm !important;
         background: #ffffff !important;
       }
 
       .print-label-page .qr-dock-img {
-        width: 18.5mm !important;
-        height: 18.5mm !important;
+        width: 18mm !important;
+        height: 18mm !important;
         image-rendering: pixelated !important;
         display: block !important;
       }
@@ -3613,6 +3615,36 @@ function detectInstructionIcon(text) {
       border-color: #4ade80;
     }
   </style>
+
+  <!-- Dynamic Thermal Label Size Injector (100x50mm default, 80x50mm, 76x50mm) -->
+  <style id="dynamicPrintPageStyle">
+    @page {
+      size: 100mm 50mm;
+      margin: 0mm !important;
+    }
+    @media print {
+      html, body, #printExecutionSandbox {
+        width: 100mm !important;
+        min-width: 100mm !important;
+        height: 50mm !important;
+        min-height: 50mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .print-label-page {
+        width: 100mm !important;
+        min-width: 100mm !important;
+        max-width: 100mm !important;
+        height: 50mm !important;
+        min-height: 48mm !important;
+        max-height: 50.5mm !important;
+      }
+    }
+    .screen-label-card {
+      width: 460px !important;
+      height: 230px !important;
+    }
+  </style>
 </head>
 <body>
 
@@ -3629,7 +3661,7 @@ function detectInstructionIcon(text) {
       </div>
       <div class="brand-info">
         <h1>Aldawaa-Patient Instructions System (A-PIS)</h1>
-        <p><i class="fas fa-check-circle" style="color:var(--emerald-500)"></i> صيدليات الدواء • طباعة إرشادات المريض الذكية</p>
+        <p><i class="fas fa-check-circle" style="color:var(--emerald-500)"></i> صيدليات الدواء • طباعة إرشادات المريض الذكية • <span id="mainThermalFormatBadge" style="font-weight:800; color:#0284c7;">مقاس الملصق: 100 × 50 مم (4" × 2")</span></p>
       </div>
     </div>
 
@@ -3912,6 +3944,15 @@ function detectInstructionIcon(text) {
 
       <!-- Controls Toolbar -->
       <div class="preview-modal-toolbar">
+        <div class="toolbar-option" style="background: rgba(16, 185, 129, 0.1); padding: 5px 12px; border-radius: 8px; border: 1.5px solid #10b981;">
+          <span style="font-weight:800; color:#065f46;"><i class="fas fa-tag"></i> مقاس الملصق:</span>
+          <select id="modalLabelSizeSelect" class="toolbar-select-box" style="font-weight:800; color:#065f46; border-color:#10b981;" onchange="setLabelPrintSize(this.value)">
+            <option value="100x50" selected>100 × 50 مم (4" × 2" - رول صيدليات الدواء)</option>
+            <option value="80x50">80 × 50 مم</option>
+            <option value="76x50">76.2 × 50.8 مم (3" × 2")</option>
+          </select>
+        </div>
+
         <div class="toolbar-option">
           <span>Language:</span>
           <select id="modalLangSelector" class="toolbar-select-box" onchange="setLabelLanguage(this.value)">
@@ -3982,8 +4023,8 @@ function detectInstructionIcon(text) {
         </button>
 
         <div style="flex:1; display:flex; justify-content:center; align-items:center; padding:0 8px;">
-          <div style="font-size:10.5px; font-weight:800; color:#92400e; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px;">
-            <span>💡 <strong>ملاحظة هامة للطباعة الحرارية:</strong> في شاشة الطباعة اضبط <strong>الهوامش (Margins)</strong> على <strong>"لا شيء (None)"</strong> لاستغلال كامل عرض الاستيكر (3" × 2") بدون فراغات.</span>
+          <div style="font-size:10.5px; font-weight:800; color:#065f46; background:#d1fae5; border:1px solid #a7f3d0; border-radius:6px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px;">
+            <span>💡 <strong>مقاس رول صيدليات الدواء:</strong> تم ضبط المقاس تلقائياً على <strong>100 × 50 مم (4" × 2")</strong>. في نافذة طباعة كروم تأكد من اختيار حجم الورق المطابق، مع ضبط <strong>الهوامش على "لا شيء (None)"</strong>.</span>
           </div>
         </div>
 
@@ -6193,6 +6234,82 @@ function detectInstructionIcon(text) {
       }
     }
 
+    let currentLabelSizeKey = localStorage.getItem('aldawaa_label_size') || '100x50';
+
+    function setLabelPrintSize(sizeKey) {
+      currentLabelSizeKey = sizeKey || '100x50';
+      localStorage.setItem('aldawaa_label_size', currentLabelSizeKey);
+
+      const styleEl = document.getElementById('dynamicPrintPageStyle');
+      let widthMm = 100;
+      let heightMm = 50;
+      let screenWidthPx = 460;
+      let screenHeightPx = 230;
+
+      if (currentLabelSizeKey === '76x50') {
+        widthMm = 76.2;
+        heightMm = 50.8;
+        screenWidthPx = 360;
+        screenHeightPx = 240;
+      } else if (currentLabelSizeKey === '80x50') {
+        widthMm = 80;
+        heightMm = 50;
+        screenWidthPx = 380;
+        screenHeightPx = 238;
+      } else {
+        // Default 100x50 (4" x 2" standard pharmacy label)
+        widthMm = 100;
+        heightMm = 50;
+        screenWidthPx = 460;
+        screenHeightPx = 230;
+      }
+
+      if (styleEl) {
+        styleEl.innerHTML = `
+          @page {
+            size: ${widthMm}mm ${heightMm}mm;
+            margin: 0mm !important;
+          }
+          @media print {
+            html, body, #printExecutionSandbox {
+              width: ${widthMm}mm !important;
+              min-width: ${widthMm}mm !important;
+              height: ${heightMm}mm !important;
+              min-height: ${heightMm}mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+            .print-label-page {
+              width: ${widthMm}mm !important;
+              min-width: ${widthMm}mm !important;
+              max-width: ${widthMm}mm !important;
+              height: ${heightMm}mm !important;
+              min-height: 48mm !important;
+              max-height: ${heightMm + 0.5}mm !important;
+            }
+          }
+          .screen-label-card {
+            width: ${screenWidthPx}px !important;
+            height: ${screenHeightPx}px !important;
+          }
+        `;
+      }
+
+      const formatBadge = document.getElementById('mainThermalFormatBadge');
+      if (formatBadge) {
+        formatBadge.innerText = `مقاس الملصق: ${widthMm} × ${heightMm} مم`;
+      }
+
+      const sel = document.getElementById('modalLabelSizeSelect');
+      if (sel && sel.value !== currentLabelSizeKey) {
+        sel.value = currentLabelSizeKey;
+      }
+
+      if (typeof renderModalLabels === 'function') {
+        renderModalLabels();
+      }
+    }
+
     function renderInstructionsChecklist() {
       const container = document.getElementById("instructionsChecklist");
       if (!container) return;
@@ -6591,10 +6708,15 @@ function detectInstructionIcon(text) {
     function estimateLinesForFontFullWidth(text, fontSize = 7.5, isRtl = true, hasQr = false) {
       if (!text) return 1;
       const cleanLen = text.trim().length;
-      // Real character capacity in Arabic Cairo font on 3" x 2" (76.2mm) edge-to-edge thermal sticker:
-      // Without QR (73mm usable): ~62-66 chars/line at 7.5pt, ~70-74 chars/line at 6.8pt
-      // With QR dock (53mm usable): ~44-48 chars/line at 7.5pt, ~50-54 chars/line at 6.8pt
-      const baseChars = hasQr ? 45 : 64;
+      const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
+      const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
+      // Real character capacity in Arabic Cairo font:
+      // 100mm x 50mm: With QR dock (72mm text area) ~60-66 chars/line; Without QR ~86-92 chars/line
+      // 80mm x 50mm: With QR dock (56mm text area) ~50-54 chars/line; Without QR ~72-76 chars/line
+      // 76mm x 50mm: With QR dock (52mm text area) ~44-48 chars/line; Without QR ~62-66 chars/line
+      const baseChars = is100mm 
+        ? (hasQr ? 62 : 88)
+        : (is80mm ? (hasQr ? 50 : 74) : (hasQr ? 45 : 64));
       const charsPerLine = Math.max(25, Math.round(baseChars * (7.5 / fontSize)));
       return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
@@ -6896,10 +7018,10 @@ function detectInstructionIcon(text) {
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:20mm; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:0; border:none;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:18.5mm; height:18.5mm; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:5.2pt; font-weight:900; line-height:1.05; text-align:center; margin-top:0.5mm; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:22mm; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:1.0mm; border:1.5px solid #000; border-radius:3px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:18mm; height:18mm; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:5.2pt; font-weight:900; line-height:1.05; text-align:center; margin-top:0.6mm; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
@@ -7008,6 +7130,8 @@ function detectInstructionIcon(text) {
       }
 
       updateBranchUIBadges();
+      const sel = document.getElementById("modalLabelSizeSelect");
+      if (sel) sel.value = currentLabelSizeKey;
       document.getElementById("printModalBackdrop").style.display = "flex";
       renderModalLabels();
     }
@@ -7264,6 +7388,9 @@ function detectInstructionIcon(text) {
     // N) Bootstrap on Page Load
     // =========================================================
     window.addEventListener("DOMContentLoaded", () => {
+      // Initialize Thermal Label Print Size (100x50mm Al-Dawaa standard default)
+      setLabelPrintSize(currentLabelSizeKey);
+
       // Initialize with current selected medication and add to batch queue
       selectMedicationItem(currentMedication, false);
 
