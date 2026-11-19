@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="100%" height="100%">
+  <defs>
+    <!-- Background subtle gradient & shadow -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="85%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F1F5F9"/>
+    </radialGradient>
+    
+    <!-- Royal Blue Capsule Half Gradient -->
+    <linearGradient id="blueHalf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="50%" stop-color="#0369A1"/>
+      <stop offset="100%" stop-color="#075985"/>
+    </linearGradient>
+
+    <!-- Emerald Green Capsule Half Gradient -->
+    <linearGradient id="greenHalf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="50%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+
+    <!-- Glossy Highlights -->
+    <linearGradient id="pillGloss" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Shadow filter -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0F2B5C" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Crisp Pure White Base Circle (As requested: خلفية بيضاء احترافية) -->
+  <circle cx="64" cy="64" r="61" fill="url(#bgGlow)" stroke="#E2E8F0" stroke-width="2.5" />
+
+  <!-- Outer subtle circular medical accent ring -->
+  <circle cx="64" cy="64" r="54" fill="none" stroke="#E0F2FE" stroke-width="2" stroke-dasharray="6 3" opacity="0.8"/>
+
+  <!-- Centered Iconic Angled Medical Capsule (Rx / Al-Dawaa) -->
+  <g transform="translate(64,64) rotate(-38) translate(-64,-64)" filter="url(#softShadow)">
+    <!-- Entire Capsule Base Container -->
+    <clipPath id="capsuleClip">
+      <rect x="36" y="24" width="56" height="80" rx="28" ry="28"/>
+    </clipPath>
+
+    <g clip-path="url(#capsuleClip)">
+      <!-- Top Half (Blue) -->
+      <rect x="36" y="24" width="56" height="40" fill="url(#blueHalf)"/>
+      <!-- Bottom Half (Green) -->
+      <rect x="36" y="64" width="56" height="40" fill="url(#greenHalf)"/>
+      <!-- Capsule Divider Line -->
+      <line x1="36" y1="64" x2="92" y2="64" stroke="#FFFFFF" stroke-width="2.5" stroke-opacity="0.9"/>
+      
+      <!-- Inner Capsule Shine Highlight -->
+      <ellipse cx="49" cy="40" rx="6" ry="14" fill="url(#pillGloss)" transform="rotate(-10 49 40)"/>
+    </g>
+
+    <!-- Outer Capsule Border for maximum definition on white -->
+    <rect x="36" y="24" width="56" height="80" rx="28" ry="28" fill="none" stroke="#0F2B5C" stroke-width="2" stroke-opacity="0.25"/>
+
+    <!-- Crisp Pure White Medical Cross Overlaid on Capsule -->
+    <g transform="translate(64, 64)">
+      <!-- Vertical bar of cross -->
+      <rect x="-4.5" y="-16" width="9" height="32" rx="3.5" fill="#FFFFFF" stroke="#0F2B5C" stroke-width="1.2" stroke-opacity="0.2"/>
+      <!-- Horizontal bar of cross -->
+      <rect x="-16" y="-4.5" width="32" height="9" rx="3.5" fill="#FFFFFF" stroke="#0F2B5C" stroke-width="1.2" stroke-opacity="0.2"/>
+    </g>
+  </g>
+
+  <!-- Modern Dynamic Medical Pulse / Identity Dot -->
+  <circle cx="100" cy="30" r="5" fill="#10B981" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="28" cy="98" r="4" fill="#0284C7" stroke="#FFFFFF" stroke-width="1.5"/>
+</svg>

@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Rx Patient Instructions System</title>
+  <title>Aldawaa-Patient Instructions System (A-PIS)</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
 
   <!-- Google Fonts: Inter & Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -743,6 +746,129 @@ function detectInstructionIcon(text) {
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    /* Pharmacist Mohamed Kholeif Header Profile & WhatsApp */
+    .header-pharmacist-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.90));
+      border: 1.5px solid rgba(2, 132, 199, 0.28);
+      border-radius: 40px;
+      padding: 4px 12px 4px 5px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.10), 0 1px 3px rgba(0, 0, 0, 0.04);
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      margin: 0 8px;
+    }
+
+    .header-pharmacist-badge:hover {
+      border-color: #0284c7;
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.18);
+    }
+
+    .ph-avatar-wrapper {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .header-ph-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #0284c7;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+      display: block;
+      background: #ffffff;
+    }
+
+    .ph-online-pulse {
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      width: 10px;
+      height: 10px;
+      background-color: #22c55e;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: phPulse 2s infinite;
+    }
+
+    @keyframes phPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+      }
+    }
+
+    .ph-info-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 1.15;
+    }
+
+    .ph-name-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ph-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f2b5c;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+
+    .ph-badge-verified {
+      color: #0284c7;
+      font-size: 11px;
+    }
+
+    .ph-role-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    .ph-whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #ffffff !important;
+      text-decoration: none !important;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 3px 10px rgba(37, 211, 102, 0.35);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .ph-whatsapp-btn:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 5px 14px rgba(37, 211, 102, 0.5);
+      background: linear-gradient(135deg, #2ae06d, #0f7a6e);
+    }
+
+    .ph-whatsapp-btn i {
+      font-size: 14px;
     }
 
     .header-actions {
@@ -2404,6 +2530,10 @@ function detectInstructionIcon(text) {
       font-weight: 700;
       color: #333333;
       flex-shrink: 0;
+      background: #ffffff;
+      position: relative;
+      z-index: 10;
+      margin-top: auto;
     }
 
     .preview-modal-footer {
@@ -2817,6 +2947,10 @@ function detectInstructionIcon(text) {
         align-items: center !important;
         width: 100% !important;
         flex-shrink: 0 !important;
+        background: #ffffff !important;
+        position: relative !important;
+        z-index: 10 !important;
+        margin-top: auto !important;
       }
     }
 
@@ -2839,6 +2973,9 @@ function detectInstructionIcon(text) {
         padding: 12px 18px;
         flex-wrap: wrap;
         gap: 12px;
+      }
+      .ph-role-title {
+        display: none;
       }
       .header-actions {
         width: 100%;
@@ -2863,6 +3000,20 @@ function detectInstructionIcon(text) {
       .brand-group {
         justify-content: center;
         text-align: center;
+      }
+      .header-pharmacist-badge {
+        align-self: center;
+        margin: 6px 0;
+      }
+      .ph-info-block {
+        display: none;
+      }
+      .ph-whatsapp-btn span {
+        display: none;
+      }
+      .ph-whatsapp-btn {
+        padding: 6px 10px;
+        border-radius: 50%;
       }
       .header-actions {
         display: flex;
@@ -3442,9 +3593,28 @@ function detectInstructionIcon(text) {
         <i class="fas fa-prescription-bottle-alt"></i>
       </div>
       <div class="brand-info">
-        <h1>Rx Patient Instructions System</h1>
+        <h1>Aldawaa-Patient Instructions System (A-PIS)</h1>
         <p><i class="fas fa-check-circle" style="color:var(--emerald-500)"></i> صيدليات الدواء • طباعة إرشادات المريض الذكية</p>
       </div>
+    </div>
+
+    <!-- Pharmacist Mohamed Kholeif Premium Profile & WhatsApp -->
+    <div class="header-pharmacist-badge">
+      <div class="ph-avatar-wrapper">
+        <img src="pharmacist_photo.png" alt="Ph: Mohamed Kholeif" class="header-ph-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Mohamed+Kholeif&background=0284c7&color=fff'">
+        <span class="ph-online-pulse" title="صيدلي معتمد متصل"></span>
+      </div>
+      <div class="ph-info-block">
+        <div class="ph-name-row">
+          <span class="ph-name">Ph: Mohamed Kholeif</span>
+          <span class="ph-badge-verified" title="صيدلي استشاري معتمد"><i class="fas fa-check-circle"></i></span>
+        </div>
+        <span class="ph-role-title">صيدلي استشاري • صيدليات الدواء</span>
+      </div>
+      <a href="https://wa.me/966541932559" target="_blank" rel="noopener noreferrer" class="ph-whatsapp-btn" title="تواصل مباشر عبر واتساب">
+        <i class="fab fa-whatsapp"></i>
+        <span>تواصل واتساب</span>
+      </a>
     </div>
 
     <div class="header-actions">
@@ -5582,23 +5752,23 @@ function detectInstructionIcon(text) {
 
       // 2. Check Formulation Tags
       if (formTags.length > 0) {
-        const isProdOralSolution = fullProdText.includes('solution') || fullProdText.includes('syrup') || fullProdText.includes('شراب') || fullProdText.includes('محلول');
-        const isProdTabletOrCap = fullProdText.includes('tab') || fullProdText.includes('cap') || fullProdText.includes('قرص') || fullProdText.includes('كبسول');
-        const isProdEffervescent = fullProdText.includes('effervesc') || fullProdText.includes('فوار');
-        const isProdXR = fullProdText.includes('xr') || fullProdText.includes('er') || fullProdText.includes('extended') || fullProdText.includes('ممتد');
+        const isProdOralSolution = /\b(solution|sol|syrup|syr|liquid|drops|oral solution)\b|شراب|محلول|نقط|قطرة/i.test(fullProdText);
+        const isProdTabletOrCap = /\b(ta|tab|tabs|tablet|tablets|cap|caps|capsule|capsules|cp|tb)\b|قرص|اقراص|كبسول|كبسولات|حبه|حبوب/i.test(fullProdText);
+        const isProdEffervescent = /\b(effervesc|eff|effervescent)\b|فوار/i.test(fullProdText);
+        const isProdXR = /\b(xr|er|cr|sr|dr|extended|retard)\b|ممتد|بطيء/i.test(fullProdText);
 
         for (const f of formTags) {
           const fNorm = f.toLowerCase();
-          if ((fNorm.includes('oral solution') || fNorm.includes('solution')) && isProdTabletOrCap && !isProdOralSolution) {
+          if ((fNorm.includes('oral solution') || fNorm.includes('solution') || fNorm.includes('محلول') || fNorm.includes('شراب')) && isProdTabletOrCap && !isProdOralSolution) {
             return false;
           }
-          if (fNorm.includes('effervescent') && !isProdEffervescent) {
+          if ((fNorm.includes('effervescent') || fNorm.includes('فوار')) && !isProdEffervescent) {
             return false;
           }
-          if ((fNorm.includes('extended-release') || fNorm.includes('xr')) && !isProdXR) {
+          if ((fNorm.includes('extended-release') || fNorm.includes('xr') || fNorm.includes('ممتد')) && !isProdXR) {
             return false;
           }
-          if (fNorm.includes('immediate-release') && isProdXR) {
+          if ((fNorm.includes('immediate-release') || fNorm.includes('سريع')) && isProdXR) {
             return false;
           }
         }
@@ -6244,10 +6414,15 @@ function detectInstructionIcon(text) {
       if (!instructions || instructions.length === 0) return [];
 
       // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
-      // Up to 10.5 lines with QR or 13.5 lines without QR fits on 1 SINGLE CARD!
-      const singlePageMaxLines = enableQr ? 10.5 : 13.5;
-      const totalAllLines = calculateTotalLinesFullWidth(instructions, 7.0, isRtl, enableQr);
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLines <= singlePageMaxLines)) {
+      // REAL PHYSICAL CAPACITY:
+      // With QR dock (width 82px / 22mm), text column width is ~235px (~30-32 chars/line).
+      // Available body height is ~150px. At 7.5pt, 1 line ~ 11.5px.
+      // Up to 7.0 lines with QR fits on 1 SINGLE CARD with 100% guaranteed safety!
+      // Without QR: full width (340px / 75mm), up to 11.0 lines fits safely.
+      const singlePageMaxLines = enableQr ? 7.0 : 11.0;
+      const totalAllLinesWithQr = calculateTotalLinesFullWidth(instructions, 7.5, isRtl, enableQr);
+
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLinesWithQr <= singlePageMaxLines && instructions.length <= 2)) {
         return [instructions];
       }
 
@@ -6262,18 +6437,18 @@ function detectInstructionIcon(text) {
       }
 
       // 3. Multi-Card Full-Utilization Pagination:
-      // Fill Card 1 comfortably up to 11.5 lines (Card 1 has no QR) so NO EMPTY WHITE SPACE is left behind!
-      // Only overflow points that cannot fit safely within 11.5 lines move to the next card.
-      const MAX_SAFE_CARD_LINES = 11.5;
+      // Card 1 to N-1 have NO QR (full width, capacity 10.0 lines at 7.5pt).
+      // The LAST card has the QR code (capacity ~7.0 lines at 7.5pt with QR).
+      const MAX_SAFE_CARD_LINES = 10.0;
       const pages = [];
       let currentPage = [];
 
       for (let i = 0; i < instructions.length; i++) {
         const inst = instructions[i];
         const candidatePage = [...currentPage, inst];
-        const linesAt7pt = calculateTotalLinesFullWidth(candidatePage, 7.5, isRtl, false);
+        const linesWithoutQr = calculateTotalLinesFullWidth(candidatePage, 7.5, isRtl, false);
 
-        if (currentPage.length > 0 && linesAt7pt > MAX_SAFE_CARD_LINES) {
+        if (currentPage.length > 0 && linesWithoutQr > MAX_SAFE_CARD_LINES) {
           pages.push(currentPage);
           currentPage = [inst];
         } else {
@@ -6282,6 +6457,15 @@ function detectInstructionIcon(text) {
       }
 
       if (currentPage.length > 0) {
+        if (pages.length === 0) {
+          const linesWithQr = calculateTotalLinesFullWidth(currentPage, 7.5, isRtl, enableQr);
+          if (linesWithQr > singlePageMaxLines || currentPage.length > 2) {
+            const half = Math.ceil(currentPage.length / 2);
+            pages.push(currentPage.slice(0, half));
+            pages.push(currentPage.slice(half));
+            return pages;
+          }
+        }
         pages.push(currentPage);
       }
 
@@ -6291,65 +6475,91 @@ function detectInstructionIcon(text) {
     function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false) {
       const count = pageItems ? pageItems.length : 0;
       const rawBase = parseFloat(userFontSize);
-      const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0);
+      const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0 && Math.abs(rawBase - 9.0) > 0.1);
 
-      // Auto-calculated optimal font size to eliminate blank space and fill the card!
+      let totalChars = 0;
+      (pageItems || []).forEach(item => {
+        const txt = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+        totalChars += txt.trim().length;
+      });
+
+      // Auto-calculated optimal font size to eliminate blank space and ensure zero footer overlap!
       let autoFontSize = 9.0;
-      let autoLineHeight = 1.28;
-      let gap = 4;
+      let autoLineHeight = 1.25;
+      let gap = 3;
 
       if (count === 1) {
-        const singleText = (isRtl && pageItems[0].textAr) ? pageItems[0].textAr : (pageItems[0].text || pageItems[0].textEn || '');
-        const charLen = singleText.trim().length;
-        // Single instruction: scale UP to fill the empty card nicely!
-        if (charLen < 150) {
-          autoFontSize = hasQr ? 11.5 : 12.0;
-          autoLineHeight = 1.40;
-          gap = 8;
-        } else if (charLen < 260) {
-          autoFontSize = hasQr ? 10.8 : 11.2;
-          autoLineHeight = 1.35;
+        if (totalChars < 120) {
+          autoFontSize = hasQr ? 11.2 : 12.0;
+          autoLineHeight = 1.38;
           gap = 6;
-        } else if (charLen < 380) {
-          autoFontSize = hasQr ? 10.0 : 10.5;
-          autoLineHeight = 1.30;
+        } else if (totalChars < 240) {
+          autoFontSize = hasQr ? 10.2 : 11.0;
+          autoLineHeight = 1.32;
           gap = 5;
+        } else if (totalChars < 360) {
+          autoFontSize = hasQr ? 9.2 : 10.0;
+          autoLineHeight = 1.25;
+          gap = 4;
         } else {
-          autoFontSize = hasQr ? 9.0 : 9.5;
-          autoLineHeight = 1.24;
+          autoFontSize = hasQr ? 8.2 : 9.0;
+          autoLineHeight = 1.20;
           gap = 3;
         }
       } else if (count === 2) {
-        autoFontSize = hasQr ? 9.2 : 9.8;
-        autoLineHeight = 1.25;
-        gap = 4;
+        if (hasQr) {
+          if (totalChars > 220) {
+            autoFontSize = 7.8;
+            autoLineHeight = 1.16;
+            gap = 2;
+          } else {
+            autoFontSize = 8.5;
+            autoLineHeight = 1.20;
+            gap = 3;
+          }
+        } else {
+          if (totalChars > 350) {
+            autoFontSize = 8.4;
+            autoLineHeight = 1.18;
+            gap = 3;
+          } else {
+            autoFontSize = 9.2;
+            autoLineHeight = 1.24;
+            gap = 4;
+          }
+        }
       } else if (count === 3) {
-        autoFontSize = hasQr ? 8.4 : 9.0;
-        autoLineHeight = 1.20;
-        gap = 3;
+        if (hasQr) {
+          autoFontSize = 7.2;
+          autoLineHeight = 1.14;
+          gap = 2;
+        } else {
+          autoFontSize = 8.2;
+          autoLineHeight = 1.18;
+          gap = 3;
+        }
       } else {
-        autoFontSize = hasQr ? 7.4 : 8.0;
-        autoLineHeight = 1.15;
+        autoFontSize = hasQr ? 6.8 : 7.4;
+        autoLineHeight = 1.12;
         gap = 2;
       }
 
-      // If user moved the slider (different from default 9.0, or custom size), STRICTLY HONOR USER'S SIZE!
-      let effectiveFontSize = autoFontSize;
-      if (isCustomUserSize) {
-        if (Math.abs(rawBase - 9.0) > 0.1) {
-          effectiveFontSize = rawBase;
-        } else {
-          effectiveFontSize = Math.max(rawBase, autoFontSize);
+      // If user moved the slider, honor user's preference with safety cap for QR:
+      let effectiveFontSize = isCustomUserSize ? rawBase : autoFontSize;
+
+      if (hasQr && count >= 2) {
+        const estLines = calculateTotalLinesFullWidth(pageItems, effectiveFontSize, isRtl, true);
+        if (estLines > 8.0) {
+          effectiveFontSize = Math.min(effectiveFontSize, 7.4);
+          autoLineHeight = Math.min(autoLineHeight, 1.15);
         }
       }
 
-      const calculatedLineHeight = (effectiveFontSize >= 12) ? 1.36 : (effectiveFontSize >= 10.5 ? 1.30 : (effectiveFontSize >= 9.5 ? 1.24 : 1.18));
-
       return {
         fontSize: Number(effectiveFontSize.toFixed(1)),
-        lineHeight: calculatedLineHeight,
+        lineHeight: autoLineHeight,
         gap: gap,
-        padding: count === 1 ? '4px 0' : '2px 0',
+        padding: count === 1 ? '4px 0' : '1px 0',
         justify: count === 1 ? 'center' : 'flex-start'
       };
     }
