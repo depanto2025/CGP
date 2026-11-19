@@ -2797,12 +2797,12 @@ function detectInstructionIcon(text) {
         max-width: 100mm !important;
         height: 50mm !important;
         min-height: 48mm !important;
-        max-height: 50.5mm !important;
+        max-height: 50mm !important;
         page-break-after: always;
         page-break-inside: avoid;
         break-inside: avoid;
         box-sizing: border-box !important;
-        padding: 0.6mm 1.0mm !important; /* Full Edge-to-edge layout filling sticker roll completely */
+        padding: 1.0mm 1.5mm !important; /* Safe padding preventing bottom edge clipping */
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -2862,11 +2862,11 @@ function detectInstructionIcon(text) {
         display: flex !important;
         flex-direction: row !important;
         align-items: stretch !important;
-        gap: 2.0mm !important;
+        gap: 1.5mm !important;
         overflow: hidden !important;
         min-height: 0 !important;
         width: 100% !important;
-        margin: 0.5mm 0 !important;
+        margin: 0.4mm 0 !important;
       }
 
       .print-label-page .label-items-list {
@@ -2884,7 +2884,6 @@ function detectInstructionIcon(text) {
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
-        width: 30mm !important;
       }
 
       .print-label-page .qr-dock-frame {
@@ -2893,24 +2892,21 @@ function detectInstructionIcon(text) {
         align-items: center !important;
         justify-content: center !important;
         border: 1.5px solid #000000 !important;
-        border-radius: 4px !important;
+        border-radius: 3px !important;
         padding: 0.8mm !important;
         background: #ffffff !important;
       }
 
       .print-label-page .qr-dock-img {
-        width: 26mm !important;
-        height: 26mm !important;
         image-rendering: pixelated !important;
         display: block !important;
       }
 
       .print-label-page .qr-dock-caption {
-        font-size: 5.6pt !important;
         font-weight: 900 !important;
-        line-height: 1.1 !important;
+        line-height: 1.05 !important;
         text-align: center !important;
-        margin-top: 0.5mm !important;
+        margin-top: 0.4mm !important;
         color: #000000 !important;
       }
 
@@ -5984,13 +5980,13 @@ function detectInstructionIcon(text) {
       }
 
       // Inline semantic form detection (handles unbracketed text or Arabic sentences)
-      if (/\b(oral suspension|shake well before use|reconstitute powder|shake oral suspension)\b|معلق|المعلق|رج المعلق|يعاد تكوين/i.test(instructionText)) {
+      if (/\b(oral suspension|shake well|reconstitute powder|shake oral suspension)\b|معلق|المعلق|رج المعلق|يعاد تكوين|مسحوق معلق|بودرة معلق/i.test(instructionText)) {
         if (!formTags.some(t => /suspension|معلق/i.test(t))) formTags.push('suspension');
       }
       if (/\b(chewable|chew or crush)\b|مضغ|للمضغ|قابلة للمضغ/i.test(instructionText)) {
         if (!formTags.some(t => /chewable|مضغ/i.test(t))) formTags.push('chewable');
       }
-      if (/\b(effervescent)\b|فوار|الفوار/i.test(instructionText)) {
+      if (/\b(effervescent|effervescence)\b|فوار|الفوار|فوارة|الفوارة|فوران|الفوران|أذب القرص|تذاب الحبة|يذاب القرص/i.test(instructionText)) {
         if (!formTags.some(t => /effervescent|فوار/i.test(t))) formTags.push('effervescent');
       }
 
@@ -6034,8 +6030,8 @@ function detectInstructionIcon(text) {
         const isProdCapsule = /\b(cap|caps|capsule|capsules|cp)\b|كبسول|كبسولات/i.test(fullProdText);
         const isProdTablet = /\b(ta|tab|tabs|tablet|tablets|tb)\b|قرص|اقراص|حبه|حبوب/i.test(fullProdText);
         const isProdTabletOrCap = isProdCapsule || isProdTablet;
-        const isProdChewable = /\b(chew|chewable)\b|مضغ|للمضغ/i.test(fullProdText);
-        const isProdEffervescent = /\b(effervesc|eff|effervescent)\b|فوار/i.test(fullProdText);
+        const isProdChewable = /\b(chew|chewable)\b|مضغ|للمضغ|قابلة للمضغ/i.test(fullProdText);
+        const isProdEffervescent = /\b(effervesc|eff|effervescent)\b|فوار|فوارة|فوران/i.test(fullProdText);
         const isProdSuspension = /\b(susp|suspension)\b|معلق|مسحوق شراب|معلق جاف/i.test(fullProdText);
         const isProdOralSolution = /\b(solution|sol|syrup|syr|liquid|drops|oral solution)\b|شراب|محلول|نقط|قطرة/i.test(fullProdText);
         const isProdXR = /\b(xr|er|cr|sr|dr|extended|retard)\b|ممتد|بطيء/i.test(fullProdText);
@@ -6046,8 +6042,8 @@ function detectInstructionIcon(text) {
           if ((fNorm.includes('suspension') || fNorm.includes('معلق')) && !isProdSuspension) {
             return false;
           }
-          // Chewable instructions incompatible with non-chewable products
-          if ((fNorm.includes('chewable') || fNorm.includes('مضغ')) && !isProdChewable) {
+          // Chewable instructions incompatible with liquids/suspensions (tablets/capsules keep chewables as requested!)
+          if ((fNorm.includes('chewable') || fNorm.includes('مضغ')) && isProdSuspension) {
             return false;
           }
           // Oral solution / syrup instructions incompatible with solid tablets/capsules unless liquid
@@ -6366,9 +6362,9 @@ function detectInstructionIcon(text) {
               max-width: ${widthMm}mm !important;
               height: ${heightMm}mm !important;
               min-height: 48mm !important;
-              max-height: ${heightMm + 0.5}mm !important;
+              max-height: ${heightMm}mm !important;
               box-sizing: border-box !important;
-              padding: 0.6mm 1.0mm !important;
+              padding: 1.0mm 1.5mm !important;
             }
           }
           .screen-label-card {
@@ -7094,6 +7090,16 @@ function detectInstructionIcon(text) {
               `;
             });
 
+            const is100mm = (!currentLabelSizeKey || currentLabelSizeKey === '100x50');
+            // Restored EXACTLY as original for 80x50 and 76x50 (18mm QR / 22mm dock)
+            // For 100x50: slightly enlarged (20.5mm QR / 24.5mm dock) to prevent footer clipping!
+            const qrDockWidthMm = is100mm ? '24.5mm' : '22mm';
+            const qrImgSizeMm = is100mm ? '20.5mm' : '18mm';
+            const qrDockWidthPx = is100mm ? '92px' : '80px';
+            const qrImgSizePx = is100mm ? '82px' : '74px';
+            const qrCaptionFontSize = is100mm ? '5.3pt' : '5.2pt';
+            const bodyGapMm = is100mm ? '1.8mm' : '1.5mm';
+
             if (isPrint) {
               allCardsHtml += `
                 <div class="print-label-page ${isRtl ? 'is-rtl' : 'is-ltr'}">
@@ -7108,23 +7114,23 @@ function detectInstructionIcon(text) {
                         ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:2.0mm; overflow:hidden; min-height:0; width:100%;">
+                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:${bodyGapMm}; overflow:hidden; min-height:0; width:100%;">
                       <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden; min-height:0;">
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:30mm; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:0.8mm; border:1.5px solid #000; border-radius:4px;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:26mm; height:26mm; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:5.6pt; font-weight:900; line-height:1.1; text-align:center; margin-top:0.5mm; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:${qrDockWidthMm}; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:0.8mm; border:1.5px solid #000; border-radius:3px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:${qrImgSizeMm}; height:${qrImgSizeMm}; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:${qrCaptionFontSize}; font-weight:900; line-height:1.05; text-align:center; margin-top:0.4mm; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
                         </div>
                       ` : ''}
                     </div>
-                    <div class="label-footer-bar" style="border-top:1px dashed #000; padding-top:0.8mm; font-size:7.0pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
-                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7.0pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
+                    <div class="label-footer-bar" style="border-top:1px dashed #000; padding-top:0.4mm; margin-bottom:0.1mm; font-size:6.8pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:6.8pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
                         <span>${displayFooter}</span>
                         ${totalPages > 1 ? `<span style="font-weight:900;"> • ${pageNum}/${totalPages}</span>` : ''}
                       </div>
@@ -7152,18 +7158,18 @@ function detectInstructionIcon(text) {
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:105px; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:3px; border:1.5px solid #000; border-radius:4px;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:96px; height:96px; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:7.2pt; font-weight:800; line-height:1.1; text-align:center; margin-top:2px; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:${qrDockWidthPx}; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:2px; border:1.5px solid #000; border-radius:3px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:${qrImgSizePx}; height:${qrImgSizePx}; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:6.8pt; font-weight:800; line-height:1.1; text-align:center; margin-top:2px; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
                         </div>
                       ` : ''}
                     </div>
-                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:2px; font-size:7.2pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
-                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7.2pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
+                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:2px; font-size:7.0pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7.0pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
                         <span>${displayFooter}</span>
                         ${totalPages > 1 ? `<span style="font-weight:900;"> • ${pageNum}/${totalPages}</span>` : ''}
                       </div>
