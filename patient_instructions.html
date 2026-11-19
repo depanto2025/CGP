@@ -4174,56 +4174,56 @@ function detectInstructionIcon(text) {
             <span>جاري الترجمة الفورية للمحتوى باللغة العربية...</span>
           </div>
 
-          <!-- Drug Classification Bar -->
-          <div class="patient-edu-class-bar" id="patientEduClassBar" style="display:none; padding: 7px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; font-size: 13px; color: #166534; font-weight: 700; margin-bottom: 14px; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <i class="fas fa-layer-group" style="color: #15803d;"></i>
+          <!-- Drug Classification Bar (Prominent for Pharmacist) -->
+          <div class="patient-edu-class-bar" id="patientEduClassBar" style="display:none; padding: 10px 16px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; font-size: 13.5px; color: #166534; font-weight: 700; margin-bottom: 14px; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <i class="fas fa-layer-group" style="color: #15803d; font-size: 16px;"></i>
             <span id="lblModalClassTitle">تصنيف الدواء:</span>
-            <span id="patientEduClassText" style="color: #0f172a; font-weight: 600;"></span>
+            <span id="patientEduClassText" style="color: #0f172a; font-weight: 700;"></span>
           </div>
 
-          <!-- Section 1: Uses / Indications -->
-          <div class="edu-card" id="cardEduUses">
-            <div class="edu-card-header icon-bg-blue">
-              <i class="fas fa-bullseye"></i>
-              <h4 id="hdrEduUses">ما هي دواعي واستخدامات هذا الدواء؟ (Uses)</h4>
+          <!-- Section 1: Uses / Indications (Sky Blue) -->
+          <div class="edu-card" id="cardEduUses" style="border: 1px solid #bae6fd; border-radius: 12px; overflow: hidden; margin-bottom: 14px;">
+            <div class="edu-card-header" style="background:#e0f2fe; color:#0284c7; border-bottom: 2px solid #bae6fd; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-bullseye" style="font-size: 17px;"></i>
+              <h4 id="hdrEduUses" style="margin: 0; font-size: 14.5px; font-weight: 800;">ما هي دواعي واستخدامات هذا الدواء؟ (Uses)</h4>
             </div>
             <ul class="edu-card-list" id="listEduUses"></ul>
           </div>
 
-          <!-- Section 2: Clinical Counseling & Administration Tips -->
-          <div class="edu-card" id="cardEduCounseling">
-            <div class="edu-card-header icon-bg-green">
-              <i class="fas fa-clipboard-check"></i>
-              <h4 id="hdrEduCounseling">نصائح الاستخدام والإرشادات الصيدلانية (Medication Counseling)</h4>
+          <!-- Section 2: Clinical Counseling & Administration Tips (Emerald Green) -->
+          <div class="edu-card" id="cardEduCounseling" style="border: 1px solid #a7f3d0; border-radius: 12px; overflow: hidden; margin-bottom: 14px;">
+            <div class="edu-card-header" style="background:#dcfce7; color:#059669; border-bottom: 2px solid #a7f3d0; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-clipboard-check" style="font-size: 17px;"></i>
+              <h4 id="hdrEduCounseling" style="margin: 0; font-size: 14.5px; font-weight: 800;">نصائح الاستخدام والإرشادات الصيدلانية (Medication Counseling)</h4>
             </div>
             <ul class="edu-card-list" id="listEduCounseling"></ul>
           </div>
 
-          <!-- Section 3: Common Side Effects -->
-          <div class="edu-card" id="cardEduSideEffects">
-            <div class="edu-card-header icon-bg-orange">
-              <i class="fas fa-exclamation-circle"></i>
-              <h4 id="hdrEduSideEffects">الآثار الجانبية الشائعة (Side Effects)</h4>
+          <!-- Section 3: Common Side Effects (Amber / Orange) -->
+          <div class="edu-card" id="cardEduSideEffects" style="border: 1px solid #fde68a; border-radius: 12px; overflow: hidden; margin-bottom: 14px;">
+            <div class="edu-card-header" style="background:#fef3c7; color:#d97706; border-bottom: 2px solid #fde68a; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-exclamation-circle" style="font-size: 17px;"></i>
+              <h4 id="hdrEduSideEffects" style="margin: 0; font-size: 14.5px; font-weight: 800;">الآثار الجانبية الشائعة (Side Effects)</h4>
             </div>
             <ul class="edu-card-list" id="listEduSideEffects"></ul>
           </div>
 
-          <!-- Section 4: Warnings / Seek Medical Attention -->
-          <div class="edu-card" id="cardEduWarnings">
-            <div class="edu-card-header icon-bg-red">
-              <i class="fas fa-triangle-exclamation"></i>
-              <h4 id="hdrEduWarnings">تحذيرات هامة ومتى يجب استشارة الطبيب فوراً (Warnings & Precautions)</h4>
-            </div>
-            <ul class="edu-card-list" id="listEduWarnings"></ul>
-          </div>
-
-          <!-- Section 5: Clinical Monitoring & Laboratory Test Interactions -->
-          <div class="edu-card" id="cardEduMonitoring">
-            <div class="edu-card-header" style="background:#e0f2fe; color:#0284c7;">
-              <i class="fas fa-stethoscope"></i>
-              <h4 id="hdrEduMonitoring">المتابعة السريرية وتداخلات التحاليل (Monitoring & Tests)</h4>
+          <!-- Section 4: Clinical Monitoring & Laboratory Test Interactions (Royal Purple - BEFORE Warnings) -->
+          <div class="edu-card" id="cardEduMonitoring" style="border: 1px solid #e9d5ff; border-radius: 12px; overflow: hidden; margin-bottom: 14px;">
+            <div class="edu-card-header" style="background:#f3e8ff; color:#7c3aed; border-bottom: 2px solid #e9d5ff; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-stethoscope" style="font-size: 17px;"></i>
+              <h4 id="hdrEduMonitoring" style="margin: 0; font-size: 14.5px; font-weight: 800;">المتابعة السريرية والفحوصات وتداخلات التحاليل (Monitoring & Tests)</h4>
             </div>
             <ul class="edu-card-list" id="listEduMonitoring"></ul>
+          </div>
+
+          <!-- Section 5: Warnings / Seek Medical Attention (Crimson Red) -->
+          <div class="edu-card" id="cardEduWarnings" style="border: 1px solid #fecaca; border-radius: 12px; overflow: hidden; margin-bottom: 14px;">
+            <div class="edu-card-header" style="background:#fee2e2; color:#dc2626; border-bottom: 2px solid #fecaca; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-triangle-exclamation" style="font-size: 17px;"></i>
+              <h4 id="hdrEduWarnings" style="margin: 0; font-size: 14.5px; font-weight: 800;">تحذيرات هامة ومتى يجب استشارة الطبيب فوراً (Warnings & Precautions)</h4>
+            </div>
+            <ul class="edu-card-list" id="listEduWarnings"></ul>
           </div>
         </div>
 
@@ -7311,6 +7311,10 @@ function detectInstructionIcon(text) {
 
       if (lang && lang !== 'ar') queryParams += `&l=${lang}`;
 
+      if (typeof currentEduSource !== 'undefined' && currentEduSource && currentEduSource !== 'mix') {
+        queryParams += `&src=${encodeURIComponent(currentEduSource)}`;
+      }
+
       const customBase = localStorage.getItem('rx_patient_edu_base_url');
       if (customBase && customBase.trim()) {
         let base = customBase.trim();
@@ -7330,7 +7334,8 @@ function detectInstructionIcon(text) {
       const settings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
       const bKey = settings ? (settings.branch || '') : '';
       const pKey = settings ? (settings.phone || '') : '';
-      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}`;
+      const srcKey = (typeof currentEduSource !== 'undefined') ? currentEduSource : '';
+      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}_${srcKey}`;
       if (patientEduQrCache.has(cacheKey)) {
         return patientEduQrCache.get(cacheKey);
       }
@@ -7470,7 +7475,7 @@ function detectInstructionIcon(text) {
       if (classBar && classText) {
         if (classes && classes.length > 0) {
           classBar.style.display = 'flex';
-          classText.textContent = classes.join(' • ');
+          classText.innerHTML = classes.map(c => `<span style="background:#ffffff; border:1px solid #86efac; padding:3px 10px; border-radius:6px; color:#15803d; font-size:12.5px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.05);">${escapeHtml(c)}</span>`).join(' ');
         } else {
           classBar.style.display = 'none';
         }
@@ -7513,15 +7518,17 @@ function detectInstructionIcon(text) {
       if (isAr) transBar.style.display = 'flex';
       else transBar.style.display = 'none';
 
-      await Promise.all([
-        renderEduSectionList('cardEduUses', 'listEduUses', data.uses || [], 'fas fa-bullseye', isAr),
-        renderEduSectionList('cardEduCounseling', 'listEduCounseling', data.counseling || [], 'fas fa-info-circle', isAr),
-        renderEduSectionList('cardEduSideEffects', 'listEduSideEffects', data.sideEffects || [], 'fas fa-exclamation', isAr),
-        renderEduSectionList('cardEduWarnings', 'listEduWarnings', data.warnings || [], 'fas fa-triangle-exclamation', isAr, true),
-        renderEduSectionList('cardEduMonitoring', 'listEduMonitoring', data.monitoring || [], 'fas fa-stethoscope', isAr)
-      ]);
+      // Render all sections IMMEDIATELY with zero lag
+      renderEduSectionList('cardEduUses', 'listEduUses', data.uses || [], 'fas fa-bullseye', isAr);
+      renderEduSectionList('cardEduCounseling', 'listEduCounseling', data.counseling || [], 'fas fa-clipboard-check', isAr);
+      renderEduSectionList('cardEduSideEffects', 'listEduSideEffects', data.sideEffects || [], 'fas fa-exclamation-circle', isAr);
+      renderEduSectionList('cardEduMonitoring', 'listEduMonitoring', data.monitoring || [], 'fas fa-stethoscope', isAr);
+      renderEduSectionList('cardEduWarnings', 'listEduWarnings', data.warnings || [], 'fas fa-triangle-exclamation', isAr, true);
 
-      transBar.style.display = 'none';
+      // Hide translation status bar after initial immediate render
+      setTimeout(() => {
+        if (transBar) transBar.style.display = 'none';
+      }, 700);
     }
 
     async function transformToPatientVoiceEn(text) {
@@ -7593,9 +7600,10 @@ function detectInstructionIcon(text) {
       return t;
     }
 
-    async function renderEduSectionList(cardId, listId, items, iconClass, isAr, isWarning = false) {
+    function renderEduSectionList(cardId, listId, items, iconClass, isAr, isWarning = false) {
       const card = document.getElementById(cardId);
       const list = document.getElementById(listId);
+      if (!card || !list) return;
       list.innerHTML = "";
 
       if (!items || items.length === 0) {
@@ -7604,21 +7612,59 @@ function detectInstructionIcon(text) {
       }
       card.style.display = "block";
 
-      const translatedItems = await Promise.all(items.map(async (txt) => {
-        if (isAr && typeof translateTextToAr === 'function') {
-          const rawTr = await translateTextToAr(transformToPatientVoiceEn(txt));
-          return transformToPatientVoiceAr(rawTr);
-        }
-        return transformToPatientVoiceEn(txt);
-      }));
+      const elementsToTranslate = [];
 
-      translatedItems.forEach(text => {
+      items.forEach(txt => {
+        if (!txt || typeof txt !== 'string') return;
+        const cleanEn = transformToPatientVoiceEn(txt);
+        let initialText = cleanEn;
+        let needsAsyncTranslation = false;
+
+        if (isAr) {
+          if (/[\u0600-\u06FF]/.test(cleanEn)) {
+            initialText = transformToPatientVoiceAr(cleanEn);
+          } else if (COMMON_PHRASES_DICT && COMMON_PHRASES_DICT[cleanEn]) {
+            initialText = transformToPatientVoiceAr(COMMON_PHRASES_DICT[cleanEn]);
+          } else if (translationCache && translationCache.has(cleanEn)) {
+            initialText = transformToPatientVoiceAr(translationCache.get(cleanEn));
+          } else {
+            initialText = cleanEn;
+            needsAsyncTranslation = true;
+          }
+        }
+
         const li = document.createElement('li');
         li.className = 'edu-card-item' + (isWarning ? ' item-warning' : '');
         li.setAttribute('dir', 'auto');
-        li.innerHTML = `<i class="${iconClass}"></i><span>${escapeHtml(text)}</span>`;
+        const icon = document.createElement('i');
+        icon.className = iconClass;
+        const span = document.createElement('span');
+        span.textContent = initialText;
+        li.appendChild(icon);
+        li.appendChild(span);
         list.appendChild(li);
+
+        if (needsAsyncTranslation && typeof translateTextToAr === 'function') {
+          elementsToTranslate.push({ span, rawEn: cleanEn });
+        }
       });
+
+      // Background translation batching without blocking the UI
+      if (elementsToTranslate.length > 0) {
+        (async () => {
+          for (const item of elementsToTranslate) {
+            try {
+              const rawTr = await translateTextToAr(item.rawEn);
+              const fixed = transformToPatientVoiceAr(rawTr);
+              if (fixed && item.span) {
+                item.span.textContent = fixed;
+              }
+            } catch (err) {
+              console.warn("Background translation error:", err);
+            }
+          }
+        })();
+      }
     }
 
     function openPatientEduPublicPage() {
