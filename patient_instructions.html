@@ -5826,8 +5826,9 @@ function detectInstructionIcon(text) {
       if (!text) return 1;
       const cleanLen = text.trim().length;
       // Real character capacity based on physical thermal print dimensions:
-      // In Arabic (Cairo) at 8.5pt, full width accommodates ~46 characters; with QR dock: ~30 characters.
-      const baseChars = hasQr ? 30 : 46;
+      // On full width sticker: ~48 chars at 8.5pt, ~56 chars at 7.2pt.
+      // With QR dock: ~30 chars at 8.5pt, ~36 chars at 7.2pt.
+      const baseChars = hasQr ? 30 : 48;
       const charsPerLine = Math.max(18, Math.round(baseChars * (8.5 / fontSize)));
       return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
@@ -5845,8 +5846,9 @@ function detectInstructionIcon(text) {
       const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
 
       // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
-      const singlePageMaxLines = enableQr ? 7.0 : 8.5;
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && calculateTotalLinesFullWidth(instructions, 7.5, isRtl, enableQr) <= singlePageMaxLines)) {
+      // Up to 12.0 lines on full-width or 9.0 lines with QR fits on 1 SINGLE CARD!
+      const singlePageMaxLines = enableQr ? 9.2 : 12.5;
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && calculateTotalLinesFullWidth(instructions, 7.2, isRtl, enableQr) <= singlePageMaxLines)) {
         return [instructions];
       }
 
@@ -5855,8 +5857,9 @@ function detectInstructionIcon(text) {
         ? parseInt(maxPerLabelVal) 
         : 99;
 
-      // Safe lines capacity: Earlier cards have NO QR (capacity ~8.0 lines), last card has QR (capacity ~6.5 lines)
-      const MAX_SAFE_LINES = 8.0;
+      // Safe lines capacity: Full-width cards (earlier cards without QR) can safely hold up to 12.0 lines at 7.2pt!
+      // This allows 3 points (like Fosamax fasting + solution + tablet = ~11 lines) to stay together on Card 1!
+      const MAX_SAFE_LINES = 12.0;
 
       const pages = [];
       let currentPage = [];
@@ -5865,10 +5868,10 @@ function detectInstructionIcon(text) {
         const inst = instructions[i];
         const candidatePage = [...currentPage, inst];
 
-        const linesAt8pt = calculateTotalLinesFullWidth(candidatePage, 8.0, isRtl, false);
+        const linesAt7pt = calculateTotalLinesFullWidth(candidatePage, 7.5, isRtl, false);
         const countOverflow = (candidatePage.length > MAX_POINTS_LIMIT);
 
-        if (currentPage.length > 0 && (linesAt8pt > MAX_SAFE_LINES || countOverflow)) {
+        if (currentPage.length > 0 && (linesAt7pt > MAX_SAFE_LINES || countOverflow)) {
           pages.push(currentPage);
           currentPage = [inst];
         } else {
@@ -5891,78 +5894,78 @@ function detectInstructionIcon(text) {
         if (linesAtBase <= 3.0) {
           return {
             fontSize: Math.min(9.5, base + 0.5),
-            lineHeight: 1.26,
-            gap: 4,
-            padding: '2px 0',
+            lineHeight: 1.28,
+            gap: 5,
+            padding: '3px 0',
             justify: 'center'
           };
-        } else if (linesAtBase <= 5.0) {
+        } else if (linesAtBase <= 5.5) {
           return {
-            fontSize: Math.min(8.5, base),
-            lineHeight: 1.18,
-            gap: 2.5,
-            padding: '1px 0',
+            fontSize: Math.min(8.6, base),
+            lineHeight: 1.20,
+            gap: 3.0,
+            padding: '2px 0',
             justify: 'flex-start'
           };
-        } else if (linesAtBase <= 6.5) {
+        } else if (linesAtBase <= 7.5) {
           return {
             fontSize: Math.min(7.8, base - 0.4),
             lineHeight: 1.15,
-            gap: 1.8,
-            padding: '0',
+            gap: 2.0,
+            padding: '1px 0',
             justify: 'flex-start'
           };
         } else {
-          // Dense QR card: auto-shrink font so nothing ever gets cut off!
+          // Dense QR card (8+ lines with QR): scale font down so NOTHING ever overflows!
           return {
-            fontSize: 7.0,
+            fontSize: 7.1,
             lineHeight: 1.12,
-            gap: 1.0,
+            gap: 1.2,
             padding: '0',
             justify: 'flex-start'
           };
         }
       }
 
-      // Without QR:
-      if (linesAtBase <= 3.0) {
+      // Without QR (Full Width):
+      if (linesAtBase <= 3.5) {
         return {
           fontSize: Math.min(10.5, base + 1.2),
-          lineHeight: 1.32,
-          gap: 6,
-          padding: '4px 0',
-          justify: 'center'
+          lineHeight: 1.34,
+          gap: 7,
+          padding: '6px 0',
+          justify: 'space-around'
         };
-      } else if (linesAtBase <= 5.0) {
+      } else if (linesAtBase <= 6.0) {
         return {
-          fontSize: Math.min(9.2, base + 0.2),
-          lineHeight: 1.22,
-          gap: 3.5,
+          fontSize: Math.min(9.4, base + 0.4),
+          lineHeight: 1.25,
+          gap: 4.5,
+          padding: '3px 0',
+          justify: 'space-around'
+        };
+      } else if (linesAtBase <= 8.5) {
+        return {
+          fontSize: Math.min(8.6, base),
+          lineHeight: 1.20,
+          gap: 3.0,
           padding: '2px 0',
           justify: 'flex-start'
         };
-      } else if (linesAtBase <= 7.0) {
+      } else if (linesAtBase <= 10.5) {
         return {
-          fontSize: Math.min(8.2, base - 0.2),
-          lineHeight: 1.16,
+          fontSize: 7.8,
+          lineHeight: 1.15,
           gap: 2.0,
           padding: '1px 0',
           justify: 'flex-start'
         };
-      } else if (linesAtBase <= 8.5) {
-        return {
-          fontSize: 7.5,
-          lineHeight: 1.14,
-          gap: 1.5,
-          padding: '0',
-          justify: 'flex-start'
-        };
       } else {
-        // High density card: shrink to 7.0pt / 1.10
+        // High density card (11 - 13 lines): scale font to 7.2pt / 1.12 so all 3 items fit cleanly without cutting!
         return {
-          fontSize: 7.0,
-          lineHeight: 1.10,
-          gap: 1.0,
+          fontSize: 7.2,
+          lineHeight: 1.12,
+          gap: 1.2,
           padding: '0',
           justify: 'flex-start'
         };
