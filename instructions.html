@@ -4509,6 +4509,7 @@ function detectInstructionIcon(text) {
     // =========================================================
     let batchMedicationQueue = [];
     let currentBatchActiveId = null;
+    let workingInstructions = [];
 
     function showToast(msg) {
       let toast = document.getElementById("appGlobalToast");
@@ -6306,7 +6307,10 @@ function detectInstructionIcon(text) {
       }
 
       if (typeof renderModalLabels === 'function') {
-        renderModalLabels();
+        const modal = document.getElementById("printModalBackdrop");
+        if (modal && modal.style.display === "flex") {
+          renderModalLabels();
+        }
       }
     }
 
@@ -6314,6 +6318,16 @@ function detectInstructionIcon(text) {
       const container = document.getElementById("instructionsChecklist");
       if (!container) return;
       container.innerHTML = "";
+
+      if (!Array.isArray(workingInstructions) || workingInstructions.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:24px 20px; background:#fff; border-radius:12px; border:1.5px dashed #cbd5e1; color:#64748b; margin-top:10px;">
+            <i class="fas fa-spinner fa-spin" style="font-size:22px; color:#10b981; margin-bottom:8px;"></i>
+            <div style="font-weight:700; font-size:14px; color:#1e293b;">جاري تحميل تعليمات الاستخدام...</div>
+          </div>
+        `;
+        return;
+      }
 
       const isRtl = (currentLabelLang === 'ar');
       let hiddenBrandCount = 0;
@@ -7388,23 +7402,40 @@ function detectInstructionIcon(text) {
     // N) Bootstrap on Page Load
     // =========================================================
     window.addEventListener("DOMContentLoaded", () => {
-      // Initialize Thermal Label Print Size (100x50mm Al-Dawaa standard default)
-      setLabelPrintSize(currentLabelSizeKey);
+      // 1. Initialize with current selected medication FIRST (loads active profile & checklist)
+      try {
+        selectMedicationItem(currentMedication, false);
+      } catch (err) {
+        console.error("Error initializing medication:", err);
+      }
 
-      // Initialize with current selected medication and add to batch queue
-      selectMedicationItem(currentMedication, false);
+      // 2. Initialize Thermal Label Print Size (100x50mm Al-Dawaa standard default)
+      try {
+        setLabelPrintSize(currentLabelSizeKey);
+      } catch (err) {
+        console.error("Error setting label print size:", err);
+      }
 
-      // Initialize Master Database
-      initMasterDatabase();
+      // 3. Initialize Master Database
+      try {
+        initMasterDatabase();
+      } catch (err) {
+        console.error("Error initializing master database:", err);
+      }
 
-      // Render initial Batch Queue Tray & Branch Badges
-      updateBatchQueueUI();
-      updateBranchUIBadges();
+      // 4. Render initial Batch Queue Tray & Branch Badges
+      try {
+        updateBatchQueueUI();
+        updateBranchUIBadges();
+      } catch (err) {
+        console.error("Error updating batch queue / branch badges:", err);
+      }
 
       // Close dropdowns on outside click
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".search-panel")) {
-          document.getElementById("quickSearchDropdown").style.display = "none";
+          const dd = document.getElementById("quickSearchDropdown");
+          if (dd) dd.style.display = "none";
         }
       });
     });
