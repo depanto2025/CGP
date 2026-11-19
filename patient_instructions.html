@@ -4980,7 +4980,11 @@ function detectInstructionIcon(text) {
       return null;
     }
 
+    // Flag tracking user's manual click choice so auto-switch never overrides user intent
+    let userExplicitSource = null;
+
     function setInstructionsSource(source) {
+      userExplicitSource = source;
       currentInstructionsSource = source;
 
       const btnLexi = document.getElementById("btnSourceLexidrugs");
@@ -5002,6 +5006,46 @@ function detectInstructionIcon(text) {
         }
         switchActiveIngredientPreset(matchedDrug, p);
       }
+
+      const srcLabel = (source === 'lexidrugs') ? 'Lexi-Drugs' : ((source === 'dynamedex') ? 'DynaMedex' : 'MIX');
+      if (typeof showToast === 'function') {
+        showToast(`المصدر النشط: ${srcLabel}`);
+      }
+    }
+
+    function extractMedicationConcepts(text) {
+      const norm = String(text || '').toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]/g, ' ');
+      const concepts = new Set();
+      if (/water|ماء|كوب/i.test(norm)) concepts.add('WATER');
+      if (/chew|crush|break|swallow whole|whole|تمضغ|تسحق|تبتلع|ابتلاع|كامل|سحق|كسر/i.test(norm)) concepts.add('SWALLOW_WHOLE');
+      if (/antacid|milk|dairy|حموضة|حليب|ألبان/i.test(norm)) concepts.add('ANTACID_MILK');
+      if (/with or without food|مع أو بدون|مع او بدون/i.test(norm)) concepts.add('WITH_WITHOUT_FOOD');
+      else if (/empty stomach|معدة فارغة/i.test(norm)) concepts.add('EMPTY_STOMACH');
+      else if (/with food|مع الطعام|مع الأكل/i.test(norm)) concepts.add('WITH_FOOD');
+      if (/missed dose|نسيان|فائتة|منسية|تعويض/i.test(norm)) concepts.add('MISSED_DOSE');
+      return concepts;
+    }
+
+    function isRedundantMedInstruction(candText, existingList) {
+      if (!candText || candText.length > 95) return false;
+      if (/prepare|suspension|vehicle|ora-plus|ora-sweet|amber|تحضير|معلق|زجاجة/i.test(candText)) {
+        return false;
+      }
+      const candConcepts = extractMedicationConcepts(candText);
+      if (candConcepts.size === 0) return false;
+
+      for (const ex of existingList) {
+        const exConcepts = extractMedicationConcepts(ex);
+        let allCovered = true;
+        for (const c of candConcepts) {
+          if (!exConcepts.has(c)) {
+            allCovered = false;
+            break;
+          }
+        }
+        if (allCovered) return true;
+      }
+      return false;
     }
 
     function getMixedDrug(p) {
@@ -5018,7 +5062,7 @@ function detectInstructionIcon(text) {
           const merged = [];
           const seen = new Set();
 
-          const normKey = (str) => String(str).toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]/g, '').slice(0, 45);
+          const normKey = (str) => String(str).toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]/g, '').slice(0, 40);
 
           listLexi.forEach(text => {
             const k = normKey(text);
@@ -5030,7 +5074,7 @@ function detectInstructionIcon(text) {
 
           listDyna.forEach(text => {
             const k = normKey(text);
-            if (!seen.has(k)) {
+            if (!seen.has(k) && !isRedundantMedInstruction(text, merged)) {
               seen.add(k);
               merged.push(text);
             }
@@ -5710,31 +5754,52 @@ function detectInstructionIcon(text) {
           };
         }
 
+        // Proactive image resolution if no Master DB image:
+        if (!cachedRepaired && !formattedImg) {
+          if (srcInd) srcInd.innerText = 'Searching Image...';
+          (async () => {
+            let repaired = await fetchImageFromWorker(code);
+            if (!repaired) repaired = await findImageOnSe7en(code, p);
+            if (repaired && repaired !== 'FAILED') {
+              currentMedication.imageUrl = repaired;
+              currentMedication.imageSource = 'Se7en Repaired ✓';
+              if (cardImg) cardImg.src = repaired;
+              if (srcInd) srcInd.innerText = 'Se7en Repaired ✓';
+              syncCurrentItemToBatch();
+              updateBatchQueueUI();
+            } else {
+              if (srcInd) srcInd.innerText = 'No Image Available';
+            }
+          })();
+        }
+
         // 2. Automatically link Active Ingredient & Instructions IMMEDIATELY!
-        // Smart Auto-Switch Rule: Lexi-Drugs is default, BUT if Lexi has only 1 or 2 instructions
-        // and DynaMedex has richer data, automatically switch to MIX!
+        // Respect user's explicit manual source selection; only auto-switch to MIX on initial load
+        // if user hasn't chosen a source and Lexi has <= 2 instructions and DynaMedex has data!
         const lexiCandidate = findLexidrug(p);
         const dynaCandidate = findDynamedexDrug(p);
 
-        let lexiInstCount = 0;
-        if (lexiCandidate && lexiCandidate.routes) {
-          const rKeys = Object.keys(lexiCandidate.routes);
-          if (rKeys.length > 0) {
-            const oralKey = rKeys.find(r => /oral/i.test(r)) || rKeys[0];
-            lexiInstCount = (lexiCandidate.routes[oralKey] || []).length;
-          }
-        }
+        let chosenSource = userExplicitSource || currentInstructionsSource || 'lexidrugs';
 
-        let chosenSource = currentInstructionsSource;
-        if (chosenSource === 'lexidrugs' && lexiCandidate && dynaCandidate && lexiInstCount > 0 && lexiInstCount <= 2) {
-          chosenSource = 'mix';
-          currentInstructionsSource = 'mix';
-          const btnLexi = document.getElementById("btnSourceLexidrugs");
-          const btnDyna = document.getElementById("btnSourceDynamedex");
-          const btnMix = document.getElementById("btnSourceMix");
-          if (btnLexi) btnLexi.classList.remove("active");
-          if (btnDyna) btnDyna.classList.remove("active");
-          if (btnMix) btnMix.classList.add("active");
+        if (!userExplicitSource && chosenSource === 'lexidrugs' && lexiCandidate && dynaCandidate) {
+          let lexiInstCount = 0;
+          if (lexiCandidate.routes) {
+            const rKeys = Object.keys(lexiCandidate.routes);
+            if (rKeys.length > 0) {
+              const oralKey = rKeys.find(r => /oral/i.test(r)) || rKeys[0];
+              lexiInstCount = (lexiCandidate.routes[oralKey] || []).length;
+            }
+          }
+          if (lexiInstCount > 0 && lexiInstCount <= 2) {
+            chosenSource = 'mix';
+            currentInstructionsSource = 'mix';
+            const btnLexi = document.getElementById("btnSourceLexidrugs");
+            const btnDyna = document.getElementById("btnSourceDynamedex");
+            const btnMix = document.getElementById("btnSourceMix");
+            if (btnLexi) btnLexi.classList.remove("active");
+            if (btnDyna) btnDyna.classList.remove("active");
+            if (btnMix) btnMix.classList.add("active");
+          }
         }
 
         let matchedDrug = null;
@@ -5909,7 +5974,7 @@ function detectInstructionIcon(text) {
       if (!instructions || instructions.length === 0) return [];
 
       // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
-      // Up to 9.5 lines with QR (like Tadalafil 3 points) or 12.5 lines without QR fits on 1 SINGLE CARD!
+      // Up to 9.5 lines with QR (like Tadalafil 3 points, Bisacodyl 2 points) or 12.5 lines without QR fits on 1 SINGLE CARD!
       const singlePageMaxLines = enableQr ? 9.5 : 12.5;
       const totalAllLines = calculateTotalLinesFullWidth(instructions, 7.2, isRtl, enableQr);
       if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLines <= singlePageMaxLines)) {
@@ -5926,46 +5991,19 @@ function detectInstructionIcon(text) {
         return pages;
       }
 
-      // 3. Multi-Card Smart Balanced Pagination (when total pages > 1):
-      // Avoid cramming Card 1 until it bursts (preventing Point 5 cut-off) while Card 2 has vast empty space.
-      // Pass A: Check if items can be split across 2 balanced cards!
-      const N = instructions.length;
-      let bestK = -1;
-      let minDiff = 999;
-
-      for (let k = 1; k < N; k++) {
-        const card1 = instructions.slice(0, k);
-        const card2 = instructions.slice(k);
-
-        const linesCard1 = calculateTotalLinesFullWidth(card1, 7.8, isRtl, false); // No QR on Card 1
-        const linesCard2 = calculateTotalLinesFullWidth(card2, 7.2, isRtl, enableQr); // QR on Card 2
-
-        // Card 1 safe ceiling: 9.5 lines (guarantees point 5 is moved to Card 2, never clipped at footer)
-        // Card 2 safe ceiling: 12.5 lines with QR
-        if (linesCard1 <= 9.5 && linesCard2 <= 12.5) {
-          const diff = Math.abs(linesCard1 - linesCard2);
-          if (diff < minDiff) {
-            minDiff = diff;
-            bestK = k;
-          }
-        }
-      }
-
-      if (bestK !== -1) {
-        return [instructions.slice(0, bestK), instructions.slice(bestK)];
-      }
-
-      // Pass B: If > 2 cards needed, use balanced greedy packaging with safe line ceiling
-      const MAX_SAFE_INTERMEDIATE_LINES = 9.2;
+      // 3. Multi-Card Full-Utilization Pagination:
+      // Fill Card 1 comfortably up to 9.5 lines so NO EMPTY WHITE SPACE is left behind!
+      // Only overflow points that cannot fit safely within 9.5 lines move to the next card.
+      const MAX_SAFE_CARD_LINES = 9.5;
       const pages = [];
       let currentPage = [];
 
-      for (let i = 0; i < N; i++) {
+      for (let i = 0; i < instructions.length; i++) {
         const inst = instructions[i];
         const candidatePage = [...currentPage, inst];
         const linesAt7pt = calculateTotalLinesFullWidth(candidatePage, 7.5, isRtl, false);
 
-        if (currentPage.length > 0 && linesAt7pt > MAX_SAFE_INTERMEDIATE_LINES) {
+        if (currentPage.length > 0 && linesAt7pt > MAX_SAFE_CARD_LINES) {
           pages.push(currentPage);
           currentPage = [inst];
         } else {
