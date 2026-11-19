@@ -2312,6 +2312,7 @@ function detectInstructionIcon(text) {
     }
 
     .label-watermark-image {
+      display: none !important;
       position: absolute;
       inset: 0;
       width: 100%;
@@ -2801,7 +2802,7 @@ function detectInstructionIcon(text) {
         page-break-inside: avoid;
         break-inside: avoid;
         box-sizing: border-box !important;
-        padding: 1.0mm 1.5mm !important; /* Edge-to-edge layout with minimal 1.5mm border */
+        padding: 0.6mm 1.0mm !important; /* Full Edge-to-edge layout filling sticker roll completely */
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -2817,14 +2818,7 @@ function detectInstructionIcon(text) {
       }
 
       .print-watermark {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        z-index: 1;
-        opacity: 0.12 !important;
-        filter: contrast(125%) !important;
+        display: none !important; /* Watermark completely removed as requested */
       }
 
       .print-label-page .label-main-text-area {
@@ -2868,11 +2862,11 @@ function detectInstructionIcon(text) {
         display: flex !important;
         flex-direction: row !important;
         align-items: stretch !important;
-        gap: 1.5mm !important;
+        gap: 2.0mm !important;
         overflow: hidden !important;
         min-height: 0 !important;
         width: 100% !important;
-        margin: 0.6mm 0 !important;
+        margin: 0.5mm 0 !important;
       }
 
       .print-label-page .label-items-list {
@@ -2890,7 +2884,7 @@ function detectInstructionIcon(text) {
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
-        width: 22mm !important;
+        width: 30mm !important;
       }
 
       .print-label-page .qr-dock-frame {
@@ -2899,22 +2893,22 @@ function detectInstructionIcon(text) {
         align-items: center !important;
         justify-content: center !important;
         border: 1.5px solid #000000 !important;
-        border-radius: 3px !important;
-        padding: 1.0mm !important;
+        border-radius: 4px !important;
+        padding: 0.8mm !important;
         background: #ffffff !important;
       }
 
       .print-label-page .qr-dock-img {
-        width: 18mm !important;
-        height: 18mm !important;
+        width: 26mm !important;
+        height: 26mm !important;
         image-rendering: pixelated !important;
         display: block !important;
       }
 
       .print-label-page .qr-dock-caption {
-        font-size: 5.2pt !important;
+        font-size: 5.6pt !important;
         font-weight: 900 !important;
-        line-height: 1.05 !important;
+        line-height: 1.1 !important;
         text-align: center !important;
         margin-top: 0.5mm !important;
         color: #000000 !important;
@@ -3979,10 +3973,11 @@ function detectInstructionIcon(text) {
           </select>
         </div>
 
-        <div class="toolbar-option">
+        <!-- Watermark Opacity Slider (Removed / Hidden as requested) -->
+        <div class="toolbar-option" style="display:none !important;">
           <span><i class="fas fa-image"></i> Watermark Opacity:</span>
-          <input type="range" id="modalWatermarkOpacity" min="5" max="35" step="1" value="12" oninput="renderModalLabels()">
-          <span id="opacityValLabel">12%</span>
+          <input type="range" id="modalWatermarkOpacity" min="0" max="0" step="1" value="0" oninput="renderModalLabels()">
+          <span id="opacityValLabel">0%</span>
         </div>
 
         <div class="toolbar-option" style="background: rgba(2, 132, 199, 0.1); padding: 5px 12px; border-radius: 8px; border: 1.5px solid #0284c7;">
@@ -5514,7 +5509,27 @@ function detectInstructionIcon(text) {
 
           const normKey = (str) => String(str).toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]/g, '').slice(0, 40);
 
-          listLexi.forEach(text => {
+          const expandItems = (arr) => {
+            const out = [];
+            arr.forEach(pt => {
+              if (typeof pt === 'string' && pt.length > 70 && pt.includes('. ')) {
+                if (/suspension|chewable|effervescent|solution|معلق|مضغ|فوار/i.test(pt)) {
+                  const s = pt.split(/(?<=\.)\s+(?=[A-Z\(\[\u0600-\u06FF])/).map(x => x.trim()).filter(Boolean);
+                  if (s.length > 1) {
+                    s.forEach(item => out.push(item));
+                    return;
+                  }
+                }
+              }
+              out.push(pt);
+            });
+            return out;
+          };
+
+          const expandedLexi = expandItems(listLexi);
+          const expandedDyna = expandItems(listDyna);
+
+          expandedLexi.forEach(text => {
             const k = normKey(text);
             if (!seen.has(k)) {
               seen.add(k);
@@ -5522,7 +5537,7 @@ function detectInstructionIcon(text) {
             }
           });
 
-          listDyna.forEach(text => {
+          expandedDyna.forEach(text => {
             const k = normKey(text);
             if (!seen.has(k) && !isRedundantMedInstruction(text, merged)) {
               seen.add(k);
@@ -5911,7 +5926,7 @@ function detectInstructionIcon(text) {
 
     function parsePrefixParts(rawPrefix) {
       const parenMatch = rawPrefix.match(/\(([^)]+)\)/);
-      let parenBrand = parenMatch ? parenMatch[1].trim() : '';
+      let parenTag = parenMatch ? parenMatch[1].trim() : '';
 
       const cleanPrefix = rawPrefix.replace(/\[[^\]]+\]/g, '').replace(/\([^)]+\)/g, '').trim();
       const parts = cleanPrefix.split(/,\s*|\s+or\s+/).map(s => s.trim()).filter(Boolean);
@@ -5919,13 +5934,18 @@ function detectInstructionIcon(text) {
       const brandTags = [];
       const formTags = [];
 
-      if (parenBrand && !CLINICAL_FORM_TAGS.has(parenBrand.toLowerCase())) {
-        brandTags.push(parenBrand);
+      if (parenTag) {
+        const pLower = parenTag.toLowerCase();
+        if (CLINICAL_FORM_TAGS.has(pLower) || /suspension|معلق|chewable|مضغ|tablet|قرص|capsule|كبسول|solution|محلول|effervescent|فوار/i.test(pLower)) {
+          formTags.push(parenTag);
+        } else {
+          brandTags.push(parenTag);
+        }
       }
 
       for (const part of parts) {
         const pLower = part.toLowerCase();
-        if (CLINICAL_FORM_TAGS.has(pLower)) {
+        if (CLINICAL_FORM_TAGS.has(pLower) || /suspension|معلق|chewable|مضغ|tablet|قرص|capsule|كبسول|solution|محلول|effervescent|فوار/i.test(pLower)) {
           formTags.push(part);
         } else {
           brandTags.push(part);
@@ -5943,14 +5963,43 @@ function detectInstructionIcon(text) {
     function extractBrandAndFormTags(instructionText) {
       if (!instructionText) return { brandTags: [], formTags: [], isBrandSpecific: false, rawPrefix: '' };
 
-      const prefixMatch = instructionText.match(/^([A-Za-z0-9\s,\-\/(\)\[\]]+?):\s*/);
-      const rawPrefix = prefixMatch ? prefixMatch[1] : '';
-      if (!rawPrefix) {
-        const arPrefixMatch = instructionText.match(/^([\u0600-\u06FF\s,\-\/(\)\[\]A-Za-z0-9]+?):\s*/);
-        if (!arPrefixMatch) return { brandTags: [], formTags: [], isBrandSpecific: false, rawPrefix: '' };
-        return parsePrefixParts(arPrefixMatch[1]);
+      const brandTags = [];
+      const formTags = [];
+
+      // Match colon prefix or bracket/parenthesis prefix at start
+      const prefixColonMatch = instructionText.match(/^([A-Za-z0-9\s,\-\/(\)\[\]\u0600-\u06FF]+?):\s*/);
+      const parenStartMatch = instructionText.match(/^[\(\[]([A-Za-z0-9\s,\-\/\u0600-\u06FF]+?)[\)\]]\s*/);
+
+      let rawPrefix = '';
+      if (prefixColonMatch) {
+        rawPrefix = prefixColonMatch[1];
+      } else if (parenStartMatch) {
+        rawPrefix = parenStartMatch[1];
       }
-      return parsePrefixParts(rawPrefix);
+
+      if (rawPrefix) {
+        const parsed = parsePrefixParts(rawPrefix);
+        brandTags.push(...parsed.brandTags);
+        formTags.push(...parsed.formTags);
+      }
+
+      // Inline semantic form detection (handles unbracketed text or Arabic sentences)
+      if (/\b(oral suspension|shake well before use|reconstitute powder|shake oral suspension)\b|معلق|المعلق|رج المعلق|يعاد تكوين/i.test(instructionText)) {
+        if (!formTags.some(t => /suspension|معلق/i.test(t))) formTags.push('suspension');
+      }
+      if (/\b(chewable|chew or crush)\b|مضغ|للمضغ|قابلة للمضغ/i.test(instructionText)) {
+        if (!formTags.some(t => /chewable|مضغ/i.test(t))) formTags.push('chewable');
+      }
+      if (/\b(effervescent)\b|فوار|الفوار/i.test(instructionText)) {
+        if (!formTags.some(t => /effervescent|فوار/i.test(t))) formTags.push('effervescent');
+      }
+
+      return {
+        brandTags,
+        formTags,
+        isBrandSpecific: brandTags.length > 0,
+        rawPrefix
+      };
     }
 
     function isInstructionRelevantToProduct(instructionText, product) {
@@ -5960,7 +6009,8 @@ function detectInstructionIcon(text) {
       const prodDescEn = normalizeSearchToken(product.tradeNameEn || product["Item Description"] || product.nameEn || '');
       const prodDescAr = normalizeSearchToken(product.tradeNameAr || product["أسم المنتج"] || product.nameAr || '');
       const prodBrand = normalizeSearchToken(product.Brand || product.brand || product.Manufacture || '');
-      const fullProdText = `${prodDescEn} ${prodDescAr} ${prodBrand}`;
+      const prodCatE = normalizeSearchToken(product["Category Level E"] || product.activeIngredient || '');
+      const fullProdText = `${prodDescEn} ${prodDescAr} ${prodBrand} ${prodCatE}`;
 
       // 1. Check Brand Tags
       if (brandTags.length > 0) {
@@ -5981,19 +6031,34 @@ function detectInstructionIcon(text) {
 
       // 2. Check Formulation Tags
       if (formTags.length > 0) {
-        const isProdOralSolution = /\b(solution|sol|syrup|syr|liquid|drops|oral solution)\b|شراب|محلول|نقط|قطرة/i.test(fullProdText);
-        const isProdTabletOrCap = /\b(ta|tab|tabs|tablet|tablets|cap|caps|capsule|capsules|cp|tb)\b|قرص|اقراص|كبسول|كبسولات|حبه|حبوب/i.test(fullProdText);
+        const isProdCapsule = /\b(cap|caps|capsule|capsules|cp)\b|كبسول|كبسولات/i.test(fullProdText);
+        const isProdTablet = /\b(ta|tab|tabs|tablet|tablets|tb)\b|قرص|اقراص|حبه|حبوب/i.test(fullProdText);
+        const isProdTabletOrCap = isProdCapsule || isProdTablet;
+        const isProdChewable = /\b(chew|chewable)\b|مضغ|للمضغ/i.test(fullProdText);
         const isProdEffervescent = /\b(effervesc|eff|effervescent)\b|فوار/i.test(fullProdText);
+        const isProdSuspension = /\b(susp|suspension)\b|معلق|مسحوق شراب|معلق جاف/i.test(fullProdText);
+        const isProdOralSolution = /\b(solution|sol|syrup|syr|liquid|drops|oral solution)\b|شراب|محلول|نقط|قطرة/i.test(fullProdText);
         const isProdXR = /\b(xr|er|cr|sr|dr|extended|retard)\b|ممتد|بطيء/i.test(fullProdText);
 
         for (const f of formTags) {
           const fNorm = f.toLowerCase();
+          // Suspension instructions incompatible with non-suspensions (like capsules/tablets)
+          if ((fNorm.includes('suspension') || fNorm.includes('معلق')) && !isProdSuspension) {
+            return false;
+          }
+          // Chewable instructions incompatible with non-chewable products
+          if ((fNorm.includes('chewable') || fNorm.includes('مضغ')) && !isProdChewable) {
+            return false;
+          }
+          // Oral solution / syrup instructions incompatible with solid tablets/capsules unless liquid
           if ((fNorm.includes('oral solution') || fNorm.includes('solution') || fNorm.includes('محلول') || fNorm.includes('شراب')) && isProdTabletOrCap && !isProdOralSolution) {
             return false;
           }
+          // Effervescent instructions incompatible with non-effervescent forms
           if ((fNorm.includes('effervescent') || fNorm.includes('فوار')) && !isProdEffervescent) {
             return false;
           }
+          // Extended-release vs Immediate-release
           if ((fNorm.includes('extended-release') || fNorm.includes('xr') || fNorm.includes('ممتد')) && !isProdXR) {
             return false;
           }
@@ -6055,8 +6120,23 @@ function detectInstructionIcon(text) {
     }
 
     function loadRouteInstructions(drug, route) {
-      const points = (drug && drug.routes && drug.routes[route]) ? drug.routes[route] : [];
+      const rawPoints = (drug && drug.routes && drug.routes[route]) ? drug.routes[route] : [];
       
+      // Smart decompose of bundled multi-sentence blocks (e.g. Lexi-Drugs paragraphs combining multiple forms)
+      const points = [];
+      rawPoints.forEach(pt => {
+        if (typeof pt === 'string' && pt.length > 70 && pt.includes('. ')) {
+          if (/suspension|chewable|effervescent|solution|معلق|مضغ|فوار/i.test(pt)) {
+            const splitSentences = pt.split(/(?<=\.)\s+(?=[A-Z\(\[\u0600-\u06FF])/).map(s => s.trim()).filter(Boolean);
+            if (splitSentences.length > 1) {
+              splitSentences.forEach(s => points.push(s));
+              return;
+            }
+          }
+        }
+        points.push(pt);
+      });
+
       workingInstructions = points.map(pt => {
         const isMatch = isInstructionRelevantToProduct(pt, currentLoadedProduct);
         return {
@@ -6287,6 +6367,8 @@ function detectInstructionIcon(text) {
               height: ${heightMm}mm !important;
               min-height: 48mm !important;
               max-height: ${heightMm + 0.5}mm !important;
+              box-sizing: border-box !important;
+              padding: 0.6mm 1.0mm !important;
             }
           }
           .screen-label-card {
@@ -7015,7 +7097,6 @@ function detectInstructionIcon(text) {
             if (isPrint) {
               allCardsHtml += `
                 <div class="print-label-page ${isRtl ? 'is-rtl' : 'is-ltr'}">
-                  <img class="print-watermark" src="${med.imageUrl || currentMedication.imageUrl || document.getElementById('cardProductImage')?.src || ''}" style="opacity: ${opacity / 100} !important;" alt="Product Watermark" onerror="this.style.display='none'">
                   <div class="label-main-text-area">
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 1.5px;">
                       <div style="flex:1; overflow:hidden;">
@@ -7027,15 +7108,15 @@ function detectInstructionIcon(text) {
                         ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:1.5mm; overflow:hidden; min-height:0; width:100%;">
+                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:2.0mm; overflow:hidden; min-height:0; width:100%;">
                       <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden; min-height:0;">
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:22mm; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:1.0mm; border:1.5px solid #000; border-radius:3px;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:18mm; height:18mm; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:5.2pt; font-weight:900; line-height:1.05; text-align:center; margin-top:0.6mm; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:30mm; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:0.8mm; border:1.5px solid #000; border-radius:4px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:26mm; height:26mm; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:5.6pt; font-weight:900; line-height:1.1; text-align:center; margin-top:0.5mm; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
@@ -7054,7 +7135,6 @@ function detectInstructionIcon(text) {
             } else {
               allCardsHtml += `
                 <div class="screen-label-card ${isRtl ? 'is-rtl' : 'is-ltr'}">
-                  <img class="label-watermark-image" src="${med.imageUrl || currentMedication.imageUrl || document.getElementById('cardProductImage')?.src || ''}" style="opacity: ${opacity / 100};" alt="Product Watermark" onerror="this.style.display='none'">
                   <div class="label-main-text-area">
                     <div class="label-header-block">
                       <div style="flex:1; overflow:hidden;">
@@ -7072,10 +7152,10 @@ function detectInstructionIcon(text) {
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:80px; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:2px; border-radius:4px;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:74px; height:74px; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:6.5pt; font-weight:800; line-height:1.1; text-align:center; margin-top:2px; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:105px; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:3px; border:1.5px solid #000; border-radius:4px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:96px; height:96px; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:7.2pt; font-weight:800; line-height:1.1; text-align:center; margin-top:2px; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
