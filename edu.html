@@ -589,15 +589,10 @@
     [dir="ltr"] .card-theme-warnings { border-left: 5px solid #dc2626; }
     .card-theme-warnings .sec-title { color: #b91c1c; }
 
-    /* Hide source toggles & drug class from patient */
+    /* Hide source toggles from patient */
     .sec-source-toggle,
     #usesSourceToggle,
     #monSourceToggle {
-      display: none !important;
-    }
-
-    .drug-class-wrap,
-    #drugClassWrap {
       display: none !important;
     }
 
@@ -1102,7 +1097,7 @@
     let currentLang = 'ar';
     let currentDrug = null;
     let scannedProduct = null;
-    let currentUsesSource = 'dynamedex'; // Default for Uses section is Dynamedex
+    let currentUsesSource = 'mix'; // Default for Uses section is MIX
     let currentMonSource = 'mix'; // Default for Monitoring section is MIX
     let translationCache = new Map();
 
@@ -1589,10 +1584,17 @@
       document.getElementById("drugNameMain").textContent = currentDrug.name;
       document.getElementById("drugNameSub").textContent = currentDrug.slug.replace(/-/g, ' ').toUpperCase();
 
-      // Drug Classification is reserved for Pharmacist only (Hidden from patient page)
+      // Display Drug Classification in QR page
       const classWrap = document.getElementById("drugClassWrap");
-      if (classWrap) {
-        classWrap.style.display = "none";
+      const classText = document.getElementById("drugClassText");
+      const classes = currentDrug.classes || (currentDrug.dynamedex ? currentDrug.dynamedex.classes : []) || [];
+      if (classWrap && classText) {
+        if (classes && classes.length > 0) {
+          classWrap.style.display = "inline-flex";
+          classText.innerHTML = classes.map(c => `<span class="drug-class-chip">${escapeHtml(c)}</span>`).join(' ');
+        } else {
+          classWrap.style.display = "none";
+        }
       }
 
       updateBranchAndContactUI();
@@ -1606,8 +1608,8 @@
         currentUsesSource = "lexidrugs";
         currentMonSource = "lexidrugs";
       } else {
-        // Default (Mix): Uses defaults to Dynamedex, Monitoring defaults to Mix
-        currentUsesSource = getUrlParam("usesSrc") || "dynamedex";
+        // Default (Mix): Uses defaults to MIX, Monitoring defaults to Mix
+        currentUsesSource = getUrlParam("usesSrc") || "mix";
         currentMonSource = getUrlParam("monSrc") || "mix";
       }
 
@@ -1720,11 +1722,22 @@
 
       const isAr = (currentLang === 'ar');
       const seen = new Set();
-      const uniqueUses = usesList.filter(item => {
-        const clean = (item.text || '').trim().toLowerCase().replace(/[\s\.\,\;\:\-\_\(\)\[\]]/g, '');
-        if (!clean || seen.has(clean)) return false;
-        seen.add(clean);
-        return true;
+      const uniqueUses = [];
+      // 1. First add FDA approved indications at the top
+      usesList.filter(item => item.type === 'fda').forEach(item => {
+        const clean = (item.text || '').split(':')[0].trim().toLowerCase().replace(/[\s\.\,\;\:\-\_\(\)\[\]]/g, '');
+        if (clean && !seen.has(clean)) {
+          seen.add(clean);
+          uniqueUses.push(item);
+        }
+      });
+      // 2. Then add Non-FDA / Off-label indications if not redundant
+      usesList.filter(item => item.type === 'nonfda').forEach(item => {
+        const clean = (item.text || '').split(':')[0].trim().toLowerCase().replace(/[\s\.\,\;\:\-\_\(\)\[\]]/g, '');
+        if (clean && !seen.has(clean)) {
+          seen.add(clean);
+          uniqueUses.push(item);
+        }
       });
 
       for (const item of uniqueUses) {
@@ -1927,8 +1940,6 @@
       });
       const pillNav = document.getElementById("pillMonitoring")?.parentElement;
       if (pillNav) pillNav.style.display = "none";
-      const classWrap = document.getElementById("drugClassWrap");
-      if (classWrap) classWrap.style.display = "none";
     }
 
     function toggleLanguage() {

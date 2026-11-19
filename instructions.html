@@ -3349,12 +3349,6 @@ function detectInstructionIcon(text) {
       padding: 14px 18px !important;
       margin: 0;
     }
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 0;
-      margin: 0;
-    }
 
     .edu-card-item {
       display: flex;
@@ -4305,6 +4299,127 @@ function detectInstructionIcon(text) {
     const MASTER_URL_1 = decodeURL("u92cq5SMwITJSVEVTFUTwITJEVEVBREUV9ibpFWbvMHZhVGavMnZlJ3LyVGdzFWbkVGdhRGc19iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa");
     const MASTER_URL_2 = decodeURL("u92cq5iMwITJSVEVTFUTwITJEVEVBREUV9ibpFWbvMHZhVGavMnZlJ3LyVGdzFWbkVGdhRGc19iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa");
     const MASTER_URL_3 = decodeURL("u92cq5yMwITJSVEVTFUTwITJEVEVBREUV9ibpFWbvMHZhVGavMnZlJ3LyVGdzFWbkVGdhRGc19iclJWej1iMyATMyEDZl1WYo9WbsFmcl12Lt92YuQnblRnbvNmclNXdiVHa0l2ZucXYy9yL6MHc0RHa");
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    window.escapeHtml = escapeHtml;
+
+    const COMMON_PRIMARY_INDICATIONS = {
+      'bisacodyl': { ar: 'ملين للإمساك', en: 'Laxative / Constipation' },
+      'alendronate': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'alendronate monosodium': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'alendronate monosodium trihydr': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'alendronate sodium': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'lactulose': { ar: 'ملين للإمساك', en: 'Laxative' },
+      'senna': { ar: 'ملين للإمساك', en: 'Laxative' },
+      'glycerin': { ar: 'ملين للإمساك', en: 'Constipation' },
+      'polyethylene glycol': { ar: 'ملين للإمساك', en: 'Laxative' },
+      'metformin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'metformin hydrochloride': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'sitagliptin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'vildagliptin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'empagliflozin': { ar: 'السكري وقصور القلب', en: 'Diabetes / Heart Failure' },
+      'dapagliflozin': { ar: 'السكري وقصور القلب', en: 'Diabetes / Heart Failure' },
+      'glimepiride': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'gliclazide': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'liraglutide': { ar: 'السكري والوزن', en: 'Diabetes / Weight' },
+      'semaglutide': { ar: 'السكري وإنقاص الوزن', en: 'Diabetes / Weight Loss' },
+      'insulin glargine': { ar: 'السكري', en: 'Diabetes' },
+      'valsartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'losartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'telmisartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'candesartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'amlodipine': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'bisoprolol': { ar: 'ضغط الدم ونبض القلب', en: 'Hypertension / Heart' },
+      'carvedilol': { ar: 'قصور القلب وضغط الدم', en: 'Heart Failure / Hypertension' },
+      'metoprolol': { ar: 'ضغط الدم ونبض القلب', en: 'Hypertension' },
+      'nebivolol': { ar: 'ضغط الدم ونبض القلب', en: 'Hypertension' },
+      'ramipril': { ar: 'ضغط الدم وحماية القلب', en: 'Hypertension' },
+      'perindopril': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'atorvastatin': { ar: 'الكوليسترول والدهون', en: 'Cholesterol / Lipids' },
+      'rosuvastatin': { ar: 'الكوليسترول والدهون', en: 'Cholesterol / Lipids' },
+      'simvastatin': { ar: 'الكوليسترول والدهون', en: 'Cholesterol / Lipids' },
+      'clopidogrel': { ar: 'سيولة الدم ومنع التجلط', en: 'Antiplatelet' },
+      'warfarin': { ar: 'مانع للتخثر وسيولة الدم', en: 'Anticoagulant' },
+      'rivaroxaban': { ar: 'مانع للتخثر ومنع الجلطات', en: 'Anticoagulant' },
+      'apixaban': { ar: 'مانع للتخثر ومنع الجلطات', en: 'Anticoagulant' },
+      'esomeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'omeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'pantoprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'rabeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'famotidine': { ar: 'حموضة وحرقة المعدة', en: 'Heartburn / GERD' },
+      'paracetamol': { ar: 'مسكن للألم وخافض حرارة', en: 'Analgesic / Antipyretic' },
+      'ibuprofen': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief / Anti-inflammatory' },
+      'diclofenac': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief / Anti-inflammatory' },
+      'celecoxib': { ar: 'مسكن ومضاد لالتهاب المفاصل', en: 'Arthritis / Pain Relief' },
+      'meloxicam': { ar: 'مسكن لالتهاب المفاصل', en: 'Arthritis / Pain Relief' },
+      'fluticasone': { ar: 'حساسية والتهاب الأنف', en: 'Nasal Allergy / Rhinitis' },
+      'fluticasone propionate': { ar: 'حساسية والتهاب الأنف', en: 'Nasal Allergy / Rhinitis' },
+      'mometasone': { ar: 'حساسية الأنف', en: 'Nasal Allergy' },
+      'montelukast': { ar: 'حساسية الصدر والربو', en: 'Asthma / Allergy' },
+      'salbutamol': { ar: 'موسع للشعب والربو', en: 'Bronchodilator / Asthma' },
+      'budesonide': { ar: 'الربو وحساسية الصدر', en: 'Asthma / Inflammation' },
+      'levocetirizine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
+      'desloratadine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
+      'loratadine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
+      'fexofenadine': { ar: 'مضاد للحساسية', en: 'Antihistamine' },
+      'amoxicillin and clavulanate': { ar: 'مضاد حيوي للعدوى البكتيرية', en: 'Antibacterial' },
+      'amoxicillin': { ar: 'مضاد حيوي للعدوى البكتيرية', en: 'Antibacterial' },
+      'azithromycin': { ar: 'مضاد حيوي للعدوى البكتيرية', en: 'Antibacterial' },
+      'clarithromycin': { ar: 'مضاد حيوي للعدوى', en: 'Antibacterial' },
+      'ciprofloxacin': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'levofloxacin': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'cefixime': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'cefuroxime': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'escitalopram': { ar: 'مضاد للاكتئاب والقلق', en: 'Depression / Anxiety' },
+      'sertraline': { ar: 'مضاد للاكتئاب والتوتر', en: 'Depression / Anxiety' },
+      'pregabalin': { ar: 'آلام الأعصاب', en: 'Neuropathic Pain' },
+      'gabapentin': { ar: 'آلام الأعصاب', en: 'Neuropathic Pain' },
+      'levothyroxine': { ar: 'خمول الغدة الدرقية', en: 'Hypothyroidism' }
+    };
+
+    function getPrimaryIndication(med, isRtl = true) {
+      if (!med) return '';
+      const rawActive = (med.activeIngredient || '').trim().toLowerCase();
+
+      for (const [k, v] of Object.entries(COMMON_PRIMARY_INDICATIONS)) {
+        if (rawActive === k || rawActive.startsWith(k) || rawActive.includes(k)) {
+          return isRtl ? v.ar : v.en;
+        }
+      }
+
+      if (typeof resolvePatientEduDrug === 'function') {
+        const drug = resolvePatientEduDrug(med.activeIngredient, med.tradeNameEn);
+        if (drug) {
+          const mix = drug.mix || {};
+          const fda = (mix.fdaUses && mix.fdaUses.length) ? mix.fdaUses[0] : (drug.lexidrugs?.labeledUses?.[0] || drug.dynamedex?.fdaUses?.[0]);
+          if (fda) {
+            let clean = fda.split(':')[0].replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim();
+            if (clean.length > 0 && clean.length <= 35) {
+              if (isRtl && typeof fixMedicalArabicTranslation === 'function') {
+                return fixMedicalArabicTranslation(clean);
+              }
+              return clean;
+            }
+          }
+          if (drug.classes && drug.classes.length > 0) {
+            let cls = drug.classes[drug.classes.length - 1];
+            if (cls.toLowerCase().includes('agent') && drug.classes.length > 1) {
+              cls = drug.classes[1] || drug.classes[0];
+            }
+            return cls;
+          }
+        }
+      }
+      return '';
+    }
 
     let productsDB = [];
     let masterBarcodeMap = new Map();
@@ -6668,6 +6783,10 @@ function detectInstructionIcon(text) {
 
         const totalPages = pages.length;
         const displayTradeName = isRtl ? (med.tradeNameAr || med.tradeNameEn) : (med.tradeNameEn || med.tradeNameAr);
+        const mainIndication = (typeof getPrimaryIndication === 'function') ? getPrimaryIndication(med, isRtl) : '';
+        const mainIndicationHtml = mainIndication 
+          ? `<span class="label-trade-indication" style="font-size: 8.0pt; font-weight: 900; color: #000; margin-${isRtl ? 'right' : 'left'}: 4px;">(${escapeHtml(mainIndication)})</span>` 
+          : '';
         const rawActive = (med.activeIngredient || '').trim();
         const activeLen = rawActive.length;
         const activeFontSize = activeLen > 30 ? '6.2pt' : (activeLen > 22 ? '6.8pt' : '7.5pt');
@@ -6742,7 +6861,7 @@ function detectInstructionIcon(text) {
                   <div class="label-main-text-area">
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 2px;">
                       <div style="flex:1; overflow:hidden;">
-                        <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900;">${displayTradeName}</div>
+                        <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900; line-height: 1.2;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
                         <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
@@ -6781,7 +6900,7 @@ function detectInstructionIcon(text) {
                   <div class="label-main-text-area">
                     <div class="label-header-block">
                       <div style="flex:1; overflow:hidden;">
-                        <div class="label-header-title">${displayTradeName}</div>
+                        <div class="label-header-title" style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
                         <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
@@ -7511,7 +7630,11 @@ function detectInstructionIcon(text) {
       if (classBar && classText) {
         if (classes && classes.length > 0) {
           classBar.style.display = 'flex';
-          classText.innerHTML = classes.map(c => `<span style="background:#ffffff; border:1px solid #86efac; padding:3px 10px; border-radius:6px; color:#15803d; font-size:12.5px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.05);">${escapeHtml(c)}</span>`).join(' ');
+          try {
+            classText.innerHTML = classes.map(c => `<span style="background:#ffffff; border:1px solid #86efac; padding:3px 10px; border-radius:6px; color:#15803d; font-size:12.5px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.05);">${(typeof escapeHtml === 'function') ? escapeHtml(c) : c}</span>`).join(' ');
+          } catch(e) {
+            classText.textContent = classes.join(' • ');
+          }
         } else {
           classBar.style.display = 'none';
         }
@@ -7524,13 +7647,32 @@ function detectInstructionIcon(text) {
       // Source Data Selection
       let data = { uses: [], counseling: [], sideEffects: [], warnings: [], monitoring: [] };
       if (currentEduSource === 'mix') {
-        const usesData = (dynaObj.uses && dynaObj.uses.length) ? dynaObj.uses : (currentEduDrug.mix?.uses || lexiObj.uses || []);
+        const mix = currentEduDrug.mix || {};
+        let usesData = [];
+        const fda = (mix.fdaUses && mix.fdaUses.length) ? mix.fdaUses : (dynaObj.fdaUses || []).concat(lexiObj.labeledUses || []);
+        const nonFda = (mix.nonFdaUses && mix.nonFdaUses.length) ? mix.nonFdaUses : (dynaObj.nonFdaUses || []).concat(lexiObj.offLabelUses || []);
+        
+        fda.forEach(u => {
+          const clean = u.replace(/\s*[\(\[]?(?:FDA Approved|FDA\/Labeled)[\)\]]?/gi, '').trim();
+          usesData.push(isAr ? `معتمد FDA: ${clean}` : `FDA Approved: ${clean}`);
+        });
+        nonFda.forEach(u => {
+          const clean = u.replace(/\s*[\(\[]?(?:Non-FDA \/ Off-Label|Off-Label)[\)\]]?/gi, '').trim();
+          usesData.push(isAr ? `استعمال غير مصرح (Off-Label): ${clean}` : `Off-Label: ${clean}`);
+        });
+
+        if (usesData.length === 0 && mix.uses && mix.uses.length) {
+          usesData = mix.uses;
+        } else if (usesData.length === 0) {
+          usesData = (dynaObj.uses && dynaObj.uses.length) ? dynaObj.uses : (lexiObj.uses || []);
+        }
+
         data = {
           uses: usesData,
-          counseling: dynaObj.counseling || (currentEduDrug.mix?.counseling || []),
-          sideEffects: lexiObj.sideEffects || (currentEduDrug.mix?.sideEffects || []),
-          warnings: lexiObj.warnings || (currentEduDrug.mix?.warnings || []),
-          monitoring: (currentEduDrug.mix && currentEduDrug.mix.monitoring) ? currentEduDrug.mix.monitoring.concat(currentEduDrug.mix.testInteractions || []) : (dynaObj.monitoring || []).concat(lexiObj.monitoring || [])
+          counseling: dynaObj.counseling || (mix.counseling || []),
+          sideEffects: lexiObj.sideEffects || (mix.sideEffects || []),
+          warnings: lexiObj.warnings || (mix.warnings || []),
+          monitoring: (mix.monitoring && mix.monitoring.length) ? mix.monitoring.concat(mix.testInteractions || []) : (dynaObj.monitoring || []).concat(lexiObj.monitoring || [])
         };
       } else if (currentEduSource === 'dynamedex') {
         data = {
