@@ -4174,6 +4174,13 @@ function detectInstructionIcon(text) {
             <span>جاري الترجمة الفورية للمحتوى باللغة العربية...</span>
           </div>
 
+          <!-- Drug Classification Bar -->
+          <div class="patient-edu-class-bar" id="patientEduClassBar" style="display:none; padding: 7px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; font-size: 13px; color: #166534; font-weight: 700; margin-bottom: 14px; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <i class="fas fa-layer-group" style="color: #15803d;"></i>
+            <span id="lblModalClassTitle">تصنيف الدواء:</span>
+            <span id="patientEduClassText" style="color: #0f172a; font-weight: 600;"></span>
+          </div>
+
           <!-- Section 1: Uses / Indications -->
           <div class="edu-card" id="cardEduUses">
             <div class="edu-card-header icon-bg-blue">
@@ -4208,6 +4215,15 @@ function detectInstructionIcon(text) {
               <h4 id="hdrEduWarnings">تحذيرات هامة ومتى يجب استشارة الطبيب فوراً (Warnings & Precautions)</h4>
             </div>
             <ul class="edu-card-list" id="listEduWarnings"></ul>
+          </div>
+
+          <!-- Section 5: Clinical Monitoring & Laboratory Test Interactions -->
+          <div class="edu-card" id="cardEduMonitoring">
+            <div class="edu-card-header" style="background:#e0f2fe; color:#0284c7;">
+              <i class="fas fa-stethoscope"></i>
+              <h4 id="hdrEduMonitoring">المتابعة السريرية وتداخلات التحاليل (Monitoring & Tests)</h4>
+            </div>
+            <ul class="edu-card-list" id="listEduMonitoring"></ul>
           </div>
         </div>
 
@@ -7423,16 +7439,41 @@ function detectInstructionIcon(text) {
       // Title & Headings
       if (isAr) {
         document.getElementById('patientEduHeaderTitle').textContent = `تثقيف وإرشادات: ${displayTitle}`;
-        document.getElementById('hdrEduUses').textContent = "ما هي دواعي واستخدامات هذا الدواء؟ (Uses)";
+        document.getElementById('hdrEduUses').textContent = "ما هي دواعي واستخدامات هذا الدواء؟ (Uses & Indications)";
         document.getElementById('hdrEduCounseling').textContent = "نصائح الاستخدام والإرشادات الصيدلانية (Medication Counseling)";
         document.getElementById('hdrEduSideEffects').textContent = "الآثار الجانبية الشائعة (Side Effects)";
         document.getElementById('hdrEduWarnings').textContent = "تحذيرات هامة ومتى يجب استشارة الطبيب فوراً (Warnings & Precautions)";
+        if (document.getElementById('hdrEduMonitoring')) {
+          document.getElementById('hdrEduMonitoring').textContent = "المتابعة السريرية وتداخلات التحاليل (Monitoring & Lab Tests)";
+        }
+        if (document.getElementById('lblModalClassTitle')) {
+          document.getElementById('lblModalClassTitle').textContent = "تصنيف الدواء:";
+        }
       } else {
         document.getElementById('patientEduHeaderTitle').textContent = `Patient Counseling: ${displayTitle}`;
-        document.getElementById('hdrEduUses').textContent = "What is this drug used for? (Indications)";
+        document.getElementById('hdrEduUses').textContent = "What is this drug used for? (Uses & Indications)";
         document.getElementById('hdrEduCounseling').textContent = "Medication Counseling & Administration Tips";
         document.getElementById('hdrEduSideEffects').textContent = "Common Side Effects";
         document.getElementById('hdrEduWarnings').textContent = "Important Warnings / Seek Medical Attention";
+        if (document.getElementById('hdrEduMonitoring')) {
+          document.getElementById('hdrEduMonitoring').textContent = "Clinical Monitoring & Laboratory Test Interactions";
+        }
+        if (document.getElementById('lblModalClassTitle')) {
+          document.getElementById('lblModalClassTitle').textContent = "Drug Class:";
+        }
+      }
+
+      // Drug Class Bar
+      const classBar = document.getElementById('patientEduClassBar');
+      const classText = document.getElementById('patientEduClassText');
+      const classes = currentEduDrug.classes || (currentEduDrug.dynamedex ? currentEduDrug.dynamedex.classes : []) || [];
+      if (classBar && classText) {
+        if (classes && classes.length > 0) {
+          classBar.style.display = 'flex';
+          classText.textContent = classes.join(' • ');
+        } else {
+          classBar.style.display = 'none';
+        }
       }
 
       // Separate datasets fallback
@@ -7440,27 +7481,31 @@ function detectInstructionIcon(text) {
       let dynaObj = (window.DYNAMEDEX_PATIENT_EDUCATION && window.DYNAMEDEX_PATIENT_EDUCATION[currentEduDrug.slug]) ? window.DYNAMEDEX_PATIENT_EDUCATION[currentEduDrug.slug] : (currentEduDrug.dynamedex || {});
 
       // Source Data Selection
-      let data = { uses: [], counseling: [], sideEffects: [], warnings: [] };
+      let data = { uses: [], counseling: [], sideEffects: [], warnings: [], monitoring: [] };
       if (currentEduSource === 'mix') {
-        data = currentEduDrug.mix || {
-          uses: lexiObj.uses || [],
-          counseling: dynaObj.counseling || [],
-          sideEffects: lexiObj.sideEffects || [],
-          warnings: lexiObj.warnings || []
+        const usesData = (dynaObj.uses && dynaObj.uses.length) ? dynaObj.uses : (currentEduDrug.mix?.uses || lexiObj.uses || []);
+        data = {
+          uses: usesData,
+          counseling: dynaObj.counseling || (currentEduDrug.mix?.counseling || []),
+          sideEffects: lexiObj.sideEffects || (currentEduDrug.mix?.sideEffects || []),
+          warnings: lexiObj.warnings || (currentEduDrug.mix?.warnings || []),
+          monitoring: (currentEduDrug.mix && currentEduDrug.mix.monitoring) ? currentEduDrug.mix.monitoring.concat(currentEduDrug.mix.testInteractions || []) : (dynaObj.monitoring || []).concat(lexiObj.monitoring || [])
         };
       } else if (currentEduSource === 'dynamedex') {
         data = {
-          uses: [],
+          uses: dynaObj.uses || [],
           counseling: dynaObj.counseling || [],
           sideEffects: [],
-          warnings: []
+          warnings: [],
+          monitoring: dynaObj.monitoring || []
         };
       } else if (currentEduSource === 'lexidrugs') {
         data = {
           uses: lexiObj.uses || [],
           counseling: [],
           sideEffects: lexiObj.sideEffects || [],
-          warnings: lexiObj.warnings || []
+          warnings: lexiObj.warnings || [],
+          monitoring: (lexiObj.monitoring || []).concat(lexiObj.testInteractions || [])
         };
       }
 
@@ -7469,10 +7514,11 @@ function detectInstructionIcon(text) {
       else transBar.style.display = 'none';
 
       await Promise.all([
-        renderEduSectionList('cardEduUses', 'listEduUses', data.uses || [], 'fas fa-check-circle', isAr),
+        renderEduSectionList('cardEduUses', 'listEduUses', data.uses || [], 'fas fa-bullseye', isAr),
         renderEduSectionList('cardEduCounseling', 'listEduCounseling', data.counseling || [], 'fas fa-info-circle', isAr),
         renderEduSectionList('cardEduSideEffects', 'listEduSideEffects', data.sideEffects || [], 'fas fa-exclamation', isAr),
-        renderEduSectionList('cardEduWarnings', 'listEduWarnings', data.warnings || [], 'fas fa-triangle-exclamation', isAr, true)
+        renderEduSectionList('cardEduWarnings', 'listEduWarnings', data.warnings || [], 'fas fa-triangle-exclamation', isAr, true),
+        renderEduSectionList('cardEduMonitoring', 'listEduMonitoring', data.monitoring || [], 'fas fa-stethoscope', isAr)
       ]);
 
       transBar.style.display = 'none';
