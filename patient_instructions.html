@@ -2307,23 +2307,25 @@ function detectInstructionIcon(text) {
       display: block;
     }
 
+    /* INLINE point row: Allows lines 2, 3, etc. to wrap to full width under badge! */
     .label-point-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 5px;
+      display: block;
+      text-align: justify;
+      text-justify: inter-word;
       font-size: 8.5pt;
       line-height: 1.22;
       color: #000000;
       font-weight: 700;
       margin-bottom: 2.5px;
+      width: 100%;
     }
 
     .label-point-badge {
       display: inline-flex;
       align-items: center;
-      gap: 2.5px;
-      flex-shrink: 0;
-      margin-top: 0.5px;
+      gap: 2px;
+      vertical-align: middle;
+      margin-inline-end: 4px;
     }
 
     .label-point-num {
@@ -2333,27 +2335,27 @@ function detectInstructionIcon(text) {
       color: #000000;
       line-height: 1;
       display: inline-block;
-      min-width: 14px;
     }
 
     .label-point-icon-svg {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 19px;
-      height: 19px;
-      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
       color: #000000;
+      margin-inline-end: 2px;
     }
 
     .label-point-icon-svg svg {
-      width: 19px;
-      height: 19px;
+      width: 16px;
+      height: 16px;
       display: block;
     }
 
     .label-point-text {
-      flex: 1;
+      display: inline;
       word-break: break-word;
       line-height: 1.22;
     }
@@ -2577,206 +2579,212 @@ function detectInstructionIcon(text) {
     }
 
     /* =========================================================
-       6. Thermal Label 3" x 2" Print Engine (@media print)
-       NO BOTTOM CUTTING! Barcode is on the vertical side margin!
+       6. Thermal Label Print Engine (@media print)
+       FULL WIDTH DYNAMIC EXTENSION: Fills sticker roll completely!
+       Eliminates blank side margins on 3", 4", and 80mm labels.
        ========================================================= */
     @page {
-      size: 3in 2in;
-      margin: 0;
+      size: auto;
+      margin: 0mm !important;
     }
 
-      @media print {
-    html, body {
-      width: 3in;
-      height: 2in;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: #ffffff !important;
-      color: #000000 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
+    @media print {
+      html, body {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
 
-    body > *:not(#printExecutionSandbox) {
-      display: none !important;
-    }
+      body > *:not(#printExecutionSandbox) {
+        display: none !important;
+      }
 
-    #printExecutionSandbox {
-      display: block !important;
-      width: 3in;
-      height: 2in;
-      margin: 0;
-      padding: 0;
-    }
+      #printExecutionSandbox {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
 
-    .print-label-page {
-      width: 3in;
-      height: 2in;
-      max-width: 3in;
-      max-height: 2in;
-      page-break-after: always;
-      page-break-inside: avoid;
-      break-inside: avoid;
-      box-sizing: border-box;
-      padding: 1.5mm 2.2mm;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-      background: #ffffff;
-      color: #000000;
-    }
+      .print-label-page {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 50.8mm !important;
+        min-height: 48mm !important;
+        max-height: 52mm !important;
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        box-sizing: border-box !important;
+        padding: 1.2mm 2.8mm !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        background: #ffffff;
+        color: #000000;
+      }
 
-    .print-label-page.is-rtl {
-      direction: rtl;
-      font-family: 'Cairo', sans-serif;
-    }
+      .print-label-page.is-rtl {
+        direction: rtl;
+        font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      }
 
-    .print-watermark {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      z-index: 1;
-      opacity: 0.12 !important;
-      filter: grayscale(100%) contrast(150%) !important;
-    }
+      .print-watermark {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 1;
+        opacity: 0.12 !important;
+        filter: grayscale(100%) contrast(150%) !important;
+      }
 
-    .print-label-page .label-main-text-area {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      z-index: 2;
-      overflow: hidden;
-    }
+      .print-label-page .label-main-text-area {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+        overflow: hidden;
+      }
 
-    .print-label-page .label-header-block {
-      border-bottom: 1.5px solid #000;
-      padding-bottom: 2px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 6px;
-      width: 100%;
-    }
+      .print-label-page .label-header-block {
+        border-bottom: 1.5px solid #000;
+        padding-bottom: 2px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 6px;
+        width: 100%;
+      }
 
-    .print-label-page .label-body-content {
-      flex: 1 !important;
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: stretch !important;
-      gap: 2mm !important;
-      overflow: hidden !important;
-      min-height: 0 !important;
-      width: 100% !important;
-      margin: 1mm 0 !important;
-    }
+      .print-label-page .label-body-content {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch !important;
+        gap: 2mm !important;
+        overflow: hidden !important;
+        min-height: 0 !important;
+        width: 100% !important;
+        margin: 0.8mm 0 !important;
+      }
 
-    .print-label-page .label-items-list {
-      flex: 1 !important;
-      min-height: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      overflow: hidden !important;
-    }
+      .print-label-page .label-items-list {
+        flex: 1 !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        width: 100% !important;
+      }
 
-    .print-label-page .label-qr-side-dock {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      flex-shrink: 0 !important;
-      width: 22mm !important;
-    }
+      .print-label-page .label-qr-side-dock {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        width: 20mm !important;
+      }
 
-    .print-label-page .qr-dock-frame {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      border: 1px solid #000 !important;
-      border-radius: 2px !important;
-      padding: 1mm !important;
-      background: #ffffff !important;
-    }
+      .print-label-page .qr-dock-frame {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 1px solid #000 !important;
+        border-radius: 2px !important;
+        padding: 0.8mm !important;
+        background: #ffffff !important;
+      }
 
-    .print-label-page .qr-dock-img {
-      width: 18mm !important;
-      height: 18mm !important;
-      image-rendering: pixelated !important;
-      display: block !important;
-    }
+      .print-label-page .qr-dock-img {
+        width: 17mm !important;
+        height: 17mm !important;
+        image-rendering: pixelated !important;
+        display: block !important;
+      }
 
-    .print-label-page .qr-dock-caption {
-      font-size: 5pt !important;
-      font-weight: 900 !important;
-      line-height: 1.05 !important;
-      text-align: center !important;
-      margin-top: 1mm !important;
-      color: #000000 !important;
-    }
+      .print-label-page .qr-dock-caption {
+        font-size: 5pt !important;
+        font-weight: 900 !important;
+        line-height: 1.05 !important;
+        text-align: center !important;
+        margin-top: 0.8mm !important;
+        color: #000000 !important;
+      }
 
-    .print-label-page .label-point-row {
-      display: flex !important;
-      align-items: flex-start !important;
-      gap: 4px !important;
-      margin-bottom: 2px !important;
-      color: #000000 !important;
-      width: 100% !important;
-    }
+      /* INLINE point row: Allows lines 2, 3, etc. to wrap to full width under badge! */
+      .print-label-page .label-point-row {
+        display: block !important;
+        text-align: justify !important;
+        text-justify: inter-word !important;
+        margin-bottom: 2px !important;
+        color: #000000 !important;
+        width: 100% !important;
+        line-height: inherit !important;
+      }
 
-    .print-label-page .label-point-badge {
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 2.5px !important;
-      flex-shrink: 0 !important;
-    }
+      .print-label-page .label-point-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 2px !important;
+        vertical-align: middle !important;
+        margin-inline-end: 4px !important;
+      }
 
-    .print-label-page .label-point-num {
-      font-weight: 900 !important;
-      color: #000000 !important;
-      line-height: 1 !important;
-      font-size: inherit !important;
-      display: inline-block !important;
-      min-width: 14px !important;
-    }
+      .print-label-page .label-point-num {
+        font-weight: 900 !important;
+        color: #000000 !important;
+        line-height: 1 !important;
+        font-size: inherit !important;
+        display: inline-block !important;
+      }
 
-    .print-label-page .label-point-icon-svg {
-      width: 18px !important;
-      height: 18px !important;
-      color: #000000 !important;
-      flex-shrink: 0 !important;
-    }
+      .print-label-page .label-point-icon-svg {
+        width: 15px !important;
+        height: 15px !important;
+        color: #000000 !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+        margin-inline-end: 2px !important;
+      }
 
-    .print-label-page .label-point-icon-svg svg {
-      width: 18px !important;
-      height: 18px !important;
-      display: block !important;
-    }
+      .print-label-page .label-point-icon-svg svg {
+        width: 15px !important;
+        height: 15px !important;
+        display: block !important;
+      }
 
-    .print-label-page .label-point-text {
-      flex: 1 !important;
-      color: #000000 !important;
-      word-break: break-word !important;
-    }
+      .print-label-page .label-point-text {
+        display: inline !important;
+        color: #000000 !important;
+        word-break: break-word !important;
+      }
 
-    .print-label-page .label-footer-bar {
-      border-top: 1px dashed #444 !important;
-      padding-top: 1mm !important;
-      font-size: 6.8pt !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-      width: 100% !important;
-      flex-shrink: 0 !important;
+      .print-label-page .label-footer-bar {
+        border-top: 1px dashed #444 !important;
+        padding-top: 0.8mm !important;
+        font-size: 6.8pt !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        flex-shrink: 0 !important;
+      }
     }
-  }
 
     #printExecutionSandbox {
       display: none;
@@ -3434,15 +3442,13 @@ function detectInstructionIcon(text) {
 
         <div class="batch-queue-actions">
           <!-- Add Current Medication -->
-          <button class="btn-batch-add" onclick="addCurrentMedicationToBatch(true, true)" title="إضافة الصنف المعروض حالياً لقائمة الطباعة المجمعة">
-            <i class="fas fa-plus-circle"></i>
-            <span>+ إضافة الصنف الحالي</span>
+          <button class="btn-batch-add" onclick="addCurrentMedicationToBatch(true, true)" title="إضافة الصنف المعروض حالياً لقائمة الطباعة المجمعة (+)" aria-label="إضافة الصنف الحالي">
+            <i class="fas fa-plus-circle" style="font-size:18px;"></i>
           </button>
 
           <!-- Clear Queue -->
-          <button class="btn-batch-clear" onclick="clearBatchQueue()" title="تفريغ القائمة">
-            <i class="fas fa-trash-can"></i>
-            <span>تفريغ القائمة</span>
+          <button class="btn-batch-clear" onclick="clearBatchQueue()" title="تفريغ قائمة الطباعة المجمعة" aria-label="تفريغ القائمة">
+            <i class="fas fa-trash-can" style="font-size:17px;"></i>
           </button>
         </div>
       </div>
@@ -3493,13 +3499,11 @@ function detectInstructionIcon(text) {
 
         <!-- Quick Print & Preview Dual Buttons on Card -->
         <div style="display:flex; gap:8px;">
-          <button class="btn-launch-preview" style="flex:1; padding:10px; font-size:12.5px; justify-content:center; background:linear-gradient(135deg, #16a34a, #15803d);" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لجميع الكروت">
-            <i class="fas fa-print"></i>
-            <span>طباعة فورية</span>
+          <button class="btn-launch-preview" style="flex:1; padding:10px; justify-content:center; background:linear-gradient(135deg, #16a34a, #15803d);" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لكافة الكروت (Print)" aria-label="طباعة فورية">
+            <i class="fas fa-print" style="font-size:18px;"></i>
           </button>
-          <button class="btn-launch-preview" style="padding:10px 14px; font-size:12.5px; justify-content:center; background:#0f172a;" onclick="openPrintModal(true)" title="معاينة كارت هذا الصنف">
-            <i class="fas fa-eye"></i>
-            <span>معاينة</span>
+          <button class="btn-launch-preview" style="padding:10px 18px; justify-content:center; background:#0f172a;" onclick="openPrintModal(true)" title="معاينة كارت هذا الصنف (Preview)" aria-label="معاينة كارت هذا الصنف">
+            <i class="fas fa-eye" style="font-size:18px;"></i>
           </button>
         </div>
       </aside>
@@ -3513,32 +3517,32 @@ function detectInstructionIcon(text) {
           </h2>
 
           <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <!-- Database Source Selector: Lexi-Drugs (Default) vs DynaMedex -->
+            <!-- Database Source Selector: Lexi-Drugs (Default) vs DynaMedex vs MIX (Icon-Only + Tooltip) -->
             <div class="db-source-toggle-box">
               <span class="db-source-label"><i class="fas fa-database"></i> Source:</span>
-              <button type="button" id="btnSourceLexidrugs" class="db-source-btn active" onclick="setInstructionsSource('lexidrugs')" title="Lexicomp Patient Administration Instructions">
-                <i class="fas fa-book-medical"></i> Lexi-Drugs
+              <button type="button" id="btnSourceLexidrugs" class="db-source-btn active" onclick="setInstructionsSource('lexidrugs')" title="Lexicomp Patient Administration Instructions (ليكسي دراجز)" aria-label="Lexi-Drugs">
+                <i class="fas fa-book-medical" style="font-size:17px;"></i>
               </button>
-              <button type="button" id="btnSourceDynamedex" class="db-source-btn" onclick="setInstructionsSource('dynamedex')" title="DynaMedex Patient Administration Instructions">
-                <i class="fas fa-stethoscope"></i> DynaMedex
+              <button type="button" id="btnSourceDynamedex" class="db-source-btn" onclick="setInstructionsSource('dynamedex')" title="DynaMedex Patient Administration Instructions (دايناميدكس)" aria-label="DynaMedex">
+                <i class="fas fa-stethoscope" style="font-size:17px;"></i>
               </button>
-              <button type="button" id="btnSourceMix" class="db-source-btn" onclick="setInstructionsSource('mix')" title="دمج تعليمات ليكسي درجز مع ديناميدكس معاً">
-                <i class="fas fa-layer-group"></i> MIX (دمج المصدرين)
+              <button type="button" id="btnSourceMix" class="db-source-btn" onclick="setInstructionsSource('mix')" title="دمج تعليمات ليكسي درجز مع ديناميدكس معاً (MIX)" aria-label="MIX">
+                <i class="fas fa-layer-group" style="font-size:17px;"></i>
               </button>
             </div>
 
-            <!-- Label Output Language Selector (Requested by User) -->
+            <!-- Label Output Language Selector (Icon-Only + Tooltip) -->
             <div class="label-lang-toggle-box">
-              <span style="font-size:11.5px; font-weight:800; color:var(--text-muted); margin-left:6px;">Print Language:</span>
-              <button id="btnLangAr" class="lang-toggle-btn active" onclick="setLabelLanguage('ar')">
-                🇸🇦 العربية (Arabic)
+              <span style="font-size:11.5px; font-weight:800; color:var(--text-muted); margin-left:4px;"><i class="fas fa-language"></i></span>
+              <button id="btnLangAr" class="lang-toggle-btn active" onclick="setLabelLanguage('ar')" title="اللغة العربية (Arabic)" aria-label="العربية">
+                <span style="font-weight:900; font-size:13px;">ع</span>
               </button>
-              <button id="btnLangEn" class="lang-toggle-btn" onclick="setLabelLanguage('en')">
-                🇬🇧 English
+              <button id="btnLangEn" class="lang-toggle-btn" onclick="setLabelLanguage('en')" title="English (الإنجليزية)" aria-label="English">
+                <span style="font-weight:900; font-size:12px;">EN</span>
               </button>
             </div>
-            <button type="button" id="btnTopOpenPatientEdu" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="فتح تثقيف المريض الشامل وقسم الـ Patient Education">
-              <i class="fas fa-graduation-cap"></i> تثقيف المريض (Patient Education)
+            <button type="button" id="btnTopOpenPatientEdu" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="تثقيف المريض (Patient Education)" aria-label="تثقيف المريض" style="padding:7px 12px;">
+              <i class="fas fa-graduation-cap" style="font-size:18px;"></i>
             </button>
           </div>
         </div>
@@ -3556,8 +3560,8 @@ function detectInstructionIcon(text) {
           </div>
           <div class="active-detected-right">
             <span id="detectedClinicalClass" class="active-class-pill">Bisphosphonate / Osteoporosis</span>
-            <button type="button" id="btnOpenPatientEducation" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="فتح تثقيف المريض الشامل وقسم الـ Patient Education">
-              <i class="fas fa-graduation-cap"></i> تثقيف المريض (Patient Education)
+            <button type="button" id="btnOpenPatientEducation" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="تثقيف المريض (Patient Education)" aria-label="تثقيف المريض" style="padding:7px 12px;">
+              <i class="fas fa-graduation-cap" style="font-size:18px;"></i>
             </button>
           </div>
         </div>
@@ -3585,13 +3589,11 @@ function detectInstructionIcon(text) {
           </div>
 
           <div style="display:flex; gap:10px; align-items:center;">
-            <button class="btn-launch-preview" style="background:linear-gradient(135deg, #16a34a, #15803d); box-shadow:0 2px 8px rgba(22, 163, 74, 0.3);" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لجميع الكروت">
-              <i class="fas fa-print"></i>
-              <span>طباعة فورية (Print Now)</span>
+            <button class="btn-launch-preview" style="padding:10px 18px; background:linear-gradient(135deg, #16a34a, #15803d); box-shadow:0 2px 8px rgba(22, 163, 74, 0.3);" onclick="triggerDirectBatchPrint()" title="طباعة فورية مباشرة لكافة الكروت المجهزة (Print Now)" aria-label="طباعة فورية">
+              <i class="fas fa-print" style="font-size:19px;"></i>
             </button>
-            <button class="btn-launch-preview" style="background:#0f172a;" onclick="openPrintModal()" title="معاينة جميع الكروت">
-              <i class="fas fa-eye"></i>
-              <span>معاينة الكروت (Preview)</span>
+            <button class="btn-launch-preview" style="padding:10px 18px; background:#0f172a;" onclick="openPrintModal()" title="معاينة جميع الكروت وتخصيص الطباعة (Preview)" aria-label="معاينة الكروت">
+              <i class="fas fa-eye" style="font-size:19px;"></i>
             </button>
           </div>
         </div>
@@ -5820,18 +5822,21 @@ function detectInstructionIcon(text) {
       if (transIndicator) transIndicator.style.display = "none";
     }
 
-function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
+    function estimateLinesForFontFullWidth(text, fontSize = 8.5, isRtl = true, hasQr = false) {
       if (!text) return 1;
-      // Full width text area (~272px):
-      const charsPerLine = Math.round(272 / (fontSize * 0.49));
-      return Math.max(1, Math.ceil(text.trim().length / charsPerLine));
+      const cleanLen = text.trim().length;
+      // Real character capacity based on physical thermal print dimensions:
+      // In Arabic (Cairo) at 8.5pt, full width accommodates ~46 characters; with QR dock: ~30 characters.
+      const baseChars = hasQr ? 30 : 46;
+      const charsPerLine = Math.max(18, Math.round(baseChars * (8.5 / fontSize)));
+      return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
 
-    function calculateTotalLinesFullWidth(items, fontSize, isRtl) {
+    function calculateTotalLinesFullWidth(items, fontSize = 8.5, isRtl = true, hasQr = false) {
       let total = 0;
       items.forEach(inst => {
         const text = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
-        total += estimateLinesForFontFullWidth(text, fontSize, isRtl);
+        total += estimateLinesForFontFullWidth(text, fontSize, isRtl, hasQr);
       });
       return total;
     }
@@ -5839,19 +5844,19 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
     function paginateInstructionsSmart(instructions, options = {}) {
       const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
 
-      // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card, KEEP ON 1 CARD!
-      // If QR is enabled, threshold is 9.2 lines so QR has room without cramping.
-      const singlePageMaxLines = enableQr ? 9.2 : 11.2;
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && calculateTotalLinesFullWidth(instructions, 7.5, isRtl) <= singlePageMaxLines)) {
+      // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
+      const singlePageMaxLines = enableQr ? 7.0 : 8.5;
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && calculateTotalLinesFullWidth(instructions, 7.5, isRtl, enableQr) <= singlePageMaxLines)) {
         return [instructions];
       }
 
-      // 2. If user explicitly chooses fixed number of points (e.g. 1, 2, 3, 4 points)
+      // 2. Fixed points per card if selected by user
       const MAX_POINTS_LIMIT = (maxPerLabelVal !== "auto" && maxPerLabelVal !== "all") 
         ? parseInt(maxPerLabelVal) 
         : 99;
-      // In multi-card labels, earlier cards have NO QR, so max lines capacity is 10.5
-      const MAX_SAFE_LINES = 10.5;
+
+      // Safe lines capacity: Earlier cards have NO QR (capacity ~8.0 lines), last card has QR (capacity ~6.5 lines)
+      const MAX_SAFE_LINES = 8.0;
 
       const pages = [];
       let currentPage = [];
@@ -5860,7 +5865,7 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
         const inst = instructions[i];
         const candidatePage = [...currentPage, inst];
 
-        const linesAt8pt = calculateTotalLinesFullWidth(candidatePage, 8.0, isRtl);
+        const linesAt8pt = calculateTotalLinesFullWidth(candidatePage, 8.0, isRtl, false);
         const countOverflow = (candidatePage.length > MAX_POINTS_LIMIT);
 
         if (currentPage.length > 0 && (linesAt8pt > MAX_SAFE_LINES || countOverflow)) {
@@ -5880,83 +5885,85 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
 
     function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = 8.5, isRtl = true, hasQr = false) {
       const base = parseFloat(userFontSize) || 8.5;
-      const linesAtBase = calculateTotalLinesFullWidth(pageItems, base, isRtl);
+      const linesAtBase = calculateTotalLinesFullWidth(pageItems, base, isRtl, hasQr);
 
       if (hasQr) {
         if (linesAtBase <= 3.0) {
           return {
-            fontSize: Math.min(10.0, base + 0.8),
-            lineHeight: 1.30,
-            gap: 5.5,
-            padding: '3px 0',
+            fontSize: Math.min(9.5, base + 0.5),
+            lineHeight: 1.26,
+            gap: 4,
+            padding: '2px 0',
             justify: 'center'
           };
-        } else if (linesAtBase <= 5.5) {
+        } else if (linesAtBase <= 5.0) {
           return {
-            fontSize: Math.min(9.0, base + 0.2),
-            lineHeight: 1.22,
-            gap: 3.5,
-            padding: '2.5px 0',
+            fontSize: Math.min(8.5, base),
+            lineHeight: 1.18,
+            gap: 2.5,
+            padding: '1px 0',
             justify: 'flex-start'
           };
-        } else if (linesAtBase <= 7.5) {
+        } else if (linesAtBase <= 6.5) {
           return {
-            fontSize: Math.min(8.2, base - 0.2),
-            lineHeight: 1.16,
-            gap: 2.0,
-            padding: '2px 0',
+            fontSize: Math.min(7.8, base - 0.4),
+            lineHeight: 1.15,
+            gap: 1.8,
+            padding: '0',
             justify: 'flex-start'
           };
         } else {
-          // Packed / dense card with QR: scale down slightly so text NEVER overlaps QR code
+          // Dense QR card: auto-shrink font so nothing ever gets cut off!
           return {
-            fontSize: 7.2,
+            fontSize: 7.0,
             lineHeight: 1.12,
-            gap: 1.5,
-            padding: '1px 0',
+            gap: 1.0,
+            padding: '0',
             justify: 'flex-start'
           };
         }
       }
 
-      if (linesAtBase <= 3.5) {
+      // Without QR:
+      if (linesAtBase <= 3.0) {
         return {
           fontSize: Math.min(10.5, base + 1.2),
-          lineHeight: 1.35,
-          gap: 7,
-          padding: '6px 0',
+          lineHeight: 1.32,
+          gap: 6,
+          padding: '4px 0',
           justify: 'center'
         };
-      } else if (linesAtBase <= 6.5) {
+      } else if (linesAtBase <= 5.0) {
         return {
-          fontSize: Math.min(9.5, base + 0.4),
-          lineHeight: 1.25,
-          gap: 4.5,
-          padding: '4px 0',
+          fontSize: Math.min(9.2, base + 0.2),
+          lineHeight: 1.22,
+          gap: 3.5,
+          padding: '2px 0',
+          justify: 'flex-start'
+        };
+      } else if (linesAtBase <= 7.0) {
+        return {
+          fontSize: Math.min(8.2, base - 0.2),
+          lineHeight: 1.16,
+          gap: 2.0,
+          padding: '1px 0',
           justify: 'flex-start'
         };
       } else if (linesAtBase <= 8.5) {
         return {
-          fontSize: Math.min(8.5, base),
-          lineHeight: 1.20,
-          gap: 3.0,
-          padding: '3px 0',
-          justify: 'flex-start'
-        };
-      } else if (linesAtBase <= 10.5) {
-        return {
-          fontSize: 7.8,
-          lineHeight: 1.16,
-          gap: 2.2,
-          padding: '2px 0',
+          fontSize: 7.5,
+          lineHeight: 1.14,
+          gap: 1.5,
+          padding: '0',
           justify: 'flex-start'
         };
       } else {
+        // High density card: shrink to 7.0pt / 1.10
         return {
-          fontSize: 7.2,
-          lineHeight: 1.14,
-          gap: 1.8,
-          padding: '1px 0',
+          fontSize: 7.0,
+          lineHeight: 1.10,
+          gap: 1.0,
+          padding: '0',
           justify: 'flex-start'
         };
       }
@@ -6041,11 +6048,11 @@ function estimateLinesForFontFullWidth(text, fontSize, isRtl) {
 
               pointsHtml += `
                 <div class="label-point-row" style="font-size: ${cardStyle.fontSize}pt; line-height: ${cardStyle.lineHeight}; margin-bottom: 2px;">
-                  <div class="label-point-badge">
+                  <span class="label-point-badge">
                     <bdi class="label-point-num" dir="ltr">${currentPointNum}.</bdi>
                     <span class="label-point-icon-svg">${iconSvg}</span>
-                  </div>
-                  <div class="label-point-text">${textToShow}</div>
+                  </span>
+                  <span class="label-point-text">${textToShow}</span>
                 </div>
               `;
             });
