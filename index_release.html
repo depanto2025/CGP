@@ -7190,13 +7190,6 @@ function detectInstructionIcon(text) {
         const raw = localStorage.getItem("rx_branch_settings");
         if (raw) {
           const parsed = JSON.parse(raw);
-          // If legacy dummy branch 104 or phone 0541932559 was saved, reset to empty
-          if (parsed.branch === "104" || parsed.phone === "0541932559") {
-            parsed.branch = "";
-            parsed.phone = "";
-            parsed.printFooterBranch = false;
-            try { localStorage.setItem("rx_branch_settings", JSON.stringify(parsed)); } catch(e) {}
-          }
           return { ...DEFAULT_BRANCH_SETTINGS, ...parsed };
         }
       } catch (e) {}
@@ -7255,6 +7248,9 @@ function detectInstructionIcon(text) {
 
       if (document.getElementById("printModalBackdrop")?.style.display === "flex") {
         renderModalLabels();
+      }
+      if (typeof renderPatientEducationModalContent === 'function' && document.getElementById('patientEduModal')?.style.display === 'flex') {
+        renderPatientEducationModalContent();
       }
     }
 
@@ -7315,7 +7311,10 @@ function detectInstructionIcon(text) {
       if (typeof QRCode === 'undefined') return "";
       const cleanSlug = (matchedSlug || 'bisacodyl').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
       const code = medObj ? (medObj.code || '') : '';
-      const cacheKey = `${cleanSlug}_${code}_${lang}`;
+      const settings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
+      const bKey = settings ? (settings.branch || '') : '';
+      const pKey = settings ? (settings.phone || '') : '';
+      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}`;
       if (patientEduQrCache.has(cacheKey)) {
         return patientEduQrCache.get(cacheKey);
       }

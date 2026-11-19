@@ -668,6 +668,15 @@
       background: linear-gradient(135deg, #059669, #047857);
       transform: translateY(-1px);
     }
+    .branch-btn.btn-whatsapp {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
+    }
+    .branch-btn.btn-whatsapp:hover {
+      background: linear-gradient(135deg, #20ba5a, #0f7569);
+      transform: translateY(-1px);
+    }
     .branch-btn.btn-location {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: #ffffff;
@@ -746,13 +755,17 @@
         <div class="branch-brand-title">
           <i class="fas fa-clinic-medical"></i>
           <span id="branchBrandName">صيدليات الدواء</span>
-          <span class="branch-num-chip" id="branchNumChip">فرع رقم 104</span>
+          <span class="branch-num-chip" id="branchNumChip" style="display:none;"></span>
         </div>
       </div>
       <div class="branch-actions-row">
-        <a href="tel:0541932559" id="btnCallPharmacy" class="branch-btn btn-call" title="اتصل بالصيدلية">
+        <a href="#" id="btnCallPharmacy" class="branch-btn btn-call" title="اتصل بالصيدلية" style="display:none;">
           <i class="fas fa-phone-alt"></i>
-          <span id="btnCallText">اتصل بالصيدلية (0541932559)</span>
+          <span id="btnCallText">اتصل بالصيدلية</span>
+        </a>
+        <a href="#" id="btnWhatsAppPharmacy" target="_blank" class="branch-btn btn-whatsapp" title="تواصل عبر واتساب" style="display:none;">
+          <i class="fab fa-whatsapp"></i>
+          <span id="btnWhatsAppText">واتساب الصيدلية</span>
         </a>
         <a href="https://maps.google.com" id="btnMapLocation" target="_blank" class="branch-btn btn-location" title="موقع الفرع على الخريطة">
           <i class="fas fa-map-marker-alt"></i>
@@ -1211,17 +1224,35 @@
         }
       }
 
-      // 2. Call Button
+      // 2. Call & WhatsApp Buttons
       const btnCallEl = document.getElementById("btnCallPharmacy");
       const btnCallText = document.getElementById("btnCallText");
-      if (btnCallEl && btnCallText) {
-        if (phone) {
-          btnCallEl.href = `tel:${phone}`;
-          btnCallText.textContent = (currentLang === 'ar') ? `اتصل بالصيدلية (${phone})` : `Call Pharmacy (${phone})`;
+      const btnWhatsAppEl = document.getElementById("btnWhatsAppPharmacy");
+      const btnWhatsAppText = document.getElementById("btnWhatsAppText");
+
+      if (phone && phone.trim()) {
+        const cleanPhone = phone.trim();
+        if (btnCallEl && btnCallText) {
+          btnCallEl.href = `tel:${cleanPhone}`;
+          btnCallText.textContent = (currentLang === 'ar') ? `اتصل بالصيدلية (${cleanPhone})` : `Call Pharmacy (${cleanPhone})`;
           btnCallEl.style.display = "inline-flex";
-        } else {
-          btnCallEl.style.display = "none";
         }
+        if (btnWhatsAppEl && btnWhatsAppText) {
+          const digits = cleanPhone.replace(/[^0-9]/g, '');
+          let waNumber = digits;
+          if (digits.startsWith('05')) {
+            waNumber = '966' + digits.substring(1);
+          } else if (digits.startsWith('5') && digits.length === 9) {
+            waNumber = '966' + digits;
+          }
+          const defaultMsg = (currentLang === 'ar') ? 'السلام عليكم، استفسار بخصوص الدواء وإرشادات الاستخدام' : 'Hello, inquiry regarding medication instructions';
+          btnWhatsAppEl.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(defaultMsg)}`;
+          btnWhatsAppText.textContent = (currentLang === 'ar') ? `واتساب (${cleanPhone})` : `WhatsApp (${cleanPhone})`;
+          btnWhatsAppEl.style.display = "inline-flex";
+        }
+      } else {
+        if (btnCallEl) btnCallEl.style.display = "none";
+        if (btnWhatsAppEl) btnWhatsAppEl.style.display = "none";
       }
 
       // 3. Location / Google Maps Button
