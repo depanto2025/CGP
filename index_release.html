@@ -6875,9 +6875,9 @@ function detectInstructionIcon(text) {
                       </div>
                       ${qrDataUrl ? `
                         <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:22mm; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #000; border-radius:2px; padding:1mm; background:#fff;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:18mm; height:18mm; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:5pt; font-weight:900; line-height:1.05; text-align:center; margin-top:1mm; color:#000;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:0;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:20mm; height:20mm; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:5.2pt; font-weight:900; line-height:1.05; text-align:center; margin-top:0.5mm; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
@@ -6914,10 +6914,10 @@ function detectInstructionIcon(text) {
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:82px; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px solid #000; border-radius:4px; padding:3px; background:#fff;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:68px; height:68px; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:6.5pt; font-weight:800; line-height:1.1; text-align:center; margin-top:3px; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:84px; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:2px; border-radius:4px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:76px; height:76px; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:6.5pt; font-weight:800; line-height:1.1; text-align:center; margin-top:2px; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
@@ -7450,25 +7450,13 @@ function detectInstructionIcon(text) {
       
       let queryParams = `d=${encodeURIComponent(cleanSlug)}`;
 
+      // Keep QR code URL ultra-short & lightweight so thermal print generates large, easily scannable QR modules
       if (settings) {
-        if (settings.branch) queryParams += `&b=${encodeURIComponent(settings.branch)}`;
-        if (settings.phone) queryParams += `&p=${encodeURIComponent(settings.phone)}`;
-        if (settings.hidePharmacistCard) {
-          queryParams += `&hp=1`;
-        } else {
-          if (settings.hidePhotoOnly) queryParams += `&hpo=1`;
-          if (settings.pharmacistName && settings.pharmacistName !== DEFAULT_BRANCH_SETTINGS.pharmacistName) {
-            queryParams += `&pn=${encodeURIComponent(settings.pharmacistName)}`;
-          }
-        }
-        if (settings.locationUrl) queryParams += `&loc=${encodeURIComponent(settings.locationUrl)}`;
+        if (settings.branch && settings.branch.trim()) queryParams += `&b=${encodeURIComponent(settings.branch.trim())}`;
+        if (settings.phone && settings.phone.trim()) queryParams += `&p=${encodeURIComponent(settings.phone.trim())}`;
       }
 
       if (lang && lang !== 'ar') queryParams += `&l=${lang}`;
-
-      if (typeof currentEduSource !== 'undefined' && currentEduSource && currentEduSource !== 'mix') {
-        queryParams += `&src=${encodeURIComponent(currentEduSource)}`;
-      }
 
       const customBase = localStorage.getItem('rx_patient_edu_base_url');
       if (customBase && customBase.trim()) {
@@ -7489,8 +7477,7 @@ function detectInstructionIcon(text) {
       const settings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
       const bKey = settings ? (settings.branch || '') : '';
       const pKey = settings ? (settings.phone || '') : '';
-      const srcKey = (typeof currentEduSource !== 'undefined') ? currentEduSource : '';
-      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}_${srcKey}`;
+      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}`;
       if (patientEduQrCache.has(cacheKey)) {
         return patientEduQrCache.get(cacheKey);
       }
@@ -7505,15 +7492,24 @@ function detectInstructionIcon(text) {
 
         new QRCode(tempDiv, {
           text: url,
-          width: 200,
-          height: 200,
-          correctLevel: QRCode.CorrectLevel.L
+          width: 256,
+          height: 256,
+          correctLevel: QRCode.CorrectLevel.M
         });
 
         let dataUrl = "";
         const canvas = tempDiv.querySelector('canvas');
         if (canvas) {
-          dataUrl = canvas.toDataURL('image/png');
+          // Add guaranteed white Quiet Zone (16px pure white margin around the QR code)
+          const qz = 16;
+          const outCanvas = document.createElement('canvas');
+          outCanvas.width = canvas.width + qz * 2;
+          outCanvas.height = canvas.height + qz * 2;
+          const ctx = outCanvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+          ctx.drawImage(canvas, qz, qz);
+          dataUrl = outCanvas.toDataURL('image/png');
         } else {
           const img = tempDiv.querySelector('img');
           if (img) dataUrl = img.src;
