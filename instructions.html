@@ -1570,14 +1570,15 @@ function detectInstructionIcon(text) {
       background: var(--orange-50);
     }
 
-    /* Two-column dashboard */
+    /* Two-column dashboard (Strict Side-by-Side on All Laptops & Desktops) */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 22px;
+      grid-template-columns: minmax(320px, 380px) 1fr;
+      gap: 20px;
+      align-items: start;
     }
 
-    @media (max-width: 960px) {
+    @media (max-width: 768px) {
       .dashboard-grid {
         grid-template-columns: 1fr;
       }
@@ -2848,8 +2849,8 @@ function detectInstructionIcon(text) {
         padding: 14px 16px 30px;
       }
       .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
+        grid-template-columns: minmax(300px, 350px) 1fr;
+        gap: 16px;
       }
     }
 
@@ -3379,6 +3380,52 @@ function detectInstructionIcon(text) {
       }
     }
 
+    /* Smart Brand Filter Pill */
+    .brand-filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1.5px solid var(--border-color);
+      background: #ffffff;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .brand-filter-pill:hover {
+      background: var(--slate-100);
+      border-color: #94a3b8;
+    }
+    .brand-filter-pill.active {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+      box-shadow: 0 1px 3px rgba(59, 130, 246, 0.15);
+    }
+    .brand-filter-notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 14px;
+      margin-top: 10px;
+      background: #f0fdf4;
+      border: 1px dashed #86efac;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 700;
+      color: #166534;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .brand-filter-notice:hover {
+      background: #dcfce7;
+      border-color: #4ade80;
+    }
   </style>
 </head>
 <body>
@@ -3577,6 +3624,13 @@ function detectInstructionIcon(text) {
                 <span style="font-weight:900; font-size:12px;">EN</span>
               </button>
             </div>
+
+            <!-- Smart Brand Filter Pill (Default ON: Auto-hides non-matching foreign brands like Flonase for Rhinase) -->
+            <button type="button" id="btnToggleBrandFilter" class="brand-filter-pill active" onclick="toggleBrandFilter()" title="فلترة وإخفاء تعليمات البراندات التجارية غير المطابقة (Smart Brand Filter)">
+              <i class="fas fa-filter"></i>
+              <span id="lblBrandFilter">فلترة البراندات [مفعل]</span>
+            </button>
+
             <button type="button" id="btnTopOpenPatientEdu" class="btn-patient-edu-trigger" onclick="openPatientEducationModal()" title="تثقيف المريض (Patient Education)" aria-label="تثقيف المريض" style="padding:7px 12px;">
               <i class="fas fa-graduation-cap" style="font-size:18px;"></i>
             </button>
@@ -3602,11 +3656,8 @@ function detectInstructionIcon(text) {
           </div>
         </div>
 
-        <!-- Instructions Checklist -->
-        <div id="instructionsChecklist" class="instruction-checklist"></div>
-
-        <!-- Add Custom Instruction Row -->
-        <div class="add-instruction-row">
+        <!-- Add Custom Instruction Row (Prominently at the TOP) -->
+        <div class="add-instruction-row" style="margin-top: 14px; margin-bottom: 12px;">
           <input type="text" id="customInstructionInput" class="add-instruction-input" 
                  placeholder="Type custom patient instruction for this active ingredient and press Enter..." 
                  onkeydown="if(event.key==='Enter') addCustomInstructionItem()">
@@ -3616,8 +3667,8 @@ function detectInstructionIcon(text) {
           </button>
         </div>
 
-        <!-- Print Action Bar -->
-        <div class="print-control-bar">
+        <!-- Print Action Bar (At TOP for Instant 1-Click Print & Preview) -->
+        <div class="print-control-bar" style="margin-bottom: 16px;">
           <div class="print-info-text">
             <i class="fas fa-check-circle" style="color: #22c55e;"></i>
             <span id="selectedCountText">3 Instructions Selected for Label</span>
@@ -3633,6 +3684,9 @@ function detectInstructionIcon(text) {
             </button>
           </div>
         </div>
+
+        <!-- Instructions Checklist -->
+        <div id="instructionsChecklist" class="instruction-checklist"></div>
       </section>
 
     </div>
@@ -3692,6 +3746,13 @@ function detectInstructionIcon(text) {
             <i class="fas fa-qrcode" style="color:#0284c7; font-size:14px;"></i>
             <span>طباعة QR التثقيف الدوائي</span>
           </label>
+        </div>
+
+        <div class="toolbar-option">
+          <button type="button" id="modalBtnToggleBrandFilter" class="brand-filter-pill active" onclick="toggleBrandFilter()" title="فلترة وإخفاء تعليمات البراندات التجارية غير المطابقة">
+            <i class="fas fa-filter"></i>
+            <span id="modalLblBrandFilter">فلترة البراندات [مفعل]</span>
+          </button>
         </div>
         <div class="toolbar-option">
           <button type="button" class="btn-preview-branch-settings" onclick="openBranchSettingsModal()" title="تعديل رقم الفرع وهاتف الصيدلية قبل الطباعة">
@@ -5407,16 +5468,207 @@ function detectInstructionIcon(text) {
       loadRouteInstructions(currentActiveDrug, route);
     }
 
+
+    // =========================================================
+    // SMART BRAND & FORMULATION FILTERING ENGINE
+    // Automatically filters out foreign commercial brand names
+    // (e.g. Flonase, Xhance for Rhinase; Adcirca, Cialis for Snafi; Binosto for Fosamax)
+    // while keeping matching brands, matching formulations (e.g. XR), and general points.
+    // Includes user toggle button [🎯 فلترة البراندات] (Default: ON).
+    // =========================================================
+    let isBrandFilterEnabled = true;
+
+    const CLINICAL_FORM_TAGS = new Set([
+      'oral', 'topical', 'intranasal', 'nasal', 'inhalation', 'oral inhalation',
+      'ophthalmic', 'otic', 'subcutaneous', 'subq', 'iv', 'intravenous', 'im', 'intramuscular',
+      'rectal', 'vaginal', 'sublingual', 'buccal', 'transdermal', 'intradermal',
+      'immediate release', 'immediate-release', 'immediate release tablet', 'immediate-release tablet',
+      'extended release', 'extended-release', 'extended release tablet', 'extended-release tablet',
+      'extended release suspension', 'extended-release suspension', 'extended release capsules',
+      'delayed release', 'delayed-release', 'controlled release', 'controlled-release',
+      'xr', 'er', 'sr', 'cr', 'dr', 'odt',
+      'tablets', 'tablet', 'capsules', 'capsule', 'solution', 'oral solution',
+      'suspension', 'oral suspension', 'syrup', 'elixir', 'drops', 'eye drops', 'ear drops',
+      'cream', 'ointment', 'gel', 'lotion', 'foam', 'spray', 'nasal spray',
+      'chewable', 'tablets, chewable', 'tablets, nonchewable caplets',
+      'effervescent', 'powder', 'dry powder inhaler', 'metered dose inhaler', 'metered-dose inhaler',
+      'liquid', 'patch', 'suppository', 'enema',
+      'pediatric', 'adults', 'geriatric', 'infants', 'children',
+      'missed dose', 'missed doses', 'caution', 'warning', 'note', 'administration',
+      'preparation', 'reconstitution', 'dilution', 'disposal', 'bariatric surgery',
+      'take with food', 'take with or without food'
+    ]);
+
+    function normalizeSearchToken(str) {
+      if (!str) return '';
+      return String(str).toLowerCase()
+        .replace(/[\u064B-\u065F]/g, '')
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .replace(/[^a-z0-9\u0600-\u06FF]+/g, ' ')
+        .trim();
+    }
+
+    function parsePrefixParts(rawPrefix) {
+      const parenMatch = rawPrefix.match(/\(([^)]+)\)/);
+      let parenBrand = parenMatch ? parenMatch[1].trim() : '';
+
+      const cleanPrefix = rawPrefix.replace(/\[[^\]]+\]/g, '').replace(/\([^)]+\)/g, '').trim();
+      const parts = cleanPrefix.split(/,\s*|\s+or\s+/).map(s => s.trim()).filter(Boolean);
+
+      const brandTags = [];
+      const formTags = [];
+
+      if (parenBrand && !CLINICAL_FORM_TAGS.has(parenBrand.toLowerCase())) {
+        brandTags.push(parenBrand);
+      }
+
+      for (const part of parts) {
+        const pLower = part.toLowerCase();
+        if (CLINICAL_FORM_TAGS.has(pLower)) {
+          formTags.push(part);
+        } else {
+          brandTags.push(part);
+        }
+      }
+
+      return {
+        brandTags,
+        formTags,
+        isBrandSpecific: brandTags.length > 0,
+        rawPrefix
+      };
+    }
+
+    function extractBrandAndFormTags(instructionText) {
+      if (!instructionText) return { brandTags: [], formTags: [], isBrandSpecific: false, rawPrefix: '' };
+
+      const prefixMatch = instructionText.match(/^([A-Za-z0-9\s,\-\/(\)\[\]]+?):\s*/);
+      const rawPrefix = prefixMatch ? prefixMatch[1] : '';
+      if (!rawPrefix) {
+        const arPrefixMatch = instructionText.match(/^([\u0600-\u06FF\s,\-\/(\)\[\]A-Za-z0-9]+?):\s*/);
+        if (!arPrefixMatch) return { brandTags: [], formTags: [], isBrandSpecific: false, rawPrefix: '' };
+        return parsePrefixParts(arPrefixMatch[1]);
+      }
+      return parsePrefixParts(rawPrefix);
+    }
+
+    function isInstructionRelevantToProduct(instructionText, product) {
+      if (!product) return true;
+      const { brandTags, formTags } = extractBrandAndFormTags(instructionText);
+
+      const prodDescEn = normalizeSearchToken(product.tradeNameEn || product["Item Description"] || product.nameEn || '');
+      const prodDescAr = normalizeSearchToken(product.tradeNameAr || product["أسم المنتج"] || product.nameAr || '');
+      const prodBrand = normalizeSearchToken(product.Brand || product.brand || product.Manufacture || '');
+      const fullProdText = `${prodDescEn} ${prodDescAr} ${prodBrand}`;
+
+      // 1. Check Brand Tags
+      if (brandTags.length > 0) {
+        let brandMatched = false;
+        for (const b of brandTags) {
+          const bNorm = normalizeSearchToken(b);
+          if (!bNorm) continue;
+          const bTokens = bNorm.split(/\s+/).filter(t => t.length > 2);
+          if (bTokens.length > 0 && bTokens.some(t => fullProdText.includes(t))) {
+            brandMatched = true;
+            break;
+          }
+        }
+        if (!brandMatched) {
+          return false;
+        }
+      }
+
+      // 2. Check Formulation Tags
+      if (formTags.length > 0) {
+        const isProdOralSolution = fullProdText.includes('solution') || fullProdText.includes('syrup') || fullProdText.includes('شراب') || fullProdText.includes('محلول');
+        const isProdTabletOrCap = fullProdText.includes('tab') || fullProdText.includes('cap') || fullProdText.includes('قرص') || fullProdText.includes('كبسول');
+        const isProdEffervescent = fullProdText.includes('effervesc') || fullProdText.includes('فوار');
+        const isProdXR = fullProdText.includes('xr') || fullProdText.includes('er') || fullProdText.includes('extended') || fullProdText.includes('ممتد');
+
+        for (const f of formTags) {
+          const fNorm = f.toLowerCase();
+          if ((fNorm.includes('oral solution') || fNorm.includes('solution')) && isProdTabletOrCap && !isProdOralSolution) {
+            return false;
+          }
+          if (fNorm.includes('effervescent') && !isProdEffervescent) {
+            return false;
+          }
+          if ((fNorm.includes('extended-release') || fNorm.includes('xr')) && !isProdXR) {
+            return false;
+          }
+          if (fNorm.includes('immediate-release') && isProdXR) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    function toggleBrandFilter() {
+      isBrandFilterEnabled = !isBrandFilterEnabled;
+      updateBrandFilterUI();
+
+      if (workingInstructions && workingInstructions.length > 0) {
+        workingInstructions.forEach(item => {
+          if (!isBrandFilterEnabled) {
+            // Unhide all brand instructions so pharmacist can see & check any
+          } else {
+            // Re-apply smart brand matching
+            const isMatch = isInstructionRelevantToProduct(item.textEn || item.text, currentLoadedProduct);
+            item.isBrandFiltered = !isMatch;
+            item.checked = isMatch;
+          }
+        });
+        syncCurrentItemToBatch();
+        renderInstructionsChecklist();
+        renderModalLabels();
+      }
+    }
+
+    function updateBrandFilterUI() {
+      const btn = document.getElementById("btnToggleBrandFilter");
+      const modalBtn = document.getElementById("modalBtnToggleBrandFilter");
+      const lbl = document.getElementById("lblBrandFilter");
+      const modalLbl = document.getElementById("modalLblBrandFilter");
+
+      if (isBrandFilterEnabled) {
+        if (btn) {
+          btn.classList.add("active");
+          if (lbl) lbl.textContent = "فلترة البراندات [مفعل]";
+        }
+        if (modalBtn) {
+          modalBtn.classList.add("active");
+          if (modalLbl) modalLbl.textContent = "فلترة البراندات [مفعل]";
+        }
+      } else {
+        if (btn) {
+          btn.classList.remove("active");
+          if (lbl) lbl.textContent = "عرض كل البراندات [معطل]";
+        }
+        if (modalBtn) {
+          modalBtn.classList.remove("active");
+          if (modalLbl) modalLbl.textContent = "عرض كل البراندات [معطل]";
+        }
+      }
+    }
+
     function loadRouteInstructions(drug, route) {
       const points = (drug && drug.routes && drug.routes[route]) ? drug.routes[route] : [];
       
-      workingInstructions = points.map(pt => ({
-        tag: route,
-        textEn: pt,
-        textAr: '',
-        text: pt,
-        checked: true
-      }));
+      workingInstructions = points.map(pt => {
+        const isMatch = isInstructionRelevantToProduct(pt, currentLoadedProduct);
+        return {
+          tag: route,
+          textEn: pt,
+          textAr: '',
+          text: pt,
+          checked: isMatch,
+          isBrandFiltered: !isMatch
+        };
+      });
 
       updateRouteButtonsUI(drug, route);
       syncCurrentItemToBatch();
@@ -5590,8 +5842,14 @@ function detectInstructionIcon(text) {
       container.innerHTML = "";
 
       const isRtl = (currentLabelLang === 'ar');
+      let hiddenBrandCount = 0;
 
       workingInstructions.forEach((item, index) => {
+        if (isBrandFilterEnabled && item.isBrandFiltered) {
+          hiddenBrandCount++;
+          return;
+        }
+
         const row = document.createElement("div");
         row.className = `instruction-card-row ${item.checked ? 'is-checked' : ''}`;
         let textVal = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
@@ -5610,6 +5868,7 @@ function detectInstructionIcon(text) {
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
               <span class="instruction-checklist-icon" title="رمز الإرشاد">${iconSvg}</span>
               <span class="instruction-tag-label">${item.tag || 'Instruction'}</span>
+              ${item.isBrandFiltered ? '<span style="font-size:10px; font-weight:800; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px;">براند تجاري آخر</span>' : ''}
             </div>
             <div class="instruction-editable-text ${isRtl ? 'rtl-text' : ''}" contenteditable="true" 
                  onblur="updateInstructionText(${index}, this.innerText)">${textVal}</div>
@@ -5621,7 +5880,16 @@ function detectInstructionIcon(text) {
         container.appendChild(row);
       });
 
-      const checkedCount = workingInstructions.filter(i => i.checked).length;
+      if (isBrandFilterEnabled && hiddenBrandCount > 0) {
+        const notice = document.createElement("div");
+        notice.className = "brand-filter-notice";
+        notice.innerHTML = `<i class="fas fa-filter"></i> <span>تم إخفاء ${hiddenBrandCount} تعليمات خاصة ببراندات تجارية أخرى غير مطابقة للصنف. (انقر لإظهار كافة البراندات)</span>`;
+        notice.onclick = () => toggleBrandFilter();
+        container.appendChild(notice);
+      }
+
+      const activeList = isBrandFilterEnabled ? workingInstructions.filter(i => !i.isBrandFiltered) : workingInstructions;
+      const checkedCount = activeList.filter(i => i.checked).length;
       const countEl = document.getElementById("selectedCountText");
       if (countEl) countEl.innerText = `${checkedCount} Instructions Selected for Label`;
     }
@@ -5974,9 +6242,9 @@ function detectInstructionIcon(text) {
       if (!instructions || instructions.length === 0) return [];
 
       // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
-      // Up to 9.5 lines with QR (like Tadalafil 3 points, Bisacodyl 2 points) or 12.5 lines without QR fits on 1 SINGLE CARD!
-      const singlePageMaxLines = enableQr ? 9.5 : 12.5;
-      const totalAllLines = calculateTotalLinesFullWidth(instructions, 7.2, isRtl, enableQr);
+      // Up to 10.5 lines with QR or 13.5 lines without QR fits on 1 SINGLE CARD!
+      const singlePageMaxLines = enableQr ? 10.5 : 13.5;
+      const totalAllLines = calculateTotalLinesFullWidth(instructions, 7.0, isRtl, enableQr);
       if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLines <= singlePageMaxLines)) {
         return [instructions];
       }
@@ -5992,9 +6260,9 @@ function detectInstructionIcon(text) {
       }
 
       // 3. Multi-Card Full-Utilization Pagination:
-      // Fill Card 1 comfortably up to 9.5 lines so NO EMPTY WHITE SPACE is left behind!
-      // Only overflow points that cannot fit safely within 9.5 lines move to the next card.
-      const MAX_SAFE_CARD_LINES = 9.5;
+      // Fill Card 1 comfortably up to 11.5 lines (Card 1 has no QR) so NO EMPTY WHITE SPACE is left behind!
+      // Only overflow points that cannot fit safely within 11.5 lines move to the next card.
+      const MAX_SAFE_CARD_LINES = 11.5;
       const pages = [];
       let currentPage = [];
 
@@ -6126,7 +6394,7 @@ function detectInstructionIcon(text) {
 
       queueToPrint.forEach((batchItem) => {
         const med = batchItem.medication || currentMedication;
-        const instructions = (batchItem.instructions || []).filter(i => i.checked);
+        const instructions = (batchItem.instructions || []).filter(i => i.checked && (!isBrandFilterEnabled || !i.isBrandFiltered));
         if (instructions.length === 0) return;
 
         const qty = Math.max(1, parseInt(batchItem.quantity) || 1);
@@ -6968,8 +7236,7 @@ function detectInstructionIcon(text) {
       transBar.style.display = 'none';
     }
 
-    async 
-    function transformToPatientVoiceEn(text) {
+    async function transformToPatientVoiceEn(text) {
       if (!text) return '';
       let t = text.trim();
       t = t.replace(/^advise patient to report\s+/i, 'Report to your doctor immediately if you experience ');
