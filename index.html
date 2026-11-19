@@ -1753,18 +1753,19 @@ function detectInstructionIcon(text) {
     }
 
     .db-source-btn {
-      padding: 6px 13px;
+      padding: 4px 8px;
       border-radius: 7px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 800;
       cursor: pointer;
-      border: none;
+      border: 1.5px solid transparent;
       background: transparent;
       color: var(--navy-700);
-      transition: all 0.2s;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      min-height: 32px;
     }
 
     .db-source-btn:hover {
@@ -1774,15 +1775,47 @@ function detectInstructionIcon(text) {
     .db-source-btn.active {
       background: var(--navy-900);
       color: #ffffff;
-      box-shadow: 0 2px 4px rgba(10, 25, 47, 0.2);
+      border-color: #38bdf8;
+      box-shadow: 0 2px 6px rgba(10, 25, 47, 0.35);
     }
 
-    .db-source-btn#btnSourceLexidrugs.active i {
-      color: var(--orange-400);
+    .source-brand-icon {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      border-radius: 4px;
+      display: block;
     }
 
-    .db-source-btn#btnSourceDynamedex.active i {
-      color: #38bdf8;
+    .source-mix-badge {
+      position: relative;
+      width: 32px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .source-mix-badge .mix-badge-img {
+      width: 17px;
+      height: 17px;
+      object-fit: contain;
+      border-radius: 3.5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .source-mix-badge .mix-img-1 {
+      position: absolute;
+      right: 0;
+      top: 1px;
+      z-index: 1;
+    }
+
+    .source-mix-badge .mix-img-2 {
+      position: absolute;
+      left: 0;
+      bottom: 1px;
+      z-index: 2;
     }
 
     /* Language Switcher for Printed Label */
@@ -2614,14 +2647,14 @@ function detectInstructionIcon(text) {
       .print-label-page {
         width: 100% !important;
         max-width: 100% !important;
-        height: 50.8mm !important;
-        min-height: 48mm !important;
-        max-height: 52mm !important;
+        height: 48mm !important;
+        min-height: 47mm !important;
+        max-height: 48.5mm !important;
         page-break-after: always;
         page-break-inside: avoid;
         break-inside: avoid;
         box-sizing: border-box !important;
-        padding: 1.2mm 2.8mm !important;
+        padding: 0.8mm 2.2mm !important;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -3521,13 +3554,16 @@ function detectInstructionIcon(text) {
             <div class="db-source-toggle-box">
               <span class="db-source-label"><i class="fas fa-database"></i> Source:</span>
               <button type="button" id="btnSourceLexidrugs" class="db-source-btn active" onclick="setInstructionsSource('lexidrugs')" title="Lexicomp Patient Administration Instructions (ليكسي دراجز)" aria-label="Lexi-Drugs">
-                <i class="fas fa-book-medical" style="font-size:17px;"></i>
+                <img src="lexidrugs_logo.jpg" alt="Lexi" class="source-brand-icon">
               </button>
               <button type="button" id="btnSourceDynamedex" class="db-source-btn" onclick="setInstructionsSource('dynamedex')" title="DynaMedex Patient Administration Instructions (دايناميدكس)" aria-label="DynaMedex">
-                <i class="fas fa-stethoscope" style="font-size:17px;"></i>
+                <img src="dynamedex_logo.jpg" alt="DynaMedex" class="source-brand-icon">
               </button>
               <button type="button" id="btnSourceMix" class="db-source-btn" onclick="setInstructionsSource('mix')" title="دمج تعليمات ليكسي درجز مع ديناميدكس معاً (MIX)" aria-label="MIX">
-                <i class="fas fa-layer-group" style="font-size:17px;"></i>
+                <div class="source-mix-badge">
+                  <img src="lexidrugs_logo.jpg" alt="Lexi" class="mix-badge-img mix-img-1">
+                  <img src="dynamedex_logo.jpg" alt="Dyna" class="mix-badge-img mix-img-2">
+                </div>
               </button>
             </div>
 
@@ -5094,52 +5130,52 @@ function detectInstructionIcon(text) {
     function fixMedicalArabicTranslation(arabicText) {
       if (!arabicText || typeof arabicText !== 'string') return '';
       return arabicText
-        // Fix "إدارة" -> "تناول" / "يؤخذ" (Strictly avoiding institutional office translation)
-        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام أو بدونه')
-        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+وجبات\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام أو بدونه')
-        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+وجبة(?!\p{L})/gu, 'تناول الدواء مع وجبة أو بدونها')
-        .replace(/(?<!\p{L})إدارة\s+مع\s+أو\s+بدون\s+أكل(?!\p{L})/gu, 'تناول الدواء مع الأكل أو بدونه')
-        .replace(/(?<!\p{L})إدارة\s+مع\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام')
-        .replace(/(?<!\p{L})إدارة\s+بدون\s+طعام(?!\p{L})/gu, 'تناول الدواء بدون طعام')
-        .replace(/(?<!\p{L})إدارة\s+على\s+معدة\s+فارغة(?!\p{L})/gu, 'تناول الدواء على معدة فارغة')
-        .replace(/(?<!\p{L})إدارة\s+(مع|بدون|على|قبل|بعد)(?!\p{L})/gu, 'تناول الدواء $1')
-        .replace(/(?<!\p{L})إدارة\s+الجرعة\s+اليومية(?!\p{L})/gu, 'تناول الجرعة اليومية')
-        .replace(/(?<!\p{L})إدارة\s+الجرعة(?!\p{L})/gu, 'تناول الجرعة')
-        .replace(/(?<!\p{L})إدارة\s+الجرعات(?!\p{L})/gu, 'تناول الجرعات')
-        .replace(/(?<!\p{L})إدارة\s+المعلق(?!\p{L})/gu, 'تناول المعلق')
-        .replace(/(?<!\p{L})إدارة\s+المحلول(?!\p{L})/gu, 'تناول المحلول')
-        .replace(/(?<!\p{L})إدارة\s+الأقراص(?!\p{L})/gu, 'تناول الأقراص')
-        .replace(/(?<!\p{L})إدارة\s+القرص(?!\p{L})/gu, 'تناول القرص')
-        .replace(/(?<!\p{L})إدارة\s+الكبسولات(?!\p{L})/gu, 'تناول الكبسولات')
-        .replace(/(?<!\p{L})إدارة\s+الكبسولة(?!\p{L})/gu, 'تناول الكبسولة')
-        .replace(/(?<!\p{L})إدارة\s+الدواء(?!\p{L})/gu, 'تناول الدواء')
-        .replace(/(?<!\p{L})إدارة\s+جرعة(?!\p{L})/gu, 'تناول جرعة')
-        .replace(/(?<!\p{L})إدارة\s+عن\s+طريق\s+الفم(?!\p{L})/gu, 'تناول عن طريق الفم')
-        .replace(/(?<!\p{L})إدارة\s+فموية(?!\p{L})/gu, 'تناول عن طريق الفم')
-        .replace(/(?<!\p{L})طريقة\s+الإدارة(?!\p{L})/gu, 'طريقة الاستعمال')
-        .replace(/(?<!\p{L})يمكن\s+إدارته(?!\p{L})/gu, 'يمكن تناوله')
-        .replace(/(?<!\p{L})يمكن\s+إدارتها(?!\p{L})/gu, 'يمكن تناولها')
-        .replace(/(?<!\p{L})يجب\s+إدارته(?!\p{L})/gu, 'يجب تناوله')
-        .replace(/(?<!\p{L})يجب\s+إدارتها(?!\p{L})/gu, 'يجب تناولها')
-        .replace(/(?<!\p{L})ينبغي\s+إدارته(?!\p{L})/gu, 'ينبغي تناوله')
-        .replace(/(?<!\p{L})ينبغي\s+إدارتها(?!\p{L})/gu, 'ينبغي تناولها')
-        .replace(/(?<!\p{L})تمت\s+إدارته(?!\p{L})/gu, 'تم تناوله')
-        .replace(/(?<!\p{L})تمت\s+إدارتها(?!\p{L})/gu, 'تم تناولها')
-        .replace(/(?<!\p{L})تم\s+إدارته(?!\p{L})/gu, 'تم تناوله')
-        .replace(/(?<!\p{L})لا\s+تقم\s+بإدارة(?!\p{L})/gu, 'لا تتناول')
-        .replace(/(?<!\p{L})لا\s+ينصح\s+بإدارة(?!\p{L})/gu, 'لا ينصح بتناول')
-        .replace(/(?<!\p{L})قبل\s+إدارة(?!\p{L})/gu, 'قبل تناول')
-        .replace(/(?<!\p{L})بعد\s+إدارة(?!\p{L})/gu, 'بعد تناول')
-        .replace(/(?<!\p{L})عند\s+إدارة(?!\p{L})/gu, 'عند تناول')
-        .replace(/(?<!\p{L})بإدارة\s+الدواء(?!\p{L})/gu, 'بتناول الدواء')
-        .replace(/(?<!\p{L})بإدارة(?!\p{L})/gu, 'بتناول')
-        .replace(/(?<!\p{L})لإدارة(?!\p{L})/gu, 'لتناول')
-        .replace(/(?<!\p{L})والإدارة(?!\p{L})/gu, 'والتناول')
-        .replace(/(?<!\p{L})فإدارة(?!\p{L})/gu, 'فتناول')
-        .replace(/(?<!\p{L})إدارتها(?!\p{L})/gu, 'تناولها')
-        .replace(/(?<!\p{L})إدارته(?!\p{L})/gu, 'تناوله')
-        .replace(/(?<!\p{L})إدارة\s*:(?!\p{L})/gu, 'طريقة الاستخدام:')
-        .replace(/(?<!\p{L})إدارة(?!\p{L})/gu, 'تناول الدواء')
+        // Fix "[إا]دارة" -> "تناول" / "يؤخذ" (Strictly avoiding institutional office translation)
+        .replace(/(?<!\p{L})[إا]دارة\s+مع\s+[أا]و\s+بدون\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام [أا]و بدونه')
+        .replace(/(?<!\p{L})[إا]دارة\s+مع\s+[أا]و\s+بدون\s+وجبات\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام [أا]و بدونه')
+        .replace(/(?<!\p{L})[إا]دارة\s+مع\s+[أا]و\s+بدون\s+وجبة(?!\p{L})/gu, 'تناول الدواء مع وجبة [أا]و بدونها')
+        .replace(/(?<!\p{L})[إا]دارة\s+مع\s+[أا]و\s+بدون\s+[أا]كل(?!\p{L})/gu, 'تناول الدواء مع ال[أا]كل [أا]و بدونه')
+        .replace(/(?<!\p{L})[إا]دارة\s+مع\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام')
+        .replace(/(?<!\p{L})[إا]دارة\s+بدون\s+طعام(?!\p{L})/gu, 'تناول الدواء بدون طعام')
+        .replace(/(?<!\p{L})[إا]دارة\s+على\s+معدة\s+فارغة(?!\p{L})/gu, 'تناول الدواء على معدة فارغة')
+        .replace(/(?<!\p{L})[إا]دارة\s+(مع|بدون|على|قبل|بعد)(?!\p{L})/gu, 'تناول الدواء $1')
+        .replace(/(?<!\p{L})[إا]دارة\s+الجرعة\s+اليومية(?!\p{L})/gu, 'تناول الجرعة اليومية')
+        .replace(/(?<!\p{L})[إا]دارة\s+الجرعة(?!\p{L})/gu, 'تناول الجرعة')
+        .replace(/(?<!\p{L})[إا]دارة\s+الجرعات(?!\p{L})/gu, 'تناول الجرعات')
+        .replace(/(?<!\p{L})[إا]دارة\s+المعلق(?!\p{L})/gu, 'تناول المعلق')
+        .replace(/(?<!\p{L})[إا]دارة\s+المحلول(?!\p{L})/gu, 'تناول المحلول')
+        .replace(/(?<!\p{L})[إا]دارة\s+الأقراص(?!\p{L})/gu, 'تناول الأقراص')
+        .replace(/(?<!\p{L})[إا]دارة\s+القرص(?!\p{L})/gu, 'تناول القرص')
+        .replace(/(?<!\p{L})[إا]دارة\s+الكبسولات(?!\p{L})/gu, 'تناول الكبسولات')
+        .replace(/(?<!\p{L})[إا]دارة\s+الكبسولة(?!\p{L})/gu, 'تناول الكبسولة')
+        .replace(/(?<!\p{L})[إا]دارة\s+الدواء(?!\p{L})/gu, 'تناول الدواء')
+        .replace(/(?<!\p{L})[إا]دارة\s+جرعة(?!\p{L})/gu, 'تناول جرعة')
+        .replace(/(?<!\p{L})[إا]دارة\s+عن\s+طريق\s+الفم(?!\p{L})/gu, 'تناول عن طريق الفم')
+        .replace(/(?<!\p{L})[إا]دارة\s+فموية(?!\p{L})/gu, 'تناول عن طريق الفم')
+        .replace(/(?<!\p{L})طريقة\s+ال[إا]دارة(?!\p{L})/gu, 'طريقة الاستعمال')
+        .replace(/(?<!\p{L})يمكن\s+[إا]دارته(?!\p{L})/gu, 'يمكن تناوله')
+        .replace(/(?<!\p{L})يمكن\s+[إا]دارتها(?!\p{L})/gu, 'يمكن تناولها')
+        .replace(/(?<!\p{L})يجب\s+[إا]دارته(?!\p{L})/gu, 'يجب تناوله')
+        .replace(/(?<!\p{L})يجب\s+[إا]دارتها(?!\p{L})/gu, 'يجب تناولها')
+        .replace(/(?<!\p{L})ينبغي\s+[إا]دارته(?!\p{L})/gu, 'ينبغي تناوله')
+        .replace(/(?<!\p{L})ينبغي\s+[إا]دارتها(?!\p{L})/gu, 'ينبغي تناولها')
+        .replace(/(?<!\p{L})تمت\s+[إا]دارته(?!\p{L})/gu, 'تم تناوله')
+        .replace(/(?<!\p{L})تمت\s+[إا]دارتها(?!\p{L})/gu, 'تم تناولها')
+        .replace(/(?<!\p{L})تم\s+[إا]دارته(?!\p{L})/gu, 'تم تناوله')
+        .replace(/(?<!\p{L})لا\s+تقم\s+ب[إا]دارة(?!\p{L})/gu, 'لا تتناول')
+        .replace(/(?<!\p{L})لا\s+ينصح\s+ب[إا]دارة(?!\p{L})/gu, 'لا ينصح بتناول')
+        .replace(/(?<!\p{L})قبل\s+[إا]دارة(?!\p{L})/gu, 'قبل تناول')
+        .replace(/(?<!\p{L})بعد\s+[إا]دارة(?!\p{L})/gu, 'بعد تناول')
+        .replace(/(?<!\p{L})عند\s+[إا]دارة(?!\p{L})/gu, 'عند تناول')
+        .replace(/(?<!\p{L})ب[إا]دارة\s+الدواء(?!\p{L})/gu, 'بتناول الدواء')
+        .replace(/(?<!\p{L})ب[إا]دارة(?!\p{L})/gu, 'بتناول')
+        .replace(/(?<!\p{L})ل[إا]دارة(?!\p{L})/gu, 'لتناول')
+        .replace(/(?<!\p{L})وال[إا]دارة(?!\p{L})/gu, 'والتناول')
+        .replace(/(?<!\p{L})ف[إا]دارة(?!\p{L})/gu, 'فتناول')
+        .replace(/(?<!\p{L})[إا]دارتها(?!\p{L})/gu, 'تناولها')
+        .replace(/(?<!\p{L})[إا]دارته(?!\p{L})/gu, 'تناوله')
+        .replace(/(?<!\p{L})[إا]دارة\s*:(?!\p{L})/gu, 'طريقة الاستخدام:')
+        .replace(/(?<!\p{L})[إا]دارة(?!\p{L})/gu, 'تناول الدواء')
         .replace(/(?<!\p{L})على\s+معدتك\s+الفارغة(?!\p{L})/gu, 'على معدة فارغة')
         .replace(/(?<!\p{L})الاستلقاء\s+لأسفل(?!\p{L})/gu, 'الاستلقاء');
     }
@@ -5674,13 +5710,39 @@ function detectInstructionIcon(text) {
           };
         }
 
-        // 2. Automatically link Active Ingredient & Instructions IMMEDIATELY! (Lexi-Drugs by default)
+        // 2. Automatically link Active Ingredient & Instructions IMMEDIATELY!
+        // Smart Auto-Switch Rule: Lexi-Drugs is default, BUT if Lexi has only 1 or 2 instructions
+        // and DynaMedex has richer data, automatically switch to MIX!
+        const lexiCandidate = findLexidrug(p);
+        const dynaCandidate = findDynamedexDrug(p);
+
+        let lexiInstCount = 0;
+        if (lexiCandidate && lexiCandidate.routes) {
+          const rKeys = Object.keys(lexiCandidate.routes);
+          if (rKeys.length > 0) {
+            const oralKey = rKeys.find(r => /oral/i.test(r)) || rKeys[0];
+            lexiInstCount = (lexiCandidate.routes[oralKey] || []).length;
+          }
+        }
+
+        let chosenSource = currentInstructionsSource;
+        if (chosenSource === 'lexidrugs' && lexiCandidate && dynaCandidate && lexiInstCount > 0 && lexiInstCount <= 2) {
+          chosenSource = 'mix';
+          currentInstructionsSource = 'mix';
+          const btnLexi = document.getElementById("btnSourceLexidrugs");
+          const btnDyna = document.getElementById("btnSourceDynamedex");
+          const btnMix = document.getElementById("btnSourceMix");
+          if (btnLexi) btnLexi.classList.remove("active");
+          if (btnDyna) btnDyna.classList.remove("active");
+          if (btnMix) btnMix.classList.add("active");
+        }
+
         let matchedDrug = null;
-        if (currentInstructionsSource === 'lexidrugs') {
-          matchedDrug = findLexidrug(p) || findDynamedexDrug(p);
-        } else if (currentInstructionsSource === 'dynamedex') {
-          matchedDrug = findDynamedexDrug(p) || findLexidrug(p);
-        } else if (currentInstructionsSource === 'mix') {
+        if (chosenSource === 'lexidrugs') {
+          matchedDrug = lexiCandidate || dynaCandidate;
+        } else if (chosenSource === 'dynamedex') {
+          matchedDrug = dynaCandidate || lexiCandidate;
+        } else if (chosenSource === 'mix') {
           matchedDrug = getMixedDrug(p);
         }
         switchActiveIngredientPreset(matchedDrug, p);
@@ -5844,34 +5906,66 @@ function detectInstructionIcon(text) {
 
     function paginateInstructionsSmart(instructions, options = {}) {
       const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
+      if (!instructions || instructions.length === 0) return [];
 
       // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
-      // Up to 12.0 lines on full-width or 9.0 lines with QR fits on 1 SINGLE CARD!
-      const singlePageMaxLines = enableQr ? 9.2 : 12.5;
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && calculateTotalLinesFullWidth(instructions, 7.2, isRtl, enableQr) <= singlePageMaxLines)) {
+      // Up to 9.5 lines with QR (like Tadalafil 3 points) or 12.5 lines without QR fits on 1 SINGLE CARD!
+      const singlePageMaxLines = enableQr ? 9.5 : 12.5;
+      const totalAllLines = calculateTotalLinesFullWidth(instructions, 7.2, isRtl, enableQr);
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLines <= singlePageMaxLines)) {
         return [instructions];
       }
 
-      // 2. Fixed points per card if selected by user
-      const MAX_POINTS_LIMIT = (maxPerLabelVal !== "auto" && maxPerLabelVal !== "all") 
-        ? parseInt(maxPerLabelVal) 
-        : 99;
+      // 2. Fixed points per card if selected by user (e.g. 1, 2, 3, 4, 5)
+      if (maxPerLabelVal !== "auto" && maxPerLabelVal !== "all") {
+        const limit = parseInt(maxPerLabelVal) || 99;
+        const pages = [];
+        for (let i = 0; i < instructions.length; i += limit) {
+          pages.push(instructions.slice(i, i + limit));
+        }
+        return pages;
+      }
 
-      // Safe lines capacity: Full-width cards (earlier cards without QR) can safely hold up to 12.0 lines at 7.2pt!
-      // This allows 3 points (like Fosamax fasting + solution + tablet = ~11 lines) to stay together on Card 1!
-      const MAX_SAFE_LINES = 12.0;
+      // 3. Multi-Card Smart Balanced Pagination (when total pages > 1):
+      // Avoid cramming Card 1 until it bursts (preventing Point 5 cut-off) while Card 2 has vast empty space.
+      // Pass A: Check if items can be split across 2 balanced cards!
+      const N = instructions.length;
+      let bestK = -1;
+      let minDiff = 999;
 
+      for (let k = 1; k < N; k++) {
+        const card1 = instructions.slice(0, k);
+        const card2 = instructions.slice(k);
+
+        const linesCard1 = calculateTotalLinesFullWidth(card1, 7.8, isRtl, false); // No QR on Card 1
+        const linesCard2 = calculateTotalLinesFullWidth(card2, 7.2, isRtl, enableQr); // QR on Card 2
+
+        // Card 1 safe ceiling: 9.5 lines (guarantees point 5 is moved to Card 2, never clipped at footer)
+        // Card 2 safe ceiling: 12.5 lines with QR
+        if (linesCard1 <= 9.5 && linesCard2 <= 12.5) {
+          const diff = Math.abs(linesCard1 - linesCard2);
+          if (diff < minDiff) {
+            minDiff = diff;
+            bestK = k;
+          }
+        }
+      }
+
+      if (bestK !== -1) {
+        return [instructions.slice(0, bestK), instructions.slice(bestK)];
+      }
+
+      // Pass B: If > 2 cards needed, use balanced greedy packaging with safe line ceiling
+      const MAX_SAFE_INTERMEDIATE_LINES = 9.2;
       const pages = [];
       let currentPage = [];
 
-      for (let i = 0; i < instructions.length; i++) {
+      for (let i = 0; i < N; i++) {
         const inst = instructions[i];
         const candidatePage = [...currentPage, inst];
-
         const linesAt7pt = calculateTotalLinesFullWidth(candidatePage, 7.5, isRtl, false);
-        const countOverflow = (candidatePage.length > MAX_POINTS_LIMIT);
 
-        if (currentPage.length > 0 && (linesAt7pt > MAX_SAFE_LINES || countOverflow)) {
+        if (currentPage.length > 0 && linesAt7pt > MAX_SAFE_INTERMEDIATE_LINES) {
           pages.push(currentPage);
           currentPage = [inst];
         } else {
