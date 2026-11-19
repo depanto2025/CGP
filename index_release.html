@@ -2375,8 +2375,9 @@ function detectInstructionIcon(text) {
       margin-top: 1px;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 250px;
+      unicode-bidi: plaintext;
+      text-align: start;
+      max-width: 270px;
     }
 
     .label-page-chip {
@@ -3299,29 +3300,32 @@ function detectInstructionIcon(text) {
 
     .edu-card {
       background: #ffffff;
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 0 !important;
       border: 1px solid #e2e8f0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      overflow: hidden;
+      margin-bottom: 14px;
     }
 
     .edu-card-header {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 0;
+      padding: 12px 18px;
+      border-bottom: 2px solid transparent;
     }
 
     .edu-card-header i {
       font-size: 18px;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .icon-bg-blue i { background: #dbeafe; color: #1d4ed8; }
@@ -3330,14 +3334,21 @@ function detectInstructionIcon(text) {
     .icon-bg-red i { background: #fee2e2; color: #b91c1c; }
 
     .edu-card-header h4 {
-      font-size: 1.05rem;
+      font-size: 14.5px;
       font-weight: 800;
-      color: #0f172a;
+      color: inherit;
       margin: 0;
+      flex: 1;
     }
 
     .edu-card-list {
       list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 18px !important;
+      margin: 0;
+    }
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -5431,6 +5442,16 @@ function detectInstructionIcon(text) {
       "Cialis: Do not split tablets; the entire dose should be taken. When used on an as-needed basis, should be taken at least 30 minutes prior to sexual activity. When used on a once-daily basis, should be taken at approximately the same time each day without regard to timing of sexual activity.": "سياليس: لا تقم بتقسيم الأقراص؛ ينبغي بلع الجرعة كاملة. عند استخدامه حسب الحاجة، يؤخذ قبل 30 دقيقة على الأقل من الجماع. وعند استخدامه مرة واحدة يومياً، يؤخذ في نفس التوقيت يومياً."
     };
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function fixMedicalArabicTranslation(arabicText) {
       if (!arabicText || typeof arabicText !== 'string') return '';
       return arabicText
@@ -6430,18 +6451,18 @@ function detectInstructionIcon(text) {
       if (transIndicator) transIndicator.style.display = "none";
     }
 
-    function estimateLinesForFontFullWidth(text, fontSize = 8.5, isRtl = true, hasQr = false) {
+    function estimateLinesForFontFullWidth(text, fontSize = 7.5, isRtl = true, hasQr = false) {
       if (!text) return 1;
       const cleanLen = text.trim().length;
-      // Real character capacity based on physical thermal print dimensions:
-      // On full width sticker: ~48 chars at 8.5pt, ~56 chars at 7.2pt.
-      // With QR dock: ~30 chars at 8.5pt, ~36 chars at 7.2pt.
-      const baseChars = hasQr ? 30 : 48;
-      const charsPerLine = Math.max(18, Math.round(baseChars * (8.5 / fontSize)));
+      // Real character capacity in Arabic Cairo font on 3" x 2" thermal sticker:
+      // Without QR: ~50-54 chars/line at 7.5pt, ~58-62 chars/line at 6.8pt
+      // With QR dock (22mm / 82px): ~34-36 chars/line at 7.5pt, ~38-42 chars/line at 6.8pt
+      const baseChars = hasQr ? 35 : 52;
+      const charsPerLine = Math.max(20, Math.round(baseChars * (7.5 / fontSize)));
       return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
 
-    function calculateTotalLinesFullWidth(items, fontSize = 8.5, isRtl = true, hasQr = false) {
+    function calculateTotalLinesFullWidth(items, fontSize = 7.5, isRtl = true, hasQr = false) {
       let total = 0;
       items.forEach(inst => {
         const text = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
@@ -6454,20 +6475,7 @@ function detectInstructionIcon(text) {
       const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
       if (!instructions || instructions.length === 0) return [];
 
-      // 1. Single Page Preferred: In "auto" or "all", if all items fit on 1 card safely
-      // REAL PHYSICAL CAPACITY:
-      // With QR dock (width 82px / 22mm), text column width is ~235px (~30-32 chars/line).
-      // Available body height is ~150px. At 7.5pt, 1 line ~ 11.5px.
-      // Up to 7.0 lines with QR fits on 1 SINGLE CARD with 100% guaranteed safety!
-      // Without QR: full width (340px / 75mm), up to 11.0 lines fits safely.
-      const singlePageMaxLines = enableQr ? 7.0 : 11.0;
-      const totalAllLinesWithQr = calculateTotalLinesFullWidth(instructions, 7.5, isRtl, enableQr);
-
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLinesWithQr <= singlePageMaxLines && instructions.length <= 2)) {
-        return [instructions];
-      }
-
-      // 2. Fixed points per card if selected by user (e.g. 1, 2, 3, 4, 5)
+      // 1. Fixed points per card if selected by user (e.g. 1, 2, 3, 4, 5)
       if (maxPerLabelVal !== "auto" && maxPerLabelVal !== "all") {
         const limit = parseInt(maxPerLabelVal) || 99;
         const pages = [];
@@ -6477,10 +6485,22 @@ function detectInstructionIcon(text) {
         return pages;
       }
 
+      // 2. Single Page Preferred ("auto" or "all"):
+      // REAL PHYSICAL CAPACITY:
+      // With smart font auto-scaling (6.8pt - 7.5pt), 1 card safely holds up to 13.0 lines with QR (~460-500 chars),
+      // or up to 15.0 lines without QR (~750 chars).
+      const singlePageMaxLines = enableQr ? 13.0 : 15.0;
+      const totalAllLinesAtMin = calculateTotalLinesFullWidth(instructions, 7.0, isRtl, enableQr);
+
+      // If all items fit safely on ONE single card, NEVER split into 2 cards!
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLinesAtMin <= singlePageMaxLines && instructions.length <= 4)) {
+        return [instructions];
+      }
+
       // 3. Multi-Card Full-Utilization Pagination:
-      // Card 1 to N-1 have NO QR (full width, capacity 10.0 lines at 7.5pt).
-      // The LAST card has the QR code (capacity ~7.0 lines at 7.5pt with QR).
-      const MAX_SAFE_CARD_LINES = 10.0;
+      // Cards 1 to N-1 have full width (no QR), holding up to 12.0 lines.
+      // The last card has the QR dock, holding up to 11.5 lines.
+      const MAX_SAFE_CARD_LINES = 12.0;
       const pages = [];
       let currentPage = [];
 
@@ -6498,15 +6518,6 @@ function detectInstructionIcon(text) {
       }
 
       if (currentPage.length > 0) {
-        if (pages.length === 0) {
-          const linesWithQr = calculateTotalLinesFullWidth(currentPage, 7.5, isRtl, enableQr);
-          if (linesWithQr > singlePageMaxLines || currentPage.length > 2) {
-            const half = Math.ceil(currentPage.length / 2);
-            pages.push(currentPage.slice(0, half));
-            pages.push(currentPage.slice(half));
-            return pages;
-          }
-        }
         pages.push(currentPage);
       }
 
@@ -6536,21 +6547,25 @@ function detectInstructionIcon(text) {
           gap = 6;
         } else if (totalChars < 240) {
           autoFontSize = hasQr ? 10.2 : 11.0;
-          autoLineHeight = 1.32;
+          autoLineHeight = 1.30;
           gap = 5;
         } else if (totalChars < 360) {
-          autoFontSize = hasQr ? 9.2 : 10.0;
-          autoLineHeight = 1.25;
+          autoFontSize = hasQr ? 9.0 : 9.8;
+          autoLineHeight = 1.24;
           gap = 4;
         } else {
-          autoFontSize = hasQr ? 8.2 : 9.0;
-          autoLineHeight = 1.20;
+          autoFontSize = hasQr ? 7.8 : 8.6;
+          autoLineHeight = 1.18;
           gap = 3;
         }
       } else if (count === 2) {
         if (hasQr) {
-          if (totalChars > 220) {
-            autoFontSize = 7.8;
+          if (totalChars > 340) {
+            autoFontSize = 7.0;
+            autoLineHeight = 1.14;
+            gap = 2;
+          } else if (totalChars > 200) {
+            autoFontSize = 7.5;
             autoLineHeight = 1.16;
             gap = 2;
           } else {
@@ -6559,25 +6574,35 @@ function detectInstructionIcon(text) {
             gap = 3;
           }
         } else {
-          if (totalChars > 350) {
-            autoFontSize = 8.4;
-            autoLineHeight = 1.18;
+          if (totalChars > 380) {
+            autoFontSize = 7.8;
+            autoLineHeight = 1.16;
+            gap = 2;
+          } else if (totalChars > 250) {
+            autoFontSize = 8.6;
+            autoLineHeight = 1.20;
             gap = 3;
           } else {
-            autoFontSize = 9.2;
-            autoLineHeight = 1.24;
+            autoFontSize = 9.4;
+            autoLineHeight = 1.25;
             gap = 4;
           }
         }
       } else if (count === 3) {
         if (hasQr) {
-          autoFontSize = 7.2;
-          autoLineHeight = 1.14;
-          gap = 2;
+          if (totalChars > 350) {
+            autoFontSize = 6.8;
+            autoLineHeight = 1.12;
+            gap = 1;
+          } else {
+            autoFontSize = 7.2;
+            autoLineHeight = 1.14;
+            gap = 2;
+          }
         } else {
-          autoFontSize = 8.2;
+          autoFontSize = 8.0;
           autoLineHeight = 1.18;
-          gap = 3;
+          gap = 2;
         }
       } else {
         autoFontSize = hasQr ? 6.8 : 7.4;
@@ -6590,9 +6615,15 @@ function detectInstructionIcon(text) {
 
       if (hasQr && count >= 2) {
         const estLines = calculateTotalLinesFullWidth(pageItems, effectiveFontSize, isRtl, true);
-        if (estLines > 8.0) {
-          effectiveFontSize = Math.min(effectiveFontSize, 7.4);
-          autoLineHeight = Math.min(autoLineHeight, 1.15);
+        if (estLines > 11.5) {
+          effectiveFontSize = Math.min(effectiveFontSize, 6.8);
+          autoLineHeight = Math.min(autoLineHeight, 1.12);
+        } else if (estLines > 9.5) {
+          effectiveFontSize = Math.min(effectiveFontSize, 7.2);
+          autoLineHeight = Math.min(autoLineHeight, 1.14);
+        } else if (estLines > 7.5) {
+          effectiveFontSize = Math.min(effectiveFontSize, 7.8);
+          autoLineHeight = Math.min(autoLineHeight, 1.16);
         }
       }
 
@@ -6637,7 +6668,12 @@ function detectInstructionIcon(text) {
 
         const totalPages = pages.length;
         const displayTradeName = isRtl ? (med.tradeNameAr || med.tradeNameEn) : (med.tradeNameEn || med.tradeNameAr);
-        const displayActive = isRtl ? `المادة الفعالة: ${med.activeIngredient}` : `Active: ${med.activeIngredient}`;
+        const rawActive = (med.activeIngredient || '').trim();
+        const activeLen = rawActive.length;
+        const activeFontSize = activeLen > 30 ? '6.2pt' : (activeLen > 22 ? '6.8pt' : '7.5pt');
+        const displayActiveHtml = isRtl
+          ? `<span style="font-size:${activeFontSize}; font-weight:800;">المادة الفعالة: </span><bdi dir="ltr" style="unicode-bidi:isolate; font-size:${activeFontSize}; font-weight:800;">${escapeHtml(rawActive)}</bdi>`
+          : `<span style="font-size:${activeFontSize}; font-weight:800;">Active: </span><bdi dir="ltr" style="unicode-bidi:isolate; font-size:${activeFontSize}; font-weight:800;">${escapeHtml(rawActive)}</bdi>`;
         const branchSettings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
         let displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
         if (branchSettings) {
@@ -6707,7 +6743,7 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 2px;">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900;">${displayTradeName}</div>
-                        <div class="label-header-subtitle" style="font-size: 7.5pt; font-weight: 800;">${displayActive}</div>
+                        <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -6746,7 +6782,7 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title">${displayTradeName}</div>
-                        <div class="label-header-subtitle">${displayActive}</div>
+                        <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -7531,7 +7567,7 @@ function detectInstructionIcon(text) {
       }, 700);
     }
 
-    async function transformToPatientVoiceEn(text) {
+    function transformToPatientVoiceEn(text) {
       if (!text) return '';
       let t = text.trim();
       t = t.replace(/^advise patient to report\s+/i, 'Report to your doctor immediately if you experience ');
