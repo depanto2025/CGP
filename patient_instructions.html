@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Rx Patient Instructions System | 3" x 2" Label Printing</title>
+  <title>Rx Patient Instructions System</title>
 
   <!-- Google Fonts: Inter & Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2186,7 +2186,7 @@ function detectInstructionIcon(text) {
       pointer-events: none;
       z-index: 1;
       opacity: 0.12;
-      filter: grayscale(100%) contrast(140%);
+      filter: contrast(120%);
       transition: opacity 0.2s;
     }
 
@@ -2391,7 +2391,7 @@ function detectInstructionIcon(text) {
     .label-point-text {
       display: inline;
       word-break: break-word;
-      line-height: 1.22;
+      line-height: inherit;
     }
 
     .label-footer-bar {
@@ -2678,7 +2678,7 @@ function detectInstructionIcon(text) {
         object-fit: contain;
         z-index: 1;
         opacity: 0.12 !important;
-        filter: grayscale(100%) contrast(150%) !important;
+        filter: contrast(125%) !important;
       }
 
       .print-label-page .label-main-text-area {
@@ -3443,7 +3443,7 @@ function detectInstructionIcon(text) {
       </div>
       <div class="brand-info">
         <h1>Rx Patient Instructions System</h1>
-        <p><i class="fas fa-tag"></i> Thermal Label Format: 3" × 2" (76.2 × 50.8 mm)</p>
+        <p><i class="fas fa-check-circle" style="color:var(--emerald-500)"></i> صيدليات الدواء • طباعة إرشادات المريض الذكية</p>
       </div>
     </div>
 
@@ -3672,7 +3672,7 @@ function detectInstructionIcon(text) {
           <div class="print-info-text">
             <i class="fas fa-check-circle" style="color: #22c55e;"></i>
             <span id="selectedCountText">3 Instructions Selected for Label</span>
-            <span style="margin-left:10px; color:var(--text-muted); font-size:12px;">(Exact 3" × 2" Thermal Label - Single Page Optimized)</span>
+            
           </div>
 
           <div style="display:flex; gap:10px; align-items:center;">
@@ -3701,7 +3701,7 @@ function detectInstructionIcon(text) {
       <div class="preview-modal-header">
         <h3>
           <i class="fas fa-eye" style="color:var(--orange-400)"></i>
-          <span>Thermal Label Preview — 3" × 2" (Full Width Smart Layout — Single Page Preferred)</span>
+          <span>معاينة ملصق إرشادات المريض (Label Preview)</span>
         </h3>
         <button class="btn-close-modal" onclick="closePrintModal()">✕</button>
       </div>
@@ -3779,7 +3779,7 @@ function detectInstructionIcon(text) {
 
         <button class="btn-execute-print" onclick="executeBrowserPrint()">
           <i class="fas fa-print"></i>
-          <span>Print Now (3" × 2" Thermal Printer) 🖨️</span>
+          <span>طباعة الملصق الآن (Print Now) 🖨️</span>
         </button>
       </div>
 
@@ -5883,9 +5883,11 @@ function detectInstructionIcon(text) {
       if (isBrandFilterEnabled && hiddenBrandCount > 0) {
         const notice = document.createElement("div");
         notice.className = "brand-filter-notice";
+        notice.style.marginBottom = "12px";
+        notice.style.marginTop = "0px";
         notice.innerHTML = `<i class="fas fa-filter"></i> <span>تم إخفاء ${hiddenBrandCount} تعليمات خاصة ببراندات تجارية أخرى غير مطابقة للصنف. (انقر لإظهار كافة البراندات)</span>`;
         notice.onclick = () => toggleBrandFilter();
-        container.appendChild(notice);
+        container.prepend(notice);
       }
 
       const activeList = isBrandFilterEnabled ? workingInstructions.filter(i => !i.isBrandFiltered) : workingInstructions;
@@ -6286,90 +6288,70 @@ function detectInstructionIcon(text) {
       return pages;
     }
 
-    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = 8.5, isRtl = true, hasQr = false) {
-      const base = parseFloat(userFontSize) || 8.5;
-      const linesAtBase = calculateTotalLinesFullWidth(pageItems, base, isRtl, hasQr);
+    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false) {
+      const count = pageItems ? pageItems.length : 0;
+      const rawBase = parseFloat(userFontSize);
+      const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0);
 
-      if (hasQr) {
-        if (linesAtBase <= 3.0) {
-          return {
-            fontSize: Math.min(9.5, base + 0.5),
-            lineHeight: 1.28,
-            gap: 5,
-            padding: '3px 0',
-            justify: 'center'
-          };
-        } else if (linesAtBase <= 5.5) {
-          return {
-            fontSize: Math.min(8.6, base),
-            lineHeight: 1.20,
-            gap: 3.0,
-            padding: '2px 0',
-            justify: 'flex-start'
-          };
-        } else if (linesAtBase <= 7.5) {
-          return {
-            fontSize: Math.min(7.8, base - 0.4),
-            lineHeight: 1.15,
-            gap: 2.0,
-            padding: '1px 0',
-            justify: 'flex-start'
-          };
+      // Auto-calculated optimal font size to eliminate blank space and fill the card!
+      let autoFontSize = 9.0;
+      let autoLineHeight = 1.28;
+      let gap = 4;
+
+      if (count === 1) {
+        const singleText = (isRtl && pageItems[0].textAr) ? pageItems[0].textAr : (pageItems[0].text || pageItems[0].textEn || '');
+        const charLen = singleText.trim().length;
+        // Single instruction: scale UP to fill the empty card nicely!
+        if (charLen < 150) {
+          autoFontSize = hasQr ? 11.5 : 12.0;
+          autoLineHeight = 1.40;
+          gap = 8;
+        } else if (charLen < 260) {
+          autoFontSize = hasQr ? 10.8 : 11.2;
+          autoLineHeight = 1.35;
+          gap = 6;
+        } else if (charLen < 380) {
+          autoFontSize = hasQr ? 10.0 : 10.5;
+          autoLineHeight = 1.30;
+          gap = 5;
         } else {
-          // Dense QR card (8+ lines with QR): scale font down so NOTHING ever overflows!
-          return {
-            fontSize: 7.1,
-            lineHeight: 1.12,
-            gap: 1.2,
-            padding: '0',
-            justify: 'flex-start'
-          };
+          autoFontSize = hasQr ? 9.0 : 9.5;
+          autoLineHeight = 1.24;
+          gap = 3;
+        }
+      } else if (count === 2) {
+        autoFontSize = hasQr ? 9.2 : 9.8;
+        autoLineHeight = 1.25;
+        gap = 4;
+      } else if (count === 3) {
+        autoFontSize = hasQr ? 8.4 : 9.0;
+        autoLineHeight = 1.20;
+        gap = 3;
+      } else {
+        autoFontSize = hasQr ? 7.4 : 8.0;
+        autoLineHeight = 1.15;
+        gap = 2;
+      }
+
+      // If user moved the slider (different from default 9.0, or custom size), STRICTLY HONOR USER'S SIZE!
+      let effectiveFontSize = autoFontSize;
+      if (isCustomUserSize) {
+        if (Math.abs(rawBase - 9.0) > 0.1) {
+          effectiveFontSize = rawBase;
+        } else {
+          effectiveFontSize = Math.max(rawBase, autoFontSize);
         }
       }
 
-      // Without QR (Full Width):
-      if (linesAtBase <= 3.5) {
-        return {
-          fontSize: Math.min(10.5, base + 1.2),
-          lineHeight: 1.34,
-          gap: 7,
-          padding: '6px 0',
-          justify: 'space-around'
-        };
-      } else if (linesAtBase <= 6.0) {
-        return {
-          fontSize: Math.min(9.4, base + 0.4),
-          lineHeight: 1.25,
-          gap: 4.5,
-          padding: '3px 0',
-          justify: 'space-around'
-        };
-      } else if (linesAtBase <= 8.5) {
-        return {
-          fontSize: Math.min(8.6, base),
-          lineHeight: 1.20,
-          gap: 3.0,
-          padding: '2px 0',
-          justify: 'flex-start'
-        };
-      } else if (linesAtBase <= 10.5) {
-        return {
-          fontSize: 7.8,
-          lineHeight: 1.15,
-          gap: 2.0,
-          padding: '1px 0',
-          justify: 'flex-start'
-        };
-      } else {
-        // High density card (11 - 13 lines): scale font to 7.2pt / 1.12 so all 3 items fit cleanly without cutting!
-        return {
-          fontSize: 7.2,
-          lineHeight: 1.12,
-          gap: 1.2,
-          padding: '0',
-          justify: 'flex-start'
-        };
-      }
+      const calculatedLineHeight = (effectiveFontSize >= 12) ? 1.36 : (effectiveFontSize >= 10.5 ? 1.30 : (effectiveFontSize >= 9.5 ? 1.24 : 1.18));
+
+      return {
+        fontSize: Number(effectiveFontSize.toFixed(1)),
+        lineHeight: calculatedLineHeight,
+        gap: gap,
+        padding: count === 1 ? '4px 0' : '2px 0',
+        justify: count === 1 ? 'center' : 'flex-start'
+      };
     }
 
     let isModalSingleMode = false;
@@ -6407,9 +6389,11 @@ function detectInstructionIcon(text) {
         const displayActive = isRtl ? `المادة الفعالة: ${med.activeIngredient}` : `Active: ${med.activeIngredient}`;
         const branchSettings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
         let displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
-        if (branchSettings && branchSettings.printFooterBranch) {
-          const bNum = branchSettings.branch ? (isRtl ? `فرع ${branchSettings.branch}` : `Branch ${branchSettings.branch}`) : '';
-          const bPhone = branchSettings.phone ? (isRtl ? `هاتف: ${branchSettings.phone}` : `Tel: ${branchSettings.phone}`) : '';
+        if (branchSettings && branchSettings.branch && branchSettings.branch.trim()) {
+          const bNum = isRtl ? `فرع ${branchSettings.branch.trim()}` : `Branch ${branchSettings.branch.trim()}`;
+          const bPhone = (branchSettings.phone && branchSettings.phone.trim()) 
+            ? (isRtl ? `هاتف: ${branchSettings.phone.trim()}` : `Tel: ${branchSettings.phone.trim()}`) 
+            : '';
           if (bNum && bPhone) {
             displayFooter = isRtl ? `صيدليات الدواء (${bNum}) • ${bPhone}` : `Al-Dawaa (${bNum}) • ${bPhone}`;
           } else if (bNum) {
@@ -6463,7 +6447,7 @@ function detectInstructionIcon(text) {
             if (isPrint) {
               allCardsHtml += `
                 <div class="print-label-page ${isRtl ? 'is-rtl' : 'is-ltr'}">
-                  <img class="print-watermark" src="${med.imageUrl}" style="opacity: ${opacity / 100} !important;" alt="Watermark" onerror="this.style.display='none'">
+                  <img class="print-watermark" src="${med.imageUrl || currentMedication.imageUrl || document.getElementById('cardProductImage')?.src || ''}" style="opacity: ${opacity / 100} !important;" alt="Product Watermark" onerror="this.style.display='none'">
                   <div class="label-main-text-area">
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 2px;">
                       <div style="flex:1; overflow:hidden;">
@@ -6502,7 +6486,7 @@ function detectInstructionIcon(text) {
             } else {
               allCardsHtml += `
                 <div class="screen-label-card ${isRtl ? 'is-rtl' : 'is-ltr'}">
-                  <img class="label-watermark-image" src="${med.imageUrl}" style="opacity: ${opacity / 100};" alt="Watermark" onerror="this.style.display='none'">
+                  <img class="label-watermark-image" src="${med.imageUrl || currentMedication.imageUrl || document.getElementById('cardProductImage')?.src || ''}" style="opacity: ${opacity / 100};" alt="Product Watermark" onerror="this.style.display='none'">
                   <div class="label-main-text-area">
                     <div class="label-header-block">
                       <div style="flex:1; overflow:hidden;">
@@ -6636,7 +6620,7 @@ function detectInstructionIcon(text) {
       if (container) container.innerHTML = html;
       if (totalBadge) {
         const prodCount = (isModalSingleMode || batchMedicationQueue.length === 0) ? 1 : batchMedicationQueue.length;
-        totalBadge.innerText = `إجمالي الطباعة: ${totalLabels} كارت (3" × 2") لـ ${prodCount} أصناف`;
+        totalBadge.innerText = `إجمالي الطباعة: ${totalLabels} كارت لـ ${prodCount} أصناف`;
       }
     }
 
@@ -6952,20 +6936,28 @@ function detectInstructionIcon(text) {
     }
 
     const DEFAULT_BRANCH_SETTINGS = {
-      branch: "104",
-      phone: "0541932559",
+      branch: "",
+      phone: "",
       locationUrl: "",
-      pharmacistName: "د. محمد خليف | صيدلي استشاري",
-      hidePharmacistCard: false,
-      hidePhotoOnly: false,
-      printFooterBranch: true
+      pharmacistName: "",
+      hidePharmacistCard: true,
+      hidePhotoOnly: true,
+      printFooterBranch: false
     };
 
     function getBranchSettings() {
       try {
         const raw = localStorage.getItem("rx_branch_settings");
         if (raw) {
-          return { ...DEFAULT_BRANCH_SETTINGS, ...JSON.parse(raw) };
+          const parsed = JSON.parse(raw);
+          // If legacy dummy branch 104 or phone 0541932559 was saved, reset to empty
+          if (parsed.branch === "104" || parsed.phone === "0541932559") {
+            parsed.branch = "";
+            parsed.phone = "";
+            parsed.printFooterBranch = false;
+            try { localStorage.setItem("rx_branch_settings", JSON.stringify(parsed)); } catch(e) {}
+          }
+          return { ...DEFAULT_BRANCH_SETTINGS, ...parsed };
         }
       } catch (e) {}
       return { ...DEFAULT_BRANCH_SETTINGS };
@@ -6987,7 +6979,7 @@ function detectInstructionIcon(text) {
       const locEl = document.getElementById("settingBranchLocation");
       if (locEl) locEl.value = settings.locationUrl || "";
       const pnEl = document.getElementById("settingPharmacistName");
-      if (pnEl) pnEl.value = settings.pharmacistName || DEFAULT_BRANCH_SETTINGS.pharmacistName;
+      if (pnEl) pnEl.value = settings.pharmacistName || "";
       const hcEl = document.getElementById("settingHidePharmacistCard");
       if (hcEl) hcEl.checked = !!settings.hidePharmacistCard;
       const hpoEl = document.getElementById("settingHidePhotoOnly");
@@ -7009,7 +7001,7 @@ function detectInstructionIcon(text) {
         branch: (document.getElementById("settingBranchNumber")?.value || "").trim(),
         phone: (document.getElementById("settingPharmacyPhone")?.value || "").trim(),
         locationUrl: (document.getElementById("settingBranchLocation")?.value || "").trim(),
-        pharmacistName: (document.getElementById("settingPharmacistName")?.value || "").trim() || DEFAULT_BRANCH_SETTINGS.pharmacistName,
+        pharmacistName: (document.getElementById("settingPharmacistName")?.value || "").trim(),
         hidePharmacistCard: !!document.getElementById("settingHidePharmacistCard")?.checked,
         hidePhotoOnly: !!document.getElementById("settingHidePhotoOnly")?.checked,
         printFooterBranch: document.getElementById("settingPrintFooterBranch") ? document.getElementById("settingPrintFooterBranch").checked : true
@@ -7028,10 +7020,23 @@ function detectInstructionIcon(text) {
 
     function updateBranchUIBadges() {
       const settings = getBranchSettings();
-      const bBadge = document.getElementById("previewBranchNumDisplay");
-      if (bBadge) bBadge.textContent = settings.branch || "104";
-      const pBadge = document.getElementById("previewPhoneDisplay");
-      if (pBadge) pBadge.textContent = settings.phone || "0541932559";
+      const badgeText = document.getElementById("previewBranchBadgeText");
+      const branchRow = document.getElementById("previewBranchRowBtn");
+      
+      const hasBranch = !!(settings.branch && settings.branch.trim());
+      const hasPhone = !!(settings.phone && settings.phone.trim());
+
+      if (hasBranch || hasPhone) {
+        let t = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> ';
+        if (settings.branch) t += '<b>فرع: ' + settings.branch + '</b> ';
+        if (settings.phone) t += '• <b>هاتف: ' + settings.phone + '</b> ';
+        t += '<i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
+        if (branchRow) branchRow.innerHTML = t;
+      } else {
+        if (branchRow) {
+          branchRow.innerHTML = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> <span id="previewBranchBadgeText" style="color:#64748b;">إعدادات الفرع (غير محدد)</span> <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
+        }
+      }
     }
 
     function getPatientViewerUrl(matchedSlug, medObj, lang = 'ar') {
