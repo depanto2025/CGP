@@ -721,15 +721,24 @@ function detectInstructionIcon(text) {
     .brand-icon {
       width: 44px;
       height: 44px;
-      background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+      background: #ffffff;
       border: 2px solid var(--orange-500);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ffffff;
-      font-size: 20px;
-      box-shadow: 0 4px 10px rgba(15, 43, 92, 0.25);
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(15, 43, 92, 0.15);
+      padding: 2px;
+      flex-shrink: 0;
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+      display: block;
     }
 
     .brand-info h1 {
@@ -847,28 +856,27 @@ function detectInstructionIcon(text) {
     .ph-whatsapp-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, #25D366, #128C7E);
       color: #ffffff !important;
       text-decoration: none !important;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 800;
-      box-shadow: 0 3px 10px rgba(37, 211, 102, 0.35);
-      transition: all 0.2s ease;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+      transition: all 0.25s ease;
       white-space: nowrap;
       flex-shrink: 0;
     }
 
     .ph-whatsapp-btn:hover {
-      transform: translateY(-1.5px);
-      box-shadow: 0 5px 14px rgba(37, 211, 102, 0.5);
+      transform: scale(1.12);
+      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.55);
       background: linear-gradient(135deg, #2ae06d, #0f7a6e);
     }
 
     .ph-whatsapp-btn i {
-      font-size: 14px;
+      font-size: 20px;
     }
 
     .header-actions {
@@ -2521,14 +2529,16 @@ function detectInstructionIcon(text) {
     }
 
     .label-footer-bar {
-      border-top: 1px dashed #666666;
+      border-top: 1.2px dashed #444444;
       padding-top: 2px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      font-size: 7px;
-      font-weight: 700;
-      color: #333333;
+      font-size: 7.2pt;
+      font-weight: 900;
+      font-family: 'Cairo', Arial, sans-serif;
+      letter-spacing: -0.1px;
+      color: #000000;
       flex-shrink: 0;
       background: #ffffff;
       position: relative;
@@ -2939,9 +2949,13 @@ function detectInstructionIcon(text) {
       }
 
       .print-label-page .label-footer-bar {
-        border-top: 1px dashed #444 !important;
+        border-top: 1px dashed #000 !important;
         padding-top: 0.8mm !important;
-        font-size: 6.8pt !important;
+        font-size: 7.0pt !important;
+        font-weight: 900 !important;
+        font-family: 'Cairo', Arial, sans-serif !important;
+        letter-spacing: -0.1px !important;
+        color: #000000 !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
@@ -3008,12 +3022,12 @@ function detectInstructionIcon(text) {
       .ph-info-block {
         display: none;
       }
-      .ph-whatsapp-btn span {
-        display: none;
-      }
       .ph-whatsapp-btn {
-        padding: 6px 10px;
-        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+      }
+      .ph-whatsapp-btn i {
+        font-size: 18px;
       }
       .header-actions {
         display: flex;
@@ -3590,7 +3604,7 @@ function detectInstructionIcon(text) {
   <header class="app-header">
     <div class="brand-group">
       <div class="brand-icon">
-        <i class="fas fa-prescription-bottle-alt"></i>
+        <img src="aldawaa_logo.png" alt="صيدليات الدواء" onerror="this.onerror=null; this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ8YJ2YMLZM2YLJNtxv1FoR-ZxjDjfKhovPjdmLB5ldMTdMtrB3KG5DdH_&s=10'">
       </div>
       <div class="brand-info">
         <h1>Aldawaa-Patient Instructions System (A-PIS)</h1>
@@ -3613,7 +3627,6 @@ function detectInstructionIcon(text) {
       </div>
       <a href="https://wa.me/966541932559" target="_blank" rel="noopener noreferrer" class="ph-whatsapp-btn" title="تواصل مباشر عبر واتساب">
         <i class="fab fa-whatsapp"></i>
-        <span>تواصل واتساب</span>
       </a>
     </div>
 
@@ -3925,9 +3938,9 @@ function detectInstructionIcon(text) {
           </button>
         </div>
         <div class="toolbar-option">
-          <button type="button" class="btn-preview-branch-settings" onclick="openBranchSettingsModal()" title="تعديل رقم الفرع وهاتف الصيدلية قبل الطباعة">
+          <button type="button" id="previewBranchRowBtn" class="btn-preview-branch-settings" onclick="openBranchSettingsModal()" title="تعديل رقم الفرع وهاتف الصيدلية قبل الطباعة">
             <i class="fas fa-store-alt" style="color:#0284c7;"></i>
-            <span>فرع: <b id="previewBranchNumDisplay">104</b> • هاتف: <b id="previewPhoneDisplay">0541932559</b></span>
+            <span id="previewBranchBadgeText" style="color:#64748b;">إعدادات الفرع (فارغ)</span>
             <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>
           </button>
         </div>
@@ -6282,6 +6295,11 @@ function detectInstructionIcon(text) {
       } finally {
         const dropdown = document.getElementById("quickSearchDropdown");
         if (dropdown) dropdown.style.display = "none";
+        const searchInput = document.getElementById("globalProductSearchInput");
+        if (searchInput) {
+          searchInput.value = "";
+          try { searchInput.focus(); } catch(e) {}
+        }
         playBeepTone();
       }
     }
@@ -6332,8 +6350,6 @@ function detectInstructionIcon(text) {
         `;
         itemEl.onclick = () => {
           document.getElementById("quickSearchDropdown").style.display = "none";
-          const inputEl = document.getElementById("globalProductSearchInput");
-          if (inputEl) inputEl.value = p["Item Description"] || p["أسم المنتج"] || "";
           selectMedicationItem(p, true);
         };
         box.appendChild(itemEl);
@@ -6343,12 +6359,21 @@ function detectInstructionIcon(text) {
     }
 
     function triggerSearchQuery() {
-      const val = document.getElementById("globalProductSearchInput").value;
+      const searchInput = document.getElementById("globalProductSearchInput");
+      const val = searchInput ? searchInput.value.trim() : "";
+      if (!val) {
+        if (searchInput) searchInput.focus();
+        return;
+      }
       const found = findProductInDB(val);
       if (found) {
         selectMedicationItem(found, true);
       } else {
         alert("⚠️ Item not found in Master Database!");
+        if (searchInput) {
+          searchInput.select();
+          searchInput.focus();
+        }
       }
     }
 
@@ -6599,8 +6624,10 @@ function detectInstructionIcon(text) {
         const displayActive = isRtl ? `المادة الفعالة: ${med.activeIngredient}` : `Active: ${med.activeIngredient}`;
         const branchSettings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
         let displayFooter = isRtl ? "صيدليات الدواء | إرشادات استخدام الدواء" : "Al-Dawaa Pharmacy | Patient Instructions";
-        if (branchSettings && branchSettings.branch && branchSettings.branch.trim()) {
-          const bNum = isRtl ? `فرع ${branchSettings.branch.trim()}` : `Branch ${branchSettings.branch.trim()}`;
+        if (branchSettings) {
+          const bNum = (branchSettings.branch && branchSettings.branch.trim()) 
+            ? (isRtl ? `فرع ${branchSettings.branch.trim()}` : `Branch ${branchSettings.branch.trim()}`) 
+            : '';
           const bPhone = (branchSettings.phone && branchSettings.phone.trim()) 
             ? (isRtl ? `هاتف: ${branchSettings.phone.trim()}` : `Tel: ${branchSettings.phone.trim()}`) 
             : '';
@@ -6608,6 +6635,8 @@ function detectInstructionIcon(text) {
             displayFooter = isRtl ? `صيدليات الدواء (${bNum}) • ${bPhone}` : `Al-Dawaa (${bNum}) • ${bPhone}`;
           } else if (bNum) {
             displayFooter = isRtl ? `صيدليات الدواء (${bNum}) | إرشادات الدواء` : `Al-Dawaa (${bNum}) | Patient Instructions`;
+          } else if (bPhone) {
+            displayFooter = isRtl ? `صيدليات الدواء • ${bPhone}` : `Al-Dawaa Pharmacy • ${bPhone}`;
           }
         }
 
@@ -6684,10 +6713,10 @@ function detectInstructionIcon(text) {
                         </div>
                       ` : ''}
                     </div>
-                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:1mm; font-size:6.8pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
-                      <div style="flex:1; text-align:center; overflow:hidden; font-size:6.8pt; line-height:1.2;">
+                    <div class="label-footer-bar" style="border-top:1px dashed #000; padding-top:1mm; font-size:7.0pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7.0pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
                         <span>${displayFooter}</span>
-                        ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                        ${totalPages > 1 ? `<span style="font-weight:900;"> • ${pageNum}/${totalPages}</span>` : ''}
                       </div>
                     </div>
                   </div>
@@ -6724,10 +6753,10 @@ function detectInstructionIcon(text) {
                         </div>
                       ` : ''}
                     </div>
-                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:2px; font-size:7pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
-                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7pt;">
+                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:2px; font-size:7.2pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7.2pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
                         <span>${displayFooter}</span>
-                        ${totalPages > 1 ? `<span> • ${pageNum}/${totalPages}</span>` : ''}
+                        ${totalPages > 1 ? `<span style="font-weight:900;"> • ${pageNum}/${totalPages}</span>` : ''}
                       </div>
                     </div>
                   </div>
@@ -7048,8 +7077,9 @@ function detectInstructionIcon(text) {
       // Initialize Master Database
       initMasterDatabase();
 
-      // Render initial Batch Queue Tray
+      // Render initial Batch Queue Tray & Branch Badges
       updateBatchQueueUI();
+      updateBranchUIBadges();
 
       // Close dropdowns on outside click
       document.addEventListener("click", (e) => {
@@ -7230,22 +7260,20 @@ function detectInstructionIcon(text) {
 
     function updateBranchUIBadges() {
       const settings = getBranchSettings();
-      const badgeText = document.getElementById("previewBranchBadgeText");
       const branchRow = document.getElementById("previewBranchRowBtn");
+      if (!branchRow) return;
       
       const hasBranch = !!(settings.branch && settings.branch.trim());
       const hasPhone = !!(settings.phone && settings.phone.trim());
 
-      if (hasBranch || hasPhone) {
-        let t = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> ';
-        if (settings.branch) t += '<b>فرع: ' + settings.branch + '</b> ';
-        if (settings.phone) t += '• <b>هاتف: ' + settings.phone + '</b> ';
-        t += '<i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
-        if (branchRow) branchRow.innerHTML = t;
+      if (hasBranch && hasPhone) {
+        branchRow.innerHTML = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> <span>فرع: <b>' + settings.branch.trim() + '</b> • هاتف: <b>' + settings.phone.trim() + '</b></span> <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
+      } else if (hasBranch) {
+        branchRow.innerHTML = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> <span>فرع: <b>' + settings.branch.trim() + '</b></span> <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
+      } else if (hasPhone) {
+        branchRow.innerHTML = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> <span>هاتف: <b>' + settings.phone.trim() + '</b></span> <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
       } else {
-        if (branchRow) {
-          branchRow.innerHTML = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> <span id="previewBranchBadgeText" style="color:#64748b;">إعدادات الفرع (غير محدد)</span> <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
-        }
+        branchRow.innerHTML = '<i class="fas fa-store-alt" style="color:#0284c7;"></i> <span id="previewBranchBadgeText" style="color:#64748b;">إعدادات الفرع (فارغ)</span> <i class="fas fa-edit" style="font-size:11px; color:#64748b; margin-right:4px;"></i>';
       }
     }
 
