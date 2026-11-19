@@ -1185,8 +1185,8 @@
         if (raw) localSettings = JSON.parse(raw);
       } catch (e) {}
 
-      const branch = branchParam || (localSettings ? localSettings.branch : "104");
-      const phone = phoneParam || (localSettings ? localSettings.phone : "0541932559");
+      const branch = branchParam || (localSettings ? localSettings.branch : "");
+      const phone = phoneParam || (localSettings ? localSettings.phone : "");
       const locationUrl = locParam || (localSettings ? localSettings.locationUrl : "");
       const hidePharm = (hidePharmParam === "1" || hidePharmParam === "true") || (!branchParam && localSettings && localSettings.hidePharmacistCard);
       const hidePhoto = (hidePhotoParam === "1" || hidePhotoParam === "true") || (!branchParam && localSettings && localSettings.hidePhotoOnly);
@@ -1350,18 +1350,32 @@
       transIndicator.style.display = "none";
     }
 
+    function deduplicateItems(arr) {
+      if (!Array.isArray(arr)) return [];
+      const seen = new Set();
+      return arr.filter(item => {
+        if (!item || typeof item !== 'string') return false;
+        const clean = item.trim().toLowerCase().replace(/[\s\.\,\;\:\-\_\(\)\[\]]/g, '');
+        if (!clean || seen.has(clean)) return false;
+        seen.add(clean);
+        return true;
+      });
+    }
+
     async function renderList(secId, listId, items, iconClass, isWarning = false) {
       const secEl = document.getElementById(secId);
       const listEl = document.getElementById(listId);
       listEl.innerHTML = "";
 
-      if (!items || items.length === 0) {
+      const uniqueItems = deduplicateItems(items);
+
+      if (!uniqueItems || uniqueItems.length === 0) {
         secEl.style.display = "none";
         return;
       }
       secEl.style.display = "block";
 
-      const renderedItems = await Promise.all(items.map(async (item) => {
+      const renderedItems = await Promise.all(uniqueItems.map(async (item) => {
         let text = item;
         if (currentLang === 'ar') {
           text = await translateText(item, 'ar');
@@ -1371,7 +1385,13 @@
         return text;
       }));
 
+      const seenRendered = new Set();
       renderedItems.forEach(text => {
+        if (!text) return;
+        const k = text.trim().toLowerCase().replace(/[\s\.\,\;\:\-\_\(\)\[\]]/g, '');
+        if (seenRendered.has(k)) return;
+        seenRendered.add(k);
+
         const li = document.createElement("li");
         li.className = "point-item" + (isWarning ? " warning-item" : "");
         li.setAttribute("dir", "auto");
