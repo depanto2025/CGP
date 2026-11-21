@@ -7553,30 +7553,71 @@ function detectInstructionIcon(text) {
       const cleanLen = text.trim().length;
       const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
       const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
-      // Real character capacity in Arabic Cairo font:
-      // 100mm x 50mm: With QR dock (72mm text area) ~60-66 chars/line; Without QR ~86-92 chars/line
-      // 80mm x 50mm: With QR dock (56mm text area) ~50-54 chars/line; Without QR ~72-76 chars/line
-      // 76mm x 50mm: With QR dock (52mm text area) ~44-48 chars/line; Without QR ~62-66 chars/line
+      
       const baseChars = is100mm 
-        ? (hasQr ? 62 : 88)
-        : (is80mm ? (hasQr ? 50 : 74) : (hasQr ? 45 : 64));
-      const charsPerLine = Math.max(25, Math.round(baseChars * (7.5 / fontSize)));
+        ? (hasQr ? 60 : 88)
+        : (is80mm ? (hasQr ? 48 : 72) : (hasQr ? 42 : 62));
+      const charsPerLine = Math.max(20, Math.round(baseChars * (7.5 / fontSize)));
       return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
 
-    function calculateCardItemWeight(items, fontSize = 7.5, isRtl = true, hasQr = false) {
+    function calculateTotalLinesFullWidth(items, fontSize = 7.5, isRtl = true, hasQr = false) {
       let total = 0;
       (items || []).forEach(inst => {
         const text = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
-        const lines = estimateLinesForFontFullWidth(text, fontSize, isRtl, hasQr);
-        // Each distinct point has icon + bullet + vertical margin + flex gap = ~0.38 lines equivalent
-        total += lines + 0.38;
+        total += estimateLinesForFontFullWidth(text, fontSize, isRtl, hasQr);
       });
       return total;
     }
 
-    function calculateTotalLinesFullWidth(items, fontSize = 7.5, isRtl = true, hasQr = false) {
-      return calculateCardItemWeight(items, fontSize, isRtl, hasQr);
+    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false) {
+      const count = pageItems ? pageItems.length : 0;
+      if (count === 0) return { fontSize: 8.5, lineHeight: 1.22, gap: 3, padding: '1px 0', justify: 'flex-start' };
+
+      const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
+      const safeBodyHeightPt = is100mm ? 88 : 84;
+
+      const rawBase = parseFloat(userFontSize);
+      const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0 && Math.abs(rawBase - 9.0) > 0.1);
+
+      // Adaptive font ladder from large (to utilize white space) down to compact (to fit without footer clipping)
+      const candidateSizes = [
+        11.5, 11.0, 10.5, 10.0, 9.5, 9.0, 8.6, 8.2, 7.8, 7.5, 7.2, 7.0, 6.7, 6.4, 6.2
+      ];
+
+      let chosenSize = 7.5;
+      let chosenLh = 1.18;
+      let chosenGap = 2;
+
+      for (const fs of candidateSizes) {
+        if (isCustomUserSize && fs > rawBase) continue;
+
+        const lh = (fs >= 10.0) ? 1.32 : ((fs >= 8.5) ? 1.24 : ((fs >= 7.2) ? 1.16 : 1.12));
+        const gapPt = (count <= 2) ? 5 : ((count <= 4) ? 3 : 1.5);
+
+        let totalHeightPt = (count - 1) * gapPt;
+        for (const item of pageItems) {
+          const txt = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+          const lines = estimateLinesForFontFullWidth(txt, fs, isRtl, hasQr);
+          const itemHeightPt = Math.max(10.5, lines * fs * lh);
+          totalHeightPt += itemHeightPt;
+        }
+
+        if (totalHeightPt <= safeBodyHeightPt - 2.5) {
+          chosenSize = fs;
+          chosenLh = lh;
+          chosenGap = gapPt;
+          break;
+        }
+      }
+
+      return {
+        fontSize: Number(chosenSize.toFixed(1)),
+        lineHeight: chosenLh,
+        gap: chosenGap,
+        padding: count === 1 ? '4px 0' : '1px 0',
+        justify: count === 1 ? 'center' : 'flex-start'
+      };
     }
 
     function paginateInstructionsSmart(instructions, options = {}) {
@@ -7593,159 +7634,37 @@ function detectInstructionIcon(text) {
         return pages;
       }
 
-      const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
-      const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
-
-      // Calibrated physical capacity on 50mm height thermal labels:
-      // Without QR:
-      const maxSafeWithoutQr = is100mm ? 8.6 : (is80mm ? 8.0 : 7.6);
-      // With QR:
-      const maxSafeWithQr = is100mm ? 7.6 : (is80mm ? 7.1 : 6.8);
-
-      // 2. Single Page Preferred ("auto" or "all"):
-      const totalSingleWeight = calculateCardItemWeight(instructions, 7.0, isRtl, enableQr);
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalSingleWeight <= maxSafeWithQr && instructions.length <= 4)) {
-        return [instructions];
-      }
-
-      // 3. Multi-Card Calibrated Pagination:
-      // Intermediate cards (no QR) respect maxSafeWithoutQr.
-      // The final card (with QR) respects maxSafeWithQr.
-      // Any point that exceeds safe height automatically flows to the next card to guarantee ZERO footer overlap!
-      const pages = [];
-      let startIndex = 0;
-
-      while (startIndex < instructions.length) {
-        let bestCount = 1;
-        for (let count = 1; count <= (instructions.length - startIndex); count++) {
-          const candidate = instructions.slice(startIndex, startIndex + count);
-          const isLastChunk = (startIndex + count === instructions.length);
-          const hasQr = isLastChunk && enableQr;
-          const limit = hasQr ? maxSafeWithQr : maxSafeWithoutQr;
-          const weight = calculateCardItemWeight(candidate, 7.5, isRtl, hasQr);
-          if (weight <= limit + 0.05) {
-            bestCount = count;
-          } else {
-            break;
-          }
-        }
-        pages.push(instructions.slice(startIndex, startIndex + bestCount));
-        startIndex += bestCount;
-      }
-
-      return pages;
-    }
-
-    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false) {
-      const count = pageItems ? pageItems.length : 0;
-      const rawBase = parseFloat(userFontSize);
-      const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0 && Math.abs(rawBase - 9.0) > 0.1);
-
-      let totalChars = 0;
-      (pageItems || []).forEach(item => {
-        const txt = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
-        totalChars += txt.trim().length;
-      });
-
-      // Auto-calculated optimal font size to eliminate blank space and ensure zero footer overlap!
-      let autoFontSize = 9.0;
-      let autoLineHeight = 1.25;
-      let gap = 3;
-
-      if (count === 1) {
-        if (totalChars < 120) {
-          autoFontSize = hasQr ? 11.2 : 12.0;
-          autoLineHeight = 1.38;
-          gap = 6;
-        } else if (totalChars < 240) {
-          autoFontSize = hasQr ? 10.2 : 11.0;
-          autoLineHeight = 1.30;
-          gap = 5;
-        } else if (totalChars < 360) {
-          autoFontSize = hasQr ? 9.0 : 9.8;
-          autoLineHeight = 1.24;
-          gap = 4;
-        } else {
-          autoFontSize = hasQr ? 7.8 : 8.6;
-          autoLineHeight = 1.18;
-          gap = 3;
-        }
-      } else if (count === 2) {
-        if (hasQr) {
-          if (totalChars > 340) {
-            autoFontSize = 7.0;
-            autoLineHeight = 1.14;
-            gap = 2;
-          } else if (totalChars > 200) {
-            autoFontSize = 7.5;
-            autoLineHeight = 1.16;
-            gap = 2;
-          } else {
-            autoFontSize = 8.5;
-            autoLineHeight = 1.20;
-            gap = 3;
-          }
-        } else {
-          if (totalChars > 380) {
-            autoFontSize = 7.8;
-            autoLineHeight = 1.16;
-            gap = 2;
-          } else if (totalChars > 250) {
-            autoFontSize = 8.6;
-            autoLineHeight = 1.20;
-            gap = 3;
-          } else {
-            autoFontSize = 9.4;
-            autoLineHeight = 1.25;
-            gap = 4;
-          }
-        }
-      } else if (count === 3) {
-        if (hasQr) {
-          if (totalChars > 350) {
-            autoFontSize = 6.8;
-            autoLineHeight = 1.12;
-            gap = 1;
-          } else {
-            autoFontSize = 7.2;
-            autoLineHeight = 1.14;
-            gap = 2;
-          }
-        } else {
-          autoFontSize = 8.0;
-          autoLineHeight = 1.18;
-          gap = 2;
-        }
-      } else {
-        autoFontSize = hasQr ? 6.8 : 7.4;
-        autoLineHeight = 1.12;
-        gap = 2;
-      }
-
-      // If user moved the slider, honor user's preference with safety cap for QR:
-      let effectiveFontSize = isCustomUserSize ? rawBase : autoFontSize;
-
-      if (hasQr && count >= 2) {
-        const estLines = calculateTotalLinesFullWidth(pageItems, effectiveFontSize, isRtl, true);
-        if (estLines > 11.5) {
-          effectiveFontSize = Math.min(effectiveFontSize, 6.8);
-          autoLineHeight = Math.min(autoLineHeight, 1.12);
-        } else if (estLines > 9.5) {
-          effectiveFontSize = Math.min(effectiveFontSize, 7.2);
-          autoLineHeight = Math.min(autoLineHeight, 1.14);
-        } else if (estLines > 7.5) {
-          effectiveFontSize = Math.min(effectiveFontSize, 7.8);
-          autoLineHeight = Math.min(autoLineHeight, 1.16);
+      // 2. Can all items fit comfortably on 1 SINGLE CARD?
+      if (instructions.length <= 4) {
+        const singleStyle = getAdaptiveCardStyleFullWidth(instructions, null, isRtl, enableQr);
+        if (singleStyle.fontSize >= 6.7) {
+          return [instructions];
         }
       }
 
-      return {
-        fontSize: Number(effectiveFontSize.toFixed(1)),
-        lineHeight: autoLineHeight,
-        gap: gap,
-        padding: count === 1 ? '4px 0' : '1px 0',
-        justify: count === 1 ? 'center' : 'flex-start'
-      };
+      // 3. User Rule: Maximum 2 Cards for drugs with many instructions ("الكتير كارتين")!
+      // Fully utilizes empty spaces by auto-scaling font and balancing cards
+      const total = instructions.length;
+
+      if (total <= 10) {
+        // Balanced 2-card split:
+        // Card 1 has full width (no QR), so it takes Math.ceil(total / 2)
+        // Card 2 has QR dock and takes the remaining points
+        const card1Count = Math.ceil(total / 2);
+        return [
+          instructions.slice(0, card1Count),
+          instructions.slice(card1Count)
+        ];
+      }
+
+      // If extreme count (>10 points), split into 3 cards
+      const card1Count = Math.ceil(total / 3);
+      const card2Count = Math.ceil((total - card1Count) / 2);
+      return [
+        instructions.slice(0, card1Count),
+        instructions.slice(card1Count, card1Count + card2Count),
+        instructions.slice(card1Count + card2Count)
+      ];
     }
 
     let isModalSingleMode = false;
@@ -7841,7 +7760,7 @@ function detectInstructionIcon(text) {
                 : '';
 
               pointsHtml += `
-                <div class="label-point-row" style="font-size: ${cardStyle.fontSize}pt; line-height: ${cardStyle.lineHeight}; margin-bottom: 2px;">
+                <div class="label-point-row" style="font-size: ${cardStyle.fontSize}pt; line-height: ${cardStyle.lineHeight}; margin-bottom: ${cardStyle.gap}px;">
                   <span class="label-point-badge">
                     <bdi class="label-point-num" dir="ltr">${currentPointNum}.</bdi>
                     <span class="label-point-icon-svg">${iconSvg}</span>
