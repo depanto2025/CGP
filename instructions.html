@@ -4227,11 +4227,7 @@ function detectInstructionIcon(text) {
           Close Window
         </button>
 
-        <div style="flex:1; display:flex; justify-content:center; align-items:center; padding:0 8px;">
-          <div style="font-size:10.5px; font-weight:800; color:#065f46; background:#d1fae5; border:1px solid #a7f3d0; border-radius:6px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px;">
-            <span>💡 <strong>مقاس رول صيدليات الدواء:</strong> تم ضبط المقاس تلقائياً على <strong>100 × 50 مم (4" × 2")</strong>. في نافذة طباعة كروم تأكد من اختيار حجم الورق المطابق، مع ضبط <strong>الهوامش على "لا شيء (None)"</strong>.</span>
-          </div>
-        </div>
+        
 
         <button class="btn-execute-print" onclick="executeBrowserPrint()">
           <i class="fas fa-print"></i>
@@ -6631,7 +6627,8 @@ function detectInstructionIcon(text) {
       let parenTag = parenMatch ? parenMatch[1].trim() : '';
 
       const cleanPrefix = rawPrefix.replace(/\[[^\]]+\]/g, '').replace(/\([^)]+\)/g, '').trim();
-      const parts = cleanPrefix.split(/,\s*|\s+or\s+/).map(s => s.trim()).filter(Boolean);
+      // Split on commas, semicolons, Arabic semicolons, slashes, pipes, or 'or'
+      const parts = cleanPrefix.split(/[,;؛/|]\s*|\s+or\s+/).map(s => s.trim()).filter(Boolean);
 
       const brandTags = [];
       const formTags = [];
@@ -6668,9 +6665,9 @@ function detectInstructionIcon(text) {
       const brandTags = [];
       const formTags = [];
 
-      // Match colon prefix or bracket/parenthesis prefix at start
-      const prefixColonMatch = instructionText.match(/^([A-Za-z0-9\s,\-\/(\)\[\]\u0600-\u06FF]+?):\s*/);
-      const parenStartMatch = instructionText.match(/^[\(\[]([A-Za-z0-9\s,\-\/\u0600-\u06FF]+?)[\)\]]\s*/);
+      // Match colon prefix or bracket/parenthesis prefix at start (allowing semicolons, hyphens, brackets etc.)
+      const prefixColonMatch = instructionText.match(/^([^:\n\r]{1,140}):\s*/);
+      const parenStartMatch = instructionText.match(/^[\(\[]([^\)\]\n\r]{1,140})[\)\]]\s*/);
 
       let rawPrefix = '';
       if (prefixColonMatch) {
@@ -7567,13 +7564,19 @@ function detectInstructionIcon(text) {
       return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
 
-    function calculateTotalLinesFullWidth(items, fontSize = 7.5, isRtl = true, hasQr = false) {
+    function calculateCardItemWeight(items, fontSize = 7.5, isRtl = true, hasQr = false) {
       let total = 0;
-      items.forEach(inst => {
+      (items || []).forEach(inst => {
         const text = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
-        total += estimateLinesForFontFullWidth(text, fontSize, isRtl, hasQr);
+        const lines = estimateLinesForFontFullWidth(text, fontSize, isRtl, hasQr);
+        // Each distinct point has icon + bullet + vertical margin + flex gap = ~0.38 lines equivalent
+        total += lines + 0.38;
       });
       return total;
+    }
+
+    function calculateTotalLinesFullWidth(items, fontSize = 7.5, isRtl = true, hasQr = false) {
+      return calculateCardItemWeight(items, fontSize, isRtl, hasQr);
     }
 
     function paginateInstructionsSmart(instructions, options = {}) {
@@ -7590,40 +7593,44 @@ function detectInstructionIcon(text) {
         return pages;
       }
 
-      // 2. Single Page Preferred ("auto" or "all"):
-      // REAL PHYSICAL CAPACITY:
-      // With smart font auto-scaling (6.8pt - 7.5pt), 1 card safely holds up to 13.0 lines with QR (~460-500 chars),
-      // or up to 15.0 lines without QR (~750 chars).
-      const singlePageMaxLines = enableQr ? 13.0 : 15.0;
-      const totalAllLinesAtMin = calculateTotalLinesFullWidth(instructions, 7.0, isRtl, enableQr);
+      const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
+      const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
 
-      // If all items fit safely on ONE single card, NEVER split into 2 cards!
-      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalAllLinesAtMin <= singlePageMaxLines && instructions.length <= 4)) {
+      // Calibrated physical capacity on 50mm height thermal labels:
+      // Without QR:
+      const maxSafeWithoutQr = is100mm ? 8.6 : (is80mm ? 8.0 : 7.6);
+      // With QR:
+      const maxSafeWithQr = is100mm ? 7.6 : (is80mm ? 7.1 : 6.8);
+
+      // 2. Single Page Preferred ("auto" or "all"):
+      const totalSingleWeight = calculateCardItemWeight(instructions, 7.0, isRtl, enableQr);
+      if (maxPerLabelVal === "all" || (maxPerLabelVal === "auto" && totalSingleWeight <= maxSafeWithQr && instructions.length <= 4)) {
         return [instructions];
       }
 
-      // 3. Multi-Card Full-Utilization Pagination:
-      // Cards 1 to N-1 have full width (no QR), holding up to 12.0 lines.
-      // The last card has the QR dock, holding up to 11.5 lines.
-      const MAX_SAFE_CARD_LINES = 12.0;
+      // 3. Multi-Card Calibrated Pagination:
+      // Intermediate cards (no QR) respect maxSafeWithoutQr.
+      // The final card (with QR) respects maxSafeWithQr.
+      // Any point that exceeds safe height automatically flows to the next card to guarantee ZERO footer overlap!
       const pages = [];
-      let currentPage = [];
+      let startIndex = 0;
 
-      for (let i = 0; i < instructions.length; i++) {
-        const inst = instructions[i];
-        const candidatePage = [...currentPage, inst];
-        const linesWithoutQr = calculateTotalLinesFullWidth(candidatePage, 7.5, isRtl, false);
-
-        if (currentPage.length > 0 && linesWithoutQr > MAX_SAFE_CARD_LINES) {
-          pages.push(currentPage);
-          currentPage = [inst];
-        } else {
-          currentPage.push(inst);
+      while (startIndex < instructions.length) {
+        let bestCount = 1;
+        for (let count = 1; count <= (instructions.length - startIndex); count++) {
+          const candidate = instructions.slice(startIndex, startIndex + count);
+          const isLastChunk = (startIndex + count === instructions.length);
+          const hasQr = isLastChunk && enableQr;
+          const limit = hasQr ? maxSafeWithQr : maxSafeWithoutQr;
+          const weight = calculateCardItemWeight(candidate, 7.5, isRtl, hasQr);
+          if (weight <= limit + 0.05) {
+            bestCount = count;
+          } else {
+            break;
+          }
         }
-      }
-
-      if (currentPage.length > 0) {
-        pages.push(currentPage);
+        pages.push(instructions.slice(startIndex, startIndex + bestCount));
+        startIndex += bestCount;
       }
 
       return pages;
@@ -7907,7 +7914,7 @@ function detectInstructionIcon(text) {
                         ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:6px; overflow:hidden; min-height:0; width:100%;">
+                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:6px; overflow:hidden; min-height:0; width:100%; padding-bottom:2px; margin-bottom:2px;">
                       <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden; min-height:0;">
                         ${pointsHtml}
                       </div>
