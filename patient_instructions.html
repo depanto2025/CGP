@@ -2757,20 +2757,21 @@ function detectInstructionIcon(text) {
     /* =========================================================
        6. Thermal Label Print Engine (@media print)
        FULL WIDTH DYNAMIC EXTENSION: Fills sticker roll completely!
-       Default: 100mm x 50mm (4" x 2" standard Al-Dawaa pharmacy label)
-       Supports 80x50 and 76x50 via setLabelPrintSize()
+       Default: 76.2mm x 50.8mm (3" x 2" standard Al-Dawaa pharmacy label)
+       Supports 80x50 and 100x50 via setLabelPrintSize()
        ========================================================= */
     @page {
-      size: 100mm 50mm; /* Standard 100mm x 50mm (4" x 2") Al-Dawaa thermal sticker roll */
+      size: 76.2mm 50.8mm; /* Standard 76.2mm x 50.8mm (3" x 2") Al-Dawaa thermal sticker roll default */
       margin: 0mm !important;
     }
 
     @media print {
       html, body {
-        width: 100mm !important;
-        min-width: 100mm !important;
-        height: 50mm !important;
-        min-height: 50mm !important;
+        width: 76.2mm !important;
+        min-width: 76.2mm !important;
+        height: 50.8mm !important;
+        min-height: 50.8mm !important;
+        max-height: 50.8mm !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
@@ -2785,19 +2786,19 @@ function detectInstructionIcon(text) {
 
       #printExecutionSandbox {
         display: block !important;
-        width: 100mm !important;
-        min-width: 100mm !important;
+        width: 76.2mm !important;
+        min-width: 76.2mm !important;
         margin: 0 !important;
         padding: 0 !important;
       }
 
       .print-label-page {
-        width: 100mm !important;
-        min-width: 100mm !important;
-        max-width: 100mm !important;
-        height: 50mm !important;
+        width: 76.2mm !important;
+        min-width: 76.2mm !important;
+        max-width: 76.2mm !important;
+        height: 50.8mm !important;
         min-height: 48mm !important;
-        max-height: 50mm !important;
+        max-height: 50.8mm !important;
         page-break-after: always;
         page-break-inside: avoid;
         break-inside: avoid;
@@ -3606,33 +3607,36 @@ function detectInstructionIcon(text) {
     }
   </style>
 
-  <!-- Dynamic Thermal Label Size Injector (100x50mm default, 80x50mm, 76x50mm) -->
+  <!-- Dynamic Thermal Label Size Injector (76.2x50.8mm default, 80x50mm, 100x50mm) -->
   <style id="dynamicPrintPageStyle">
     @page {
-      size: 100mm 50mm;
+      size: 76.2mm 50.8mm;
       margin: 0mm !important;
     }
     @media print {
       html, body, #printExecutionSandbox {
-        width: 100mm !important;
-        min-width: 100mm !important;
-        height: 50mm !important;
-        min-height: 50mm !important;
+        width: 76.2mm !important;
+        min-width: 76.2mm !important;
+        height: 50.8mm !important;
+        min-height: 50.8mm !important;
+        max-height: 50.8mm !important;
         margin: 0 !important;
         padding: 0 !important;
       }
       .print-label-page {
-        width: 100mm !important;
-        min-width: 100mm !important;
-        max-width: 100mm !important;
-        height: 50mm !important;
+        width: 76.2mm !important;
+        min-width: 76.2mm !important;
+        max-width: 76.2mm !important;
+        height: 50.8mm !important;
         min-height: 48mm !important;
-        max-height: 50.5mm !important;
+        max-height: 50.8mm !important;
+        box-sizing: border-box !important;
+        padding: 1.0mm 1.5mm !important;
       }
     }
     .screen-label-card {
-      width: 460px !important;
-      height: 230px !important;
+      width: 360px !important;
+      height: 240px !important;
     }
   </style>
 </head>
@@ -3651,7 +3655,7 @@ function detectInstructionIcon(text) {
       </div>
       <div class="brand-info">
         <h1>Aldawaa-Patient Instructions System (A-PIS)</h1>
-        <p><i class="fas fa-check-circle" style="color:var(--emerald-500)"></i> صيدليات الدواء • طباعة إرشادات المريض الذكية • <span id="mainThermalFormatBadge" style="font-weight:800; color:#0284c7;">مقاس الملصق: 100 × 50 مم (4" × 2")</span></p>
+        <p><i class="fas fa-check-circle" style="color:var(--emerald-500)"></i> صيدليات الدواء • طباعة إرشادات المريض الذكية • <span id="mainThermalFormatBadge" style="font-weight:800; color:#0284c7;">مقاس الملصق: 76.2 × 50.8 مم (3" × 2")</span></p>
       </div>
     </div>
 
@@ -3937,9 +3941,9 @@ function detectInstructionIcon(text) {
         <div class="toolbar-option" style="background: rgba(16, 185, 129, 0.1); padding: 5px 12px; border-radius: 8px; border: 1.5px solid #10b981;">
           <span style="font-weight:800; color:#065f46;"><i class="fas fa-tag"></i> مقاس الملصق:</span>
           <select id="modalLabelSizeSelect" class="toolbar-select-box" style="font-weight:800; color:#065f46; border-color:#10b981;" onchange="setLabelPrintSize(this.value)">
-            <option value="100x50" selected>100 × 50 مم (4" × 2" - رول صيدليات الدواء)</option>
+            <option value="76x50" selected>76.2 × 50.8 مم (3" × 2" - رول صيدليات الدواء الافتراضي)</option>
             <option value="80x50">80 × 50 مم</option>
-            <option value="76x50">76.2 × 50.8 مم (3" × 2")</option>
+            <option value="100x50">100 × 50 مم (4" × 2")</option>
           </select>
         </div>
 
@@ -5338,6 +5342,137 @@ function detectInstructionIcon(text) {
       'calcium': 'calcium-carbonate'
     };
 
+    const DRUG_CLINICAL_ALIASES = {
+      // Mesalazine / Mesalamine (5-ASA)
+      'mesalazine': 'mesalamine',
+      'mesalazin': 'mesalamine',
+      '5asa': 'mesalamine',
+      '5-asa': 'mesalamine',
+      '5aminosalicylicacid': 'mesalamine',
+      '5-aminosalicylic-acid': 'mesalamine',
+      'salofalk': 'mesalamine',
+      'pentasa': 'mesalamine',
+      'asacol': 'mesalamine',
+      'asacolhd': 'mesalamine',
+      'asacol-hd': 'mesalamine',
+      'mezavant': 'mesalamine',
+      'apriso': 'mesalamine',
+      'lialda': 'mesalamine',
+      'canasa': 'mesalamine',
+      'delzicol': 'mesalamine',
+      'rowasa': 'mesalamine',
+
+      // Paracetamol / Acetaminophen
+      'paracetamol': 'acetaminophen',
+      'panadol': 'acetaminophen',
+      'tylenol': 'acetaminophen',
+      'adol': 'acetaminophen',
+      'feverdol': 'acetaminophen',
+      'paramol': 'acetaminophen',
+      'abimol': 'acetaminophen',
+      'cefalgin': 'acetaminophen',
+      'calpol': 'acetaminophen',
+
+      // Salbutamol / Albuterol
+      'salbutamol': 'albuterol',
+      'ventolin': 'albuterol',
+      'proair': 'albuterol',
+      'proventil': 'albuterol',
+
+      // Furosemide / Frusemide
+      'frusemide': 'furosemide',
+      'lasix': 'furosemide',
+
+      // Glibenclamide / Glyburide
+      'glibenclamide': 'glyburide',
+      'daonil': 'glyburide',
+
+      // Amoxicillin + Clavulanate
+      'amoxicillinclavulanate': 'amoxicillin-and-clavulanate',
+      'amoxicillin-clavulanate': 'amoxicillin-and-clavulanate',
+      'amoxicillinclavulanicacid': 'amoxicillin-and-clavulanate',
+      'amoxicillin-clavulanic-acid': 'amoxicillin-and-clavulanate',
+      'coamoxiclav': 'amoxicillin-and-clavulanate',
+      'co-amoxiclav': 'amoxicillin-and-clavulanate',
+      'augmentin': 'amoxicillin-and-clavulanate',
+      'curam': 'amoxicillin-and-clavulanate',
+      'klavox': 'amoxicillin-and-clavulanate',
+      'megamox': 'amoxicillin-and-clavulanate',
+      'julmentin': 'amoxicillin-and-clavulanate',
+      'amoclan': 'amoxicillin-and-clavulanate',
+
+      // Alendronate / Fosamax
+      'alendronatesodium': 'alendronate',
+      'alendronate-sodium': 'alendronate',
+      'alendronatemonosodiumtrihydrate': 'alendronate',
+      'alendronate-monosodium-trihydrate': 'alendronate',
+      'alendronatemonosodiumtrihydr': 'alendronate',
+      'alendronate-monosodium-trihydr': 'alendronate',
+      'fosamax': 'alendronate',
+      'bonapex': 'alendronate',
+      'ostamax': 'alendronate',
+
+      // Cefixime / Suprax
+      'cefiximetrihydrate': 'cefixime',
+      'cefixime-trihydrate': 'cefixime',
+      'suprax': 'cefixime',
+      'magnaf': 'cefixime',
+      'ximacef': 'cefixime',
+
+      // Bisacodyl / Dulcolax
+      'dulcolax': 'bisacodyl',
+      'laxacol': 'bisacodyl',
+
+      // Omeprazole / Losec
+      'losec': 'omeprazole',
+      'omeran': 'omeprazole',
+      'gastrazole': 'omeprazole',
+
+      // Esomeprazole / Nexium
+      'nexium': 'esomeprazole',
+      'ezor': 'esomeprazole',
+      'esomra': 'esomeprazole',
+
+      // Pantoprazole / Controloc
+      'controloc': 'pantoprazole',
+      'pantozol': 'pantoprazole',
+      'pulcet': 'pantoprazole',
+
+      // Atorvastatin / Lipitor
+      'lipitor': 'atorvastatin',
+      'atocor': 'atorvastatin',
+      'ator': 'atorvastatin',
+      'torvast': 'atorvastatin',
+
+      // Rosuvastatin / Crestor
+      'crestor': 'rosuvastatin',
+      'rovat': 'rosuvastatin',
+
+      // Amlodipine / Norvasc
+      'norvasc': 'amlodipine',
+      'amlor': 'amlodipine',
+
+      // Metformin / Glucophage
+      'glucophage': 'metformin',
+      'cidophage': 'metformin',
+
+      // Ursodeoxycholic Acid / Ursodiol
+      'ursodeoxycholicacid': 'ursodiol',
+      'ursodeoxycholic-acid': 'ursodiol',
+      'ursofalk': 'ursodiol',
+      'ursogall': 'ursodiol',
+
+      // Hyoscine / Scopolamine
+      'hyoscine': 'scopolamine',
+      'hyoscinebutylbromide': 'scopolamine',
+      'hyoscine-butylbromide': 'scopolamine',
+      'buscopan': 'scopolamine',
+
+      // Diclofenac
+      'voltaren': 'diclofenac',
+      'cataflam': 'diclofenac'
+    };
+
     const COMMON_SALTS = [
       'sodium', 'monosodium', 'disodium', 'trisodium', 'potassium', 'calcium', 'hydrochloride', 'hcl', 'maleate', 'fumarate',
       'tartrate', 'succinate', 'phosphate', 'sulfate', 'sulphate', 'mesylate', 'besylate',
@@ -5396,6 +5531,15 @@ function detectInstructionIcon(text) {
         const alphanumeric = clean.replace(/[^a-z0-9]/g, '').trim();
         if (!alphanumeric) continue;
 
+        // Check clinical aliases first (e.g. mesalazine -> mesalamine)
+        const alias = DRUG_CLINICAL_ALIASES[alphanumeric] || DRUG_CLINICAL_ALIASES[clean.trim().replace(/\s+/g, '-')];
+        if (alias) {
+          const aliasAlpha = alias.replace(/[^a-z0-9]/g, '');
+          if (lexiDb[aliasAlpha]) return lexiDb[aliasAlpha];
+          if (lexiDb[alias]) return lexiDb[alias];
+          if (lexidrugsNameIndex.has(aliasAlpha)) return lexiDb[lexidrugsNameIndex.get(aliasAlpha)];
+        }
+
         if (lexiDb[alphanumeric]) return lexiDb[alphanumeric];
         if (lexidrugsNameIndex.has(alphanumeric)) return lexiDb[lexidrugsNameIndex.get(alphanumeric)];
 
@@ -5409,12 +5553,21 @@ function detectInstructionIcon(text) {
         }
       }
 
-      // 2. Check Brand and Descriptions against lexidrugsNameIndex
+      // 2. Check Brand and Descriptions against lexidrugsNameIndex & Aliases
       const descTokens = (p.descEn + ' ' + p.brand).toLowerCase().split(/[\s,]+/);
       for (let w of descTokens) {
         const cleanW = w.replace(/[^a-z0-9]/g, '');
-        if (cleanW.length >= 4 && lexidrugsNameIndex.has(cleanW)) {
-          return lexiDb[lexidrugsNameIndex.get(cleanW)];
+        if (cleanW.length >= 4) {
+          const alias = DRUG_CLINICAL_ALIASES[cleanW];
+          if (alias) {
+            const aliasAlpha = alias.replace(/[^a-z0-9]/g, '');
+            if (lexiDb[aliasAlpha]) return lexiDb[aliasAlpha];
+            if (lexiDb[alias]) return lexiDb[alias];
+            if (lexidrugsNameIndex.has(aliasAlpha)) return lexiDb[lexidrugsNameIndex.get(aliasAlpha)];
+          }
+          if (lexidrugsNameIndex.has(cleanW)) {
+            return lexiDb[lexidrugsNameIndex.get(cleanW)];
+          }
         }
       }
 
@@ -5834,6 +5987,17 @@ function detectInstructionIcon(text) {
         const alphanumeric = clean.replace(/[^a-z0-9]/g, '').trim();
         if (!alphanumeric) continue;
 
+        // Check clinical aliases first (e.g. mesalazine -> mesalamine)
+        const alias = DRUG_CLINICAL_ALIASES[alphanumeric] || DRUG_CLINICAL_ALIASES[clean.trim().replace(/\s+/g, '-')];
+        if (alias) {
+          const aliasAlpha = alias.replace(/[^a-z0-9]/g, '');
+          if (dynDb[alias]) return dynDb[alias];
+          if (dynDb[aliasAlpha]) return dynDb[aliasAlpha];
+          if (DYNAMEDEX_SYNONYMS[alias] && dynDb[DYNAMEDEX_SYNONYMS[alias]]) return dynDb[DYNAMEDEX_SYNONYMS[alias]];
+          if (DYNAMEDEX_SYNONYMS[aliasAlpha] && dynDb[DYNAMEDEX_SYNONYMS[aliasAlpha]]) return dynDb[DYNAMEDEX_SYNONYMS[aliasAlpha]];
+          if (dynamedexNameIndex.has(aliasAlpha)) return dynDb[dynamedexNameIndex.get(aliasAlpha)];
+        }
+
         if (DYNAMEDEX_SYNONYMS[alphanumeric] && dynDb[DYNAMEDEX_SYNONYMS[alphanumeric]]) {
           return dynDb[DYNAMEDEX_SYNONYMS[alphanumeric]];
         }
@@ -5852,7 +6016,21 @@ function detectInstructionIcon(text) {
         }
       }
 
-      // 2. Check Brand and Descriptions against Synonyms
+      // 2. Check Brand and Descriptions against Synonyms & DRUG_CLINICAL_ALIASES
+      const descTokens = (p.descEn + ' ' + p.brand).toLowerCase().split(/[\s,]+/);
+      for (let w of descTokens) {
+        const cleanW = w.replace(/[^a-z0-9]/g, '');
+        if (cleanW.length >= 4) {
+          const alias = DRUG_CLINICAL_ALIASES[cleanW];
+          if (alias) {
+            const aliasAlpha = alias.replace(/[^a-z0-9]/g, '');
+            if (dynDb[alias]) return dynDb[alias];
+            if (dynDb[aliasAlpha]) return dynDb[aliasAlpha];
+            if (dynamedexNameIndex.has(aliasAlpha)) return dynDb[dynamedexNameIndex.get(aliasAlpha)];
+          }
+        }
+      }
+
       const combined = (p.descEn + ' ' + p.brand).toLowerCase();
       for (let [k, slug] of Object.entries(DYNAMEDEX_SYNONYMS)) {
         if (combined.includes(k) && dynDb[slug]) {
@@ -6311,10 +6489,12 @@ function detectInstructionIcon(text) {
       }
     }
 
-    let currentLabelSizeKey = localStorage.getItem('aldawaa_label_size') || '100x50';
+    let storedLabelSize = localStorage.getItem('aldawaa_label_size');
+    let currentLabelSizeKey = (storedLabelSize && storedLabelSize !== '100x50') ? storedLabelSize : '76x50';
+    localStorage.setItem('aldawaa_label_size', currentLabelSizeKey);
 
     function setLabelPrintSize(sizeKey) {
-      currentLabelSizeKey = sizeKey || '100x50';
+      currentLabelSizeKey = sizeKey || '76x50';
       localStorage.setItem('aldawaa_label_size', currentLabelSizeKey);
 
       const styleEl = document.getElementById('dynamicPrintPageStyle');
@@ -7495,7 +7675,7 @@ function detectInstructionIcon(text) {
         console.error("Error initializing medication:", err);
       }
 
-      // 2. Initialize Thermal Label Print Size (100x50mm Al-Dawaa standard default)
+      // 2. Initialize Thermal Label Print Size (76.2x50.8mm Al-Dawaa standard default)
       try {
         setLabelPrintSize(currentLabelSizeKey);
       } catch (err) {
@@ -7539,71 +7719,79 @@ function detectInstructionIcon(text) {
 
     function cleanStringForMatching(str) {
       if (!str) return '';
-      return str.toLowerCase()
+      return String(str).toLowerCase()
         .replace(SALT_STOP_WORDS, ' ')
         .replace(/[^a-z0-9]+/g, ' ')
         .trim()
         .replace(/\s+/g, '-');
     }
 
+    function cleanDrugActiveToken(str) {
+      if (!str) return '';
+      let s = String(str).toLowerCase().replace(/\(.*?\)/g, ' ').replace(SALT_STOP_WORDS, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+      return s.replace(/\s+/g, '-');
+    }
+
     function resolvePatientEduDrug(rawActive, rawTrade) {
       const db = window.PATIENT_EDUCATION_DATA;
       if (!db) return null;
 
-      const candidates = [rawActive, rawTrade].filter(Boolean);
+      // 1. FIRST PRIORITY: Active Ingredient Matching
+      if (rawActive) {
+        const rawSlug = cleanStringForMatching(rawActive);
+        const saltStripped = cleanDrugActiveToken(rawActive);
+        const rawAlpha = rawSlug.replace(/-/g, '');
+        const saltAlpha = saltStripped.replace(/-/g, '');
 
-      // 1. Direct slug or key match
-      for (const c of candidates) {
-        const rawSlug = c.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        const cleanSlug = cleanStringForMatching(c);
         if (db[rawSlug]) return db[rawSlug];
-        if (db[cleanSlug]) return db[cleanSlug];
-      }
+        if (saltStripped && db[saltStripped]) return db[saltStripped];
 
-      // 2. Synonyms match (exact)
-      for (const c of candidates) {
-        const rawClean = c.toLowerCase().trim();
-        const cleanSlug = cleanStringForMatching(c);
+        // Check clinical aliases (e.g. mesalazine -> mesalamine)
+        const alias = DRUG_CLINICAL_ALIASES[rawSlug] || DRUG_CLINICAL_ALIASES[rawAlpha] ||
+                      (saltStripped && (DRUG_CLINICAL_ALIASES[saltStripped] || DRUG_CLINICAL_ALIASES[saltAlpha]));
+        if (alias && db[alias]) return db[alias];
+
         for (const [k, v] of Object.entries(db)) {
-          if (v.slug === cleanSlug || (v.name && v.name.toLowerCase() === rawClean)) return v;
-          if (v.synonyms && (v.synonyms.includes(rawClean) || v.synonyms.includes(cleanSlug))) {
-            return v;
+          if (v.slug === rawSlug || v.slug === saltStripped || (alias && v.slug === alias)) return v;
+          if (v.name && cleanStringForMatching(v.name) === rawSlug) return v;
+          if (v.synonyms) {
+            if (v.synonyms.includes(rawSlug) || (saltStripped && v.synonyms.includes(saltStripped))) {
+              return v;
+            }
           }
         }
-      }
 
-      // 3. Substring slug & token matching (e.g. "alendronate" in "alendronate-monosodium-trihydr")
-      for (const c of candidates) {
-        const cleanSlug = cleanStringForMatching(c);
-        const tokens = cleanSlug.split('-').filter(t => t.length >= 4);
-        
-        for (const tok of tokens) {
+        const activeTokens = (saltStripped || rawSlug).split('-').filter(t => t.length >= 4);
+        for (const tok of activeTokens) {
           if (db[tok]) return db[tok];
+          const tokAlias = DRUG_CLINICAL_ALIASES[tok];
+          if (tokAlias && db[tokAlias]) return db[tokAlias];
           for (const [k, v] of Object.entries(db)) {
-            if (k === tok || k.startsWith(tok) || (v.name && v.name.toLowerCase().startsWith(tok))) {
-              return v;
-            }
-          }
-        }
-
-        if (cleanSlug.length >= 4) {
-          for (const [k, v] of Object.entries(db)) {
-            if (k.includes(cleanSlug) || cleanSlug.includes(k)) {
-              return v;
-            }
+            if (k === tok || k.startsWith(tok + '-')) return v;
           }
         }
       }
 
-      // 4. Trade name substring match in synonyms
+      // 2. SECOND PRIORITY: Trade Name / Brand matching (Strict cleaning - remove strengths, dosage forms, Arabic terms)
       if (rawTrade) {
-        const tradeTokens = rawTrade.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(t => t.length >= 4);
+        const cleanTrade = String(rawTrade).toLowerCase()
+          .replace(/\b\d+(\.\d+)?\s*(mg|g|gm|mcg|ml|l|iu|u|%|unit|units)\b/gi, ' ')
+          .replace(/\b\d+\s*(tab|tabs|tablet|tablets|cap|caps|capsule|capsules|amp|amps|vial|vials|sachet|sachets|supp|supps)\b/gi, ' ')
+          .replace(/\b(tab|tabs|tablet|tablets|cap|caps|capsule|capsules|syrup|susp|suspension|drops|drop|cream|ointment|gel|lotion|spray|inhaler|injection|solution|sol|effervescent|xr|er|cr|sr|dr|retard|forte|extra|plus|comp|oral)\b/gi, ' ')
+          .replace(/\b(قرص|أقراص|اقراص|كبسول|كبسولات|حبوب|حبه|حبة|شراب|معلق|نقط|قطرة|كريم|مرهم|جل|بخاخ|حقن|حقنة|فوار|ممتد|سريع|بلس|فورت|اكسترا)\b/gi, ' ')
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim();
+
+        const tradeTokens = cleanTrade.split(/\s+/).filter(t => t.length >= 4 && !/^\d+$/.test(t));
         for (const tok of tradeTokens) {
+          if (db[tok]) return db[tok];
+          const tokAlias = DRUG_CLINICAL_ALIASES[tok];
+          if (tokAlias && db[tokAlias]) return db[tokAlias];
+
+          const regex = new RegExp('\\b' + tok + '\\b', 'i');
           for (const [k, v] of Object.entries(db)) {
-            if (v.synonyms) {
-              for (const s of v.synonyms) {
-                if (s.includes(tok)) return v;
-              }
+            if (v.synonyms && v.synonyms.some(s => regex.test(s))) {
+              return v;
             }
           }
         }
@@ -7711,10 +7899,19 @@ function detectInstructionIcon(text) {
     }
 
     function getPatientViewerUrl(matchedSlug, medObj, lang = 'ar') {
-      const cleanSlug = (matchedSlug || 'bisacodyl').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const cleanSlug = (matchedSlug || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
       const settings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
       
       let queryParams = `d=${encodeURIComponent(cleanSlug)}`;
+
+      if (medObj) {
+        if (medObj.tradeNameEn) {
+          queryParams += `&t=${encodeURIComponent(medObj.tradeNameEn)}`;
+        }
+        if (medObj.itemCode || medObj.code) {
+          queryParams += `&c=${encodeURIComponent(medObj.itemCode || medObj.code)}`;
+        }
+      }
 
       // Keep QR code URL ultra-short & lightweight so thermal print generates large, easily scannable QR modules
       if (settings) {
@@ -7800,8 +7997,50 @@ function detectInstructionIcon(text) {
       const tradeName = currentMedication ? currentMedication.tradeNameEn : '';
 
       currentEduDrug = resolvePatientEduDrug(activeName, tradeName) || 
-                       resolvePatientEduDrug(activeName) || 
-                       (window.PATIENT_EDUCATION_DATA ? window.PATIENT_EDUCATION_DATA['alendronate'] || Object.values(window.PATIENT_EDUCATION_DATA)[0] : null);
+                       resolvePatientEduDrug(activeName);
+
+      if (!currentEduDrug && (activeName || tradeName)) {
+        // Construct a safe generic patient education record using the actual drug name - NEVER show wrong drug!
+        const dispName = (activeName || tradeName || "Medication").toUpperCase();
+        const cleanSlug = cleanStringForMatching(dispName);
+        currentEduDrug = {
+          name: dispName,
+          slug: cleanSlug,
+          classes: ["Prescription Medication"],
+          routes: {
+            "Oral": [
+              "تناول الدواء بدقة حسب الجرعة والتعليمات المحددة من قبل الطبيب المعالج أو الصيدلي.",
+              "Take medication exactly as directed by your healthcare provider or pharmacist.",
+              "إذا نسيت جرعة، فتناولها بمجرد أن تتذكرها ما لم يقترب موعد الجرعة التالية؛ ولا تضاعف الجرعة.",
+              "If you miss a dose, take it as soon as remembered unless close to next dose; do not double up."
+            ]
+          },
+          counseling: {
+            ar: [
+              "تناول الدواء بدقة حسب الجرعة والتعليمات المحددة من قبل الطبيب المعالج أو الصيدلي.",
+              "استشر الطبيب أو الصيدلي قبل تناول أي أدوية أخرى أو مكملات لتجنب التداخلات الدوائية.",
+              "يحفظ الدواء في درجة حرارة الغرفة بعيداً عن الرطوبة والحرارة وبعيداً عن متناول الأطفال."
+            ],
+            en: [
+              "Take medication exactly as directed by your healthcare provider or pharmacist.",
+              "Consult doctor or pharmacist before taking other medications to prevent interactions.",
+              "Store at room temperature away from moisture, heat, and keep out of reach of children."
+            ]
+          },
+          indications: {
+            ar: ["علاج وتدبير الحالة الطبية حسب تقييم الطبيب المعالج والتشخيص السريري."],
+            en: ["Treatment and management of condition as prescribed by healthcare provider."]
+          },
+          monitoring: {
+            ar: ["المتابعة الدورية للتحاليل والأعراض وفق توجيهات الطبيب."],
+            en: ["Periodic monitoring and clinical follow-up as directed by physician."]
+          },
+          warnings: {
+            ar: ["أوقف الدواء واستشر الطبيب فوراً عند ظهور أعراض تحسسية كالحكة أو الطفح الجلدي أو صعوبة التنفس."],
+            en: ["Stop medication and seek prompt medical care if signs of allergic reaction occur."]
+          }
+        };
+      }
 
       currentEduSource = 'mix';
       currentEduLang = currentLabelLang || 'ar';

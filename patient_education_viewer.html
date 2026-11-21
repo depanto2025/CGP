@@ -1101,75 +1101,214 @@
     let currentMonSource = 'mix'; // Default for Monitoring section is MIX
     let translationCache = new Map();
 
+    const DRUG_CLINICAL_ALIASES = {
+      // Mesalazine / Mesalamine (5-ASA)
+      'mesalazine': 'mesalamine',
+      'mesalazin': 'mesalamine',
+      '5asa': 'mesalamine',
+      '5-asa': 'mesalamine',
+      '5aminosalicylicacid': 'mesalamine',
+      '5-aminosalicylic-acid': 'mesalamine',
+      'salofalk': 'mesalamine',
+      'pentasa': 'mesalamine',
+      'asacol': 'mesalamine',
+      'asacolhd': 'mesalamine',
+      'asacol-hd': 'mesalamine',
+      'mezavant': 'mesalamine',
+      'apriso': 'mesalamine',
+      'lialda': 'mesalamine',
+      'canasa': 'mesalamine',
+      'delzicol': 'mesalamine',
+      'rowasa': 'mesalamine',
+
+      // Paracetamol / Acetaminophen
+      'paracetamol': 'acetaminophen',
+      'panadol': 'acetaminophen',
+      'tylenol': 'acetaminophen',
+      'adol': 'acetaminophen',
+      'feverdol': 'acetaminophen',
+      'paramol': 'acetaminophen',
+      'abimol': 'acetaminophen',
+      'cefalgin': 'acetaminophen',
+      'calpol': 'acetaminophen',
+
+      // Salbutamol / Albuterol
+      'salbutamol': 'albuterol',
+      'ventolin': 'albuterol',
+      'proair': 'albuterol',
+      'proventil': 'albuterol',
+
+      // Furosemide / Frusemide
+      'frusemide': 'furosemide',
+      'lasix': 'furosemide',
+
+      // Glibenclamide / Glyburide
+      'glibenclamide': 'glyburide',
+      'daonil': 'glyburide',
+
+      // Amoxicillin + Clavulanate
+      'amoxicillinclavulanate': 'amoxicillin-and-clavulanate',
+      'amoxicillin-clavulanate': 'amoxicillin-and-clavulanate',
+      'amoxicillinclavulanicacid': 'amoxicillin-and-clavulanate',
+      'amoxicillin-clavulanic-acid': 'amoxicillin-and-clavulanate',
+      'coamoxiclav': 'amoxicillin-and-clavulanate',
+      'co-amoxiclav': 'amoxicillin-and-clavulanate',
+      'augmentin': 'amoxicillin-and-clavulanate',
+      'curam': 'amoxicillin-and-clavulanate',
+      'klavox': 'amoxicillin-and-clavulanate',
+      'megamox': 'amoxicillin-and-clavulanate',
+      'julmentin': 'amoxicillin-and-clavulanate',
+      'amoclan': 'amoxicillin-and-clavulanate',
+
+      // Alendronate / Fosamax
+      'alendronatesodium': 'alendronate',
+      'alendronate-sodium': 'alendronate',
+      'alendronatemonosodiumtrihydrate': 'alendronate',
+      'alendronate-monosodium-trihydrate': 'alendronate',
+      'alendronatemonosodiumtrihydr': 'alendronate',
+      'alendronate-monosodium-trihydr': 'alendronate',
+      'fosamax': 'alendronate',
+      'bonapex': 'alendronate',
+      'ostamax': 'alendronate',
+
+      // Cefixime / Suprax
+      'cefiximetrihydrate': 'cefixime',
+      'cefixime-trihydrate': 'cefixime',
+      'suprax': 'cefixime',
+      'magnaf': 'cefixime',
+      'ximacef': 'cefixime',
+
+      // Bisacodyl / Dulcolax
+      'dulcolax': 'bisacodyl',
+      'laxacol': 'bisacodyl',
+
+      // Omeprazole / Losec
+      'losec': 'omeprazole',
+      'omeran': 'omeprazole',
+      'gastrazole': 'omeprazole',
+
+      // Esomeprazole / Nexium
+      'nexium': 'esomeprazole',
+      'ezor': 'esomeprazole',
+      'esomra': 'esomeprazole',
+
+      // Pantoprazole / Controloc
+      'controloc': 'pantoprazole',
+      'pantozol': 'pantoprazole',
+      'pulcet': 'pantoprazole',
+
+      // Atorvastatin / Lipitor
+      'lipitor': 'atorvastatin',
+      'atocor': 'atorvastatin',
+      'ator': 'atorvastatin',
+      'torvast': 'atorvastatin',
+
+      // Rosuvastatin / Crestor
+      'crestor': 'rosuvastatin',
+      'rovat': 'rosuvastatin',
+
+      // Amlodipine / Norvasc
+      'norvasc': 'amlodipine',
+      'amlor': 'amlodipine',
+
+      // Metformin / Glucophage
+      'glucophage': 'metformin',
+      'cidophage': 'metformin',
+
+      // Ursodeoxycholic Acid / Ursodiol
+      'ursodeoxycholicacid': 'ursodiol',
+      'ursodeoxycholic-acid': 'ursodiol',
+      'ursofalk': 'ursodiol',
+      'ursogall': 'ursodiol',
+
+      // Hyoscine / Scopolamine
+      'hyoscine': 'scopolamine',
+      'hyoscinebutylbromide': 'scopolamine',
+      'hyoscine-butylbromide': 'scopolamine',
+      'buscopan': 'scopolamine',
+
+      // Diclofenac
+      'voltaren': 'diclofenac',
+      'cataflam': 'diclofenac'
+    };
+
     const SALT_STOP_WORDS = /\b(monosodium|disodium|trisodium|sodium|potassium|calcium|hydrochloride|hcl|maleate|fumarate|sulfate|succinate|tartrate|citrate|acetate|phosphate|nitrate|trihydrate|dihydrate|monohydrate|anhydrous|hydrate|trihydr|trihyd|susp|tablet|tablets|capsule|capsules|oral|solution|injection|drops|syrup|once|weekly|daily|mg|ml|mcg|gm|g)\b/gi;
 
     function cleanStringForMatching(str) {
       if (!str) return '';
-      return str.toLowerCase()
+      return String(str).toLowerCase()
         .replace(SALT_STOP_WORDS, ' ')
         .replace(/[^a-z0-9]+/g, ' ')
         .trim()
         .replace(/\s+/g, '-');
     }
 
+    function cleanDrugActiveToken(str) {
+      if (!str) return '';
+      let s = String(str).toLowerCase().replace(/\(.*?\)/g, ' ').replace(SALT_STOP_WORDS, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+      return s.replace(/\s+/g, '-');
+    }
+
     function resolvePatientEduDrug(rawActive, rawTrade) {
       const db = window.PATIENT_EDUCATION_DATA;
       if (!db) return null;
 
-      const candidates = [rawActive, rawTrade].filter(Boolean);
+      // 1. FIRST PRIORITY: Active Ingredient Matching
+      if (rawActive) {
+        const rawSlug = cleanStringForMatching(rawActive);
+        const saltStripped = cleanDrugActiveToken(rawActive);
+        const rawAlpha = rawSlug.replace(/-/g, '');
+        const saltAlpha = saltStripped.replace(/-/g, '');
 
-      // 1. Direct slug or key match
-      for (const c of candidates) {
-        const rawSlug = c.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        const cleanSlug = cleanStringForMatching(c);
         if (db[rawSlug]) return db[rawSlug];
-        if (db[cleanSlug]) return db[cleanSlug];
-      }
+        if (saltStripped && db[saltStripped]) return db[saltStripped];
 
-      // 2. Synonyms match (exact)
-      for (const c of candidates) {
-        const rawClean = c.toLowerCase().trim();
-        const cleanSlug = cleanStringForMatching(c);
+        // Check clinical aliases (e.g. mesalazine -> mesalamine)
+        const alias = DRUG_CLINICAL_ALIASES[rawSlug] || DRUG_CLINICAL_ALIASES[rawAlpha] ||
+                      (saltStripped && (DRUG_CLINICAL_ALIASES[saltStripped] || DRUG_CLINICAL_ALIASES[saltAlpha]));
+        if (alias && db[alias]) return db[alias];
+
         for (const [k, v] of Object.entries(db)) {
-          if (v.slug === cleanSlug || (v.name && v.name.toLowerCase() === rawClean)) return v;
-          if (v.synonyms && (v.synonyms.includes(rawClean) || v.synonyms.includes(cleanSlug))) {
-            return v;
+          if (v.slug === rawSlug || v.slug === saltStripped || (alias && v.slug === alias)) return v;
+          if (v.name && cleanStringForMatching(v.name) === rawSlug) return v;
+          if (v.synonyms) {
+            if (v.synonyms.includes(rawSlug) || (saltStripped && v.synonyms.includes(saltStripped))) {
+              return v;
+            }
           }
         }
-      }
 
-      // 3. Substring slug & token matching
-      for (const c of candidates) {
-        const cleanSlug = cleanStringForMatching(c);
-        const tokens = cleanSlug.split('-').filter(t => t.length >= 4);
-        
-        for (const tok of tokens) {
+        const activeTokens = (saltStripped || rawSlug).split('-').filter(t => t.length >= 4);
+        for (const tok of activeTokens) {
           if (db[tok]) return db[tok];
+          const tokAlias = DRUG_CLINICAL_ALIASES[tok];
+          if (tokAlias && db[tokAlias]) return db[tokAlias];
           for (const [k, v] of Object.entries(db)) {
-            if (k === tok || k.startsWith(tok) || (v.name && v.name.toLowerCase().startsWith(tok))) {
-              return v;
-            }
-          }
-        }
-
-        if (cleanSlug.length >= 4) {
-          for (const [k, v] of Object.entries(db)) {
-            if (k.includes(cleanSlug) || cleanSlug.includes(k)) {
-              return v;
-            }
+            if (k === tok || k.startsWith(tok + '-')) return v;
           }
         }
       }
 
-      // 4. Trade name substring match in synonyms
+      // 2. SECOND PRIORITY: Trade Name / Brand matching (Strict cleaning - remove strengths, dosage forms, Arabic terms)
       if (rawTrade) {
-        const tradeTokens = rawTrade.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(t => t.length >= 4);
+        const cleanTrade = String(rawTrade).toLowerCase()
+          .replace(/\b\d+(\.\d+)?\s*(mg|g|gm|mcg|ml|l|iu|u|%|unit|units)\b/gi, ' ')
+          .replace(/\b\d+\s*(tab|tabs|tablet|tablets|cap|caps|capsule|capsules|amp|amps|vial|vials|sachet|sachets|supp|supps)\b/gi, ' ')
+          .replace(/\b(tab|tabs|tablet|tablets|cap|caps|capsule|capsules|syrup|susp|suspension|drops|drop|cream|ointment|gel|lotion|spray|inhaler|injection|solution|sol|effervescent|xr|er|cr|sr|dr|retard|forte|extra|plus|comp|oral)\b/gi, ' ')
+          .replace(/\b(قرص|أقراص|اقراص|كبسول|كبسولات|حبوب|حبه|حبة|شراب|معلق|نقط|قطرة|كريم|مرهم|جل|بخاخ|حقن|حقنة|فوار|ممتد|سريع|بلس|فورت|اكسترا)\b/gi, ' ')
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim();
+
+        const tradeTokens = cleanTrade.split(/\s+/).filter(t => t.length >= 4 && !/^\d+$/.test(t));
         for (const tok of tradeTokens) {
+          if (db[tok]) return db[tok];
+          const tokAlias = DRUG_CLINICAL_ALIASES[tok];
+          if (tokAlias && db[tokAlias]) return db[tokAlias];
+
+          const regex = new RegExp('\\b' + tok + '\\b', 'i');
           for (const [k, v] of Object.entries(db)) {
-            if (v.synonyms) {
-              for (const s of v.synonyms) {
-                if (s.includes(tok)) return v;
-              }
+            if (v.synonyms && v.synonyms.some(s => regex.test(s))) {
+              return v;
             }
           }
         }
@@ -1977,7 +2116,47 @@
       }
 
       currentLang = langParam;
-      currentDrug = resolvePatientEduDrug(drugParam, tradeParam) || resolvePatientEduDrug("alendronate") || (window.PATIENT_EDUCATION_DATA ? Object.values(window.PATIENT_EDUCATION_DATA)[0] : null);
+      currentDrug = resolvePatientEduDrug(drugParam, tradeParam) || resolvePatientEduDrug(drugParam);
+      if (!currentDrug && (drugParam || tradeParam)) {
+        const dispName = (drugParam || tradeParam || "Medication").toUpperCase();
+        currentDrug = {
+          name: dispName,
+          slug: cleanStringForMatching(dispName),
+          classes: ["Prescription Medication"],
+          routes: {
+            "Oral": [
+              "تناول الدواء بدقة حسب الجرعة والتعليمات المحددة من قبل الطبيب المعالج أو الصيدلي.",
+              "Take medication exactly as directed by your healthcare provider or pharmacist.",
+              "إذا نسيت جرعة، فتناولها بمجرد أن تتذكرها ما لم يقترب موعد الجرعة التالية؛ ولا تضاعف الجرعة.",
+              "If you miss a dose, take it as soon as remembered unless close to next dose; do not double up."
+            ]
+          },
+          counseling: {
+            ar: [
+              "تناول الدواء بدقة حسب الجرعة والتعليمات المحددة من قبل الطبيب المعالج أو الصيدلي.",
+              "استشر الطبيب أو الصيدلي قبل تناول أي أدوية أخرى أو مكملات لتجنب التداخلات الدوائية.",
+              "يحفظ الدواء في درجة حرارة الغرفة بعيداً عن الرطوبة والحرارة وبعيداً عن متناول الأطفال."
+            ],
+            en: [
+              "Take medication exactly as directed by your healthcare provider or pharmacist.",
+              "Consult doctor or pharmacist before taking other medications to prevent interactions.",
+              "Store at room temperature away from moisture, heat, and keep out of reach of children."
+            ]
+          },
+          indications: {
+            ar: ["علاج وتدبير الحالة الطبية حسب تقييم الطبيب المعالج والتشخيص السريري."],
+            en: ["Treatment and management of condition as prescribed by healthcare provider."]
+          },
+          monitoring: {
+            ar: ["المتابعة الدورية للتحاليل والأعراض وفق توجيهات الطبيب."],
+            en: ["Periodic monitoring and clinical follow-up as directed by physician."]
+          },
+          warnings: {
+            ar: ["أوقف الدواء واستشر الطبيب فوراً عند ظهور أعراض تحسسية كالحكة أو الطفح الجلدي أو صعوبة التنفس."],
+            en: ["Stop medication and seek prompt medical care if signs of allergic reaction occur."]
+          }
+        };
+      }
       
       renderDrug();
     });
