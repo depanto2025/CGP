@@ -7666,6 +7666,18 @@ function detectInstructionIcon(text) {
       };
     }
 
+    function splitTextAtCharLimit(text, limit) {
+      if (!text || text.length <= limit) return { part1: text, part2: '' };
+      let splitIdx = text.lastIndexOf(' ', limit);
+      if (splitIdx === -1 || splitIdx < limit * 0.45) {
+        splitIdx = limit;
+      }
+      return {
+        part1: text.substring(0, splitIdx).trim(),
+        part2: text.substring(splitIdx).trim()
+      };
+    }
+
     function paginateInstructionsSmart(instructions, options = {}) {
       const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
       if (!instructions || instructions.length === 0) return [];
@@ -7768,20 +7780,84 @@ function detectInstructionIcon(text) {
         return bestPartition;
       }
 
+      // 3. Line-Level Continuation Split:
+      // When there are many points and the item at the bottom of Card 1 would hit or hide under the footer,
+      // utilize Card 1 right up to the footer margin, and continue the remainder seamlessly on Card 2 ("يكمل بقيته في الكارت التاني")!
+      const is100mm = (sizeKey === '100x50');
+      const is80mm = (sizeKey === '80x50');
+      const safeBodyHeightCard1 = is100mm ? 86 : (is80mm ? 82 : 78);
+      const targetFs = 6.8;
+      const targetLh = 1.14;
+      const baseChars = is100mm ? 68 : (is80mm ? 52 : 46);
+      const charsPerLine = Math.round(baseChars * (7.5 / targetFs));
+
+      const card1 = [];
+      let heightUsed = 0;
+      let splitIndex = -1;
+      let splitParts = null;
+
+      for (let i = 0; i < n; i++) {
+        const item = instructions[i];
+        const txt = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+        const lines = estimateLinesForFontFullWidth(txt, targetFs, isRtl, false);
+        const itemH = Math.max(10, lines * targetFs * targetLh + 1.5);
+        const gap = (card1.length > 0 ? 2 : 0);
+
+        if (heightUsed + gap + itemH <= safeBodyHeightCard1 - 2.0) {
+          card1.push(item);
+          heightUsed += gap + itemH;
+        } else {
+          // Check if partial lines of this item can fit on Card 1 without touching footer
+          const remainingH = safeBodyHeightCard1 - 2.0 - heightUsed - gap;
+          const linesThatFit = Math.floor((remainingH - 1.5) / (targetFs * targetLh));
+          if (linesThatFit >= 1) {
+            const charLimit = Math.max(25, Math.floor(linesThatFit * charsPerLine));
+            const cleanedText = (typeof cleanMonographPhrases === 'function') ? cleanMonographPhrases(txt) : txt;
+            const res = splitTextAtCharLimit(cleanedText, charLimit);
+            if (res.part1 && res.part2) {
+              splitIndex = i;
+              splitParts = res;
+              card1.push({
+                ...item,
+                textAr: res.part1,
+                text: res.part1,
+                isSplitStart: true
+              });
+            }
+          }
+          break;
+        }
+      }
+
+      const card2 = [];
+      if (splitIndex !== -1 && splitParts) {
+        card2.push({
+          ...instructions[splitIndex],
+          textAr: splitParts.part2,
+          text: splitParts.part2,
+          isSplitContinuation: true,
+          continuationPointNum: splitIndex + 1
+        });
+        for (let i = splitIndex + 1; i < n; i++) {
+          card2.push(instructions[i]);
+        }
+      } else {
+        for (let i = card1.length; i < n; i++) {
+          card2.push(instructions[i]);
+        }
+      }
+
       // If extreme count (>10 items), split across 3 cards
-      if (n > 10) {
-        const card1Count = Math.ceil(n / 3);
-        const card2Count = Math.ceil((n - card1Count) / 2);
+      if (card2.length > 8 && n > 10) {
+        const card2Count = Math.ceil(card2.length / 2);
         return [
-          instructions.slice(0, card1Count),
-          instructions.slice(card1Count, card1Count + card2Count),
-          instructions.slice(card1Count + card2Count)
+          card1,
+          card2.slice(0, card2Count),
+          card2.slice(card2Count)
         ];
       }
 
-      // Fallback: 2-card balanced
-      const half = Math.ceil(n / 2);
-      return [instructions.slice(0, half), instructions.slice(half)];
+      return [card1, card2];
     }
 
     let isModalSingleMode = false;
@@ -7865,7 +7941,9 @@ function detectInstructionIcon(text) {
 
             let pointsHtml = "";
             pageItems.forEach((inst) => {
-              const currentPointNum = pointCounter++;
+              const currentPointNum = inst.isSplitContinuation 
+                ? (inst.continuationPointNum || pointCounter) 
+                : pointCounter++;
               let textToShow = (isRtl) ? (inst.textAr || (typeof getOfflineArabicTranslation === 'function' ? getOfflineArabicTranslation(inst.textEn || inst.text) : '') || inst.text || inst.textEn || '') : (inst.text || inst.textEn || '');
               if (isRtl) {
                 textToShow = fixMedicalArabicTranslation(textToShow);
@@ -7880,13 +7958,21 @@ function detectInstructionIcon(text) {
                 ? getInstructionPictogramSvg(iconName) 
                 : '';
 
+              const pointNumBadgeHtml = inst.isSplitContinuation
+                ? `<bdi class="label-point-num" dir="ltr" style="font-size:7.2pt; font-weight:900; color:#0284c7;">${currentPointNum}.</bdi>`
+                : `<bdi class="label-point-num" dir="ltr">${currentPointNum}.</bdi>`;
+
+              const continuationPrefix = inst.isSplitContinuation
+                ? `<span style="font-weight:900; color:#0284c7; margin-inline-end:3px;">(تابع)</span> `
+                : '';
+
               pointsHtml += `
                 <div class="label-point-row" style="font-size: ${cardStyle.fontSize}pt; line-height: ${cardStyle.lineHeight}; margin-bottom: ${cardStyle.gap}px;">
                   <span class="label-point-badge">
-                    <bdi class="label-point-num" dir="ltr">${currentPointNum}.</bdi>
+                    ${pointNumBadgeHtml}
                     <span class="label-point-icon-svg">${iconSvg}</span>
                   </span>
-                  <span class="label-point-text">${textToShow}</span>
+                  <span class="label-point-text">${continuationPrefix}${textToShow}</span>
                 </div>
               `;
             });
