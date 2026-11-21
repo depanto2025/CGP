@@ -7612,13 +7612,16 @@ function detectInstructionIcon(text) {
       return total;
     }
 
-    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false) {
+    function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false, showActiveSubtitle = true) {
       const count = pageItems ? pageItems.length : 0;
       if (count === 0) return { fontSize: 8.5, lineHeight: 1.20, gap: 2, padding: '1px 0', justify: 'flex-start' };
 
       const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
       const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
-      const safeBodyHeightPt = is100mm ? 86 : (is80mm ? 82 : 78);
+
+      // When active ingredient subtitle is hidden on Card 2+, we gain ~14pt of extra vertical body height!
+      const subtitleBonus = (!showActiveSubtitle ? 14 : 0);
+      const safeBodyHeightPt = (is100mm ? 86 : (is80mm ? 82 : 78)) + subtitleBonus;
 
       const rawBase = parseFloat(userFontSize);
       const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0 && Math.abs(rawBase - 9.0) > 0.1);
@@ -7677,69 +7680,108 @@ function detectInstructionIcon(text) {
         return pages;
       }
 
-      const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
-      const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
+      const sizeKey = (typeof currentLabelSizeKey !== 'undefined') ? currentLabelSizeKey : '76x50';
 
-      // Calibrated safe line limits per card:
-      // Reduced by ~2 lines from previous limit as explicitly requested ("شيل منه سطرين بعدها يبقى كارت جديد")
-      // Card 1 (no QR, full width): Max ~6.0 lines for 76x50
-      // Card with QR (side dock): Max ~5.2 lines for 76x50
-      const maxLinesCard1 = is100mm ? 7.6 : (is80mm ? 6.6 : 6.0);
-      const maxLinesWithQr = is100mm ? 6.6 : (is80mm ? 5.8 : 5.2);
+      function checkCardFitsInternal(items, isCard1) {
+        const hasQr = !isCard1;
+        const is100mm = (sizeKey === '100x50');
+        const is80mm = (sizeKey === '80x50');
+        // Card 1 has active subtitle (safe ~78pt for 76x50)
+        // Card 2 has NO active subtitle (safe ~92pt for 76x50)
+        const safeBodyHeight = isCard1 
+          ? (is100mm ? 86 : (is80mm ? 82 : 78)) 
+          : (is100mm ? 100 : (is80mm ? 96 : 92));
+        
+        const count = items.length;
+        if (count === 0) return { fits: true, fontSize: 8.5, totalH: 0 };
 
-      function getItemLines(inst, hasQr, fs = 7.5) {
-        const txt = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
-        const lines = estimateLinesForFontFullWidth(txt, fs, isRtl, hasQr);
-        return lines + 0.4;
+        const candidateSizes = [10.0, 9.5, 9.0, 8.6, 8.2, 7.8, 7.5, 7.2, 7.0, 6.7, 6.4, 6.2];
+        for (const fs of candidateSizes) {
+          const lh = (fs >= 10.0) ? 1.28 : ((fs >= 8.5) ? 1.20 : ((fs >= 7.2) ? 1.15 : 1.12));
+          const gapPt = (count <= 2) ? 4 : ((count <= 4) ? 2.5 : 1.5);
+          let totalH = (count - 1) * gapPt;
+          for (const item of items) {
+            const txt = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+            const lines = estimateLinesForFontFullWidth(txt, fs, isRtl, hasQr);
+            totalH += Math.max(10, lines * fs * lh + 1.5);
+          }
+          if (totalH <= safeBodyHeight - 2.0) {
+            return { fits: true, fontSize: fs, totalH };
+          }
+        }
+        return { fits: false, fontSize: 6.0, totalH: 999 };
       }
 
       // 2. Can all items fit comfortably on 1 SINGLE CARD with QR?
       if (instructions.length <= 3) {
-        let singleLines = 0;
-        for (const inst of instructions) {
-          singleLines += getItemLines(inst, enableQr, 7.2);
-        }
-        if (singleLines <= maxLinesWithQr) {
+        const fitSingle = checkCardFitsInternal(instructions, false);
+        if (fitSingle.fits && fitSingle.fontSize >= 7.0) {
           return [instructions];
         }
       }
 
-      // 3. User Rule: Maximum 2 Cards ("الكتير كارتين")
-      // Card 1 has full width (no QR dock).
-      // Pack Card 1 up to maxLinesCard1:
-      const card1 = [];
-      let card1Lines = 0;
+      const n = instructions.length;
+      let bestPartition = null;
+      let bestScore = -9999;
+      const candidates = [];
 
-      for (let i = 0; i < instructions.length; i++) {
-        const inst = instructions[i];
-        const instLines = getItemLines(inst, false, 7.5);
+      // Sequential splits:
+      for (let k = 1; k < n; k++) {
+        candidates.push({
+          c1: instructions.slice(0, k),
+          c2: instructions.slice(k)
+        });
+      }
 
-        // If adding this exceeds Card 1 line budget and Card 1 already has at least 1 item:
-        if (card1.length > 0 && (card1Lines + instLines > maxLinesCard1)) {
-          break;
+      // Non-sequential swaps: if one item is large, swap it to Card 2 where height is larger (no active ingredient)
+      // and fill Card 1 with data from beginning to end as requested by user!
+      if (n === 3) {
+        candidates.push({ c1: [instructions[0], instructions[2]], c2: [instructions[1]] });
+        candidates.push({ c1: [instructions[1], instructions[2]], c2: [instructions[0]] });
+        candidates.push({ c1: [instructions[0], instructions[1]], c2: [instructions[2]] });
+      } else if (n === 4) {
+        for (let i = 0; i < n; i++) {
+          candidates.push({
+            c1: instructions.filter((_, idx) => idx !== i),
+            c2: [instructions[i]]
+          });
         }
-        card1.push(inst);
-        card1Lines += instLines;
+      }
 
-        // If total instructions >= 4, keep balance so Card 1 doesn't over-stuff
-        if (instructions.length >= 4 && card1.length >= Math.ceil(instructions.length / 2)) {
-          break;
+      for (const cand of candidates) {
+        const fit1 = checkCardFitsInternal(cand.c1, true);
+        const fit2 = checkCardFitsInternal(cand.c2, false);
+        if (fit1.fits && fit2.fits) {
+          const minFs = Math.min(fit1.fontSize, fit2.fontSize);
+          const penalty = (minFs < 7.0 ? (7.0 - minFs) * 12 : 0);
+          // Reward having Card 1 filled with more items ("من بدايته لنهايته داتا")
+          const balanceBonus = (cand.c1.length >= cand.c2.length ? 3.0 : 0);
+          const score = (minFs * 4.0) + (fit1.fontSize + fit2.fontSize) + balanceBonus - penalty;
+          if (score > bestScore) {
+            bestScore = score;
+            bestPartition = [cand.c1, cand.c2];
+          }
         }
       }
 
-      const remaining = instructions.slice(card1.length);
-      if (remaining.length === 0) {
-        return [card1];
+      if (bestPartition) {
+        return bestPartition;
       }
 
-      // Strict 2-card limit for normal cases (<= 10 items)
-      if (remaining.length <= 7 || instructions.length <= 10) {
-        return [card1, remaining];
+      // If extreme count (>10 items), split across 3 cards
+      if (n > 10) {
+        const card1Count = Math.ceil(n / 3);
+        const card2Count = Math.ceil((n - card1Count) / 2);
+        return [
+          instructions.slice(0, card1Count),
+          instructions.slice(card1Count, card1Count + card2Count),
+          instructions.slice(card1Count + card2Count)
+        ];
       }
 
-      // Only for extreme count (>10 items), split remaining across 2 cards
-      const halfRem = Math.ceil(remaining.length / 2);
-      return [card1, remaining.slice(0, halfRem), remaining.slice(halfRem)];
+      // Fallback: 2-card balanced
+      const half = Math.ceil(n / 2);
+      return [instructions.slice(0, half), instructions.slice(half)];
     }
 
     let isModalSingleMode = false;
@@ -7818,7 +7860,8 @@ function detectInstructionIcon(text) {
               qrDataUrl = getDrugQrDataUrl(drugSlug, med, currentLabelLang);
             }
             const pageNum = pIndex + 1;
-            const cardStyle = getAdaptiveCardStyleFullWidth(pageItems, fontSize, isRtl, !!qrDataUrl);
+            const showActiveSubtitle = (totalPages === 1 || pageNum === 1);
+            const cardStyle = getAdaptiveCardStyleFullWidth(pageItems, fontSize, isRtl, !!qrDataUrl, showActiveSubtitle);
 
             let pointsHtml = "";
             pageItems.forEach((inst) => {
@@ -7865,7 +7908,7 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 1.5px;">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900; line-height: 1.2;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
-                        <div class="label-header-subtitle">${displayActiveHtml}</div>
+                        ${showActiveSubtitle ? `<div class="label-header-subtitle">${displayActiveHtml}</div>` : ''}
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -7903,7 +7946,7 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 1.5px;">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900; line-height: 1.2;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
-                        <div class="label-header-subtitle">${displayActiveHtml}</div>
+                        ${showActiveSubtitle ? `<div class="label-header-subtitle">${displayActiveHtml}</div>` : ''}
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
