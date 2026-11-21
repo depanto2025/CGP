@@ -6016,6 +6016,7 @@ function detectInstructionIcon(text) {
           matchedDrug = getMixedDrug(p);
         }
         switchActiveIngredientPreset(matchedDrug, p);
+        updatePregnancyLactationMainBar(matchedDrug, p);
       }
 
       const srcLabel = (source === 'lexidrugs') ? 'Lexi-Drugs' : ((source === 'dynamedex') ? 'DynaMedex' : 'MIX');
@@ -6162,6 +6163,40 @@ function detectInstructionIcon(text) {
     }
 
     const COMMON_PHRASES_DICT = {
+
+      // High-Frequency Offline Translations for Key Medications
+      "Administer first thing in the morning and ≥30 minutes before the first food, beverage (except plain water), or other medications of the day. Do not take with mineral water or with other beverages. Patients should be instructed to stay upright (not to lie down) for ≥30 minutes and until after first food of the day (to reduce esophageal irritation).": "يؤخذ أول شيء في الصباح على الريق قبل 30 دقيقة على الأقل من أول طعام أو شراب (باستثناء الماء العادي) أو أي دواء آخر. لا يؤخذ مع المياه المعدنية أو المشروبات الأخرى. يجب البقاء في وضع مستقيم (عدم الاستلقاء) لمدة لا تقل عن 30 دقيقة وحتى بعد تناول أول وجبة طعام لتقليل تهيج المريء.",
+      "Administer first thing in the morning and ≥30 minutes before the first food, beverage (except plain water), or other medications of the day.": "يؤخذ أول شيء في الصباح على الريق قبل 30 دقيقة على الأقل من أول طعام أو شراب (باستثناء الماء العادي) أو أي دواء آخر.",
+      "Administer first thing in the morning and ≥30 minutes before the first food, beverage (except plain water), or other medication(s) of the day. Do not take with mineral water or with other beverages. Patients should be instructed to stay upright (not to lie down) for ≥30 minutes and until after first food of the day (to reduce esophageal irritation).": "يؤخذ أول شيء في الصباح على الريق قبل 30 دقيقة على الأقل من أول طعام أو شراب (باستثناء الماء العادي) أو أي دواء آخر. لا يؤخذ مع المياه المعدنية أو المشروبات الأخرى. يجب البقاء في وضع مستقيم (عدم الاستلقاء) لمدة لا تقل عن 30 دقيقة وحتى بعد تناول أول وجبة طعام لتقليل تهيج المريء.",
+      
+      // Suprax / Cefixime
+      "May be administered with or without food. Shake oral suspension well before use. Chewable tablets must be chewed or crushed before swallowing.": "يمكن تناوله مع الطعام أو بدونه. رج المعلق الفموي جيداً قبل الاستخدام. يجب مضغ الأقراص القابلة للمضغ أو طحنها جيداً قبل البلع.",
+      "May be taken with or without food. Shake suspension well before use. Chewable tablets must be chewed or crushed before swallowing.": "يمكن تناوله مع الطعام أو بدونه. رج المعلق جيداً قبل الاستخدام. يجب مضغ الأقراص القابلة للمضغ أو طحنها قبل البلع.",
+      "Take with or without food.": "تناول الدواء مع الطعام أو بدونه.",
+      "(Chewable tablets) Chew or crush prior to swallowing.": "(الأقراص القابلة للمضغ) يجب مضغ القرص أو طحنه جيداً قبل البلع.",
+      "(Suspension) Reconstitute powder prior to use and shake well before measuring dose.": "(المعلق) يعاد تكوين المسحوق بالماء قبل الاستخدام ويرج جيداً قبل قياس الجرعة.",
+      "(Suspension) Keep reconstituted suspension at room temperature or under refrigeration for up to 14 days.": "(المعلق) يحفظ المعلق بعد خلطه في درجة حرارة الغرفة أو بالثلاجة لمدة تصل إلى 14 يوماً فقط.",
+      "Powder for suspension: Refer to manufacturer’s product labeling for reconstitution instructions.": "مسحوق المعلق: يرجى الرجوع لتعليمات العبوة لمعرفة كمية الماء المطلوبة للتحضير.",
+      
+      // Salofalk / Mesalamine
+      "Note: For all formulations, maintain adequate hydration during therapy (to minimize nephrolithiasis risk).": "ملحوظة: لجميع التركيبات، حافظ على شرب كميات كافية من الماء والسوائل أثناء فترة العلاج (للتقليل من خطر حصوات الكلى).",
+      "Note: For all formulations, maintain adequate hydration during therapy (to reduce risk of kidney stones).": "ملحوظة: بالنسبة لجميع التركيبات، حافظ على الترطيب الكافي وشرب الماء أثناء العلاج (للتقليل من خطر الإصابة بحصى الكلية).",
+      "Capsules: Administer with or without food": "الكبسولات: تؤخذ مع الطعام أو بدونه.",
+      "Capsules: May be given with or without food": "الكبسولات: يُعطى مع أو بدون الطعام.",
+      "Tablets: Swallow whole; do not break, chew, cut, or crush.": "الأقراص: تبلع الحبة كاملة؛ وممنوع كسرها أو طحنها أو مضغها.",
+      "(Delzicol(TM)) May be taken with or without food.": "يمكن تناول الكبسولات مع وجبات الطعام أو بدونها.",
+      "Use at bedtime.": "يُستخدم وقت النوم.",
+      "(Suppository) Retain for 1 to 3 hours or longer.": "(التحاميل) يفضل إبقاؤها داخل المستقيم لمدة 1 إلى 3 ساعات على الأقل لتحقيق أقصى فاعلية.",
+      "(Suppository) Do not cut or break.": "(التحاميل) لا تقم بكسر أو تقسيم التحميلة.",
+      "(Suspension) Shake well prior to administration; retain all night (approximately 8 hours).": "(الحقنة الشرجية / المعلق) ترج العبوة جيداً قبل الاستعمال، وتُبقى طوال الليل (حوالي 8 ساعات).",
+      "Rectal suspension for rectal use only.": "المعلق الشرجي مخصص للاستخدام عبر الشرج فقط.",
+      
+      // Zofran / Ondansetron
+      "Oral: May be administered without regard to meals.": "عن طريق الفم: يمكن تناوله مع وجبات الطعام أو بدونها.",
+      "Bioavailability is slightly enhanced by the presence of food.": "يزداد امتصاص الدواء قليلاً عند تناوله مع الطعام.",
+      "Concomitant administration of antacids does not alter the absorption of ondansetron.": "تناول أدوية الحموضة بالتزامن لا يؤثر على امتصاص الدواء.",
+      "(oral disintegrating tablets) with dry hands, peel back foil backing and gently remove tablet; do not push oral disintegrating tablet through foil; place on top of tongue where it will dissolve in seconds, then swallow with saliva; administration with liquid is not necessary.": "الأقراص سريعة الذوبان بالفم (ODT): بيدين جافتين انزع غلاف الألمنيوم برفق ثم أخرج القرص وضعه فوق اللسان ليذوب خلال ثوانٍ وابلعه مع اللعاب دون الحاجة لشرب ماء.",
+
       "Infuse over 1 hour (2 mg/mL infusion) or over 3 hours (1 mg/mL infusion). Not for IM or IV bolus administration.": "يعطى بالتنقيط الوريدي البطيء على مدى ساعة إلى 3 ساعات؛ وليس للحقن العضلي أو الوريدي السريع.",
       "Immediate release suspension and tablet may be taken without regard to food; extended release suspension should be taken on an empty stomach (at least 1 hour before or 2 hours following a meal), within 12 hours of reconstitution.": "المعلق والأقراص سريعة المفعول يمكن تناولها مع الطعام أو بدونه؛ أما المعلق ممتد المفعول فيؤخذ على معدة فارغة (قبل الأكل بساعة أو بعده بساعتين).",
       "For nonvalvular atrial fibrillation, administer with the evening meal.": "لعلاج الرجفان الأذيني: تؤخذ الجرعة اليومية مع وجبة العشاء.",
@@ -6265,15 +6300,90 @@ function detectInstructionIcon(text) {
         .replace(/(?<!\p{L})الاستلقاء\s+لأسفل(?!\p{L})/gu, 'الاستلقاء');
     }
 
+        function getOfflineArabicTranslation(rawText) {
+      if (!rawText || typeof rawText !== 'string') return '';
+      const clean = rawText.trim();
+      if (!clean) return '';
+      if (/[\u0600-\u06FF]/.test(clean)) return fixMedicalArabicTranslation(clean);
+
+      // 1. Direct dictionary match
+      if (COMMON_PHRASES_DICT[clean]) return fixMedicalArabicTranslation(COMMON_PHRASES_DICT[clean]);
+
+      // 2. Normalized match (medication(s) <-> medications, >= <-> ≥, quotes, whitespace)
+      const norm = clean
+        .replace(/medication\(s\)/gi, 'medications')
+        .replace(/[≥]/g, '>=')
+        .replace(/[≤]/g, '<=')
+        .replace(/\s+/g, ' ')
+        .toLowerCase();
+
+      for (const [k, v] of Object.entries(COMMON_PHRASES_DICT)) {
+        const kNorm = k
+          .replace(/medication\(s\)/gi, 'medications')
+          .replace(/[≥]/g, '>=')
+          .replace(/[≤]/g, '<=')
+          .replace(/\s+/g, ' ')
+          .toLowerCase();
+        if (kNorm === norm) {
+          return fixMedicalArabicTranslation(v);
+        }
+      }
+
+      // 3. Sentence decomposition
+      const sentences = clean.match(/[^.!?]+[.!?]+|\S+$/g) || [clean];
+      if (sentences.length > 1) {
+        const translatedParts = [];
+        let hasAnyMatch = false;
+        for (const s of sentences) {
+          const sTrim = s.trim();
+          let trans = COMMON_PHRASES_DICT[sTrim];
+          if (!trans) {
+            const sNorm = sTrim
+              .replace(/medication\(s\)/gi, 'medications')
+              .replace(/[≥]/g, '>=')
+              .replace(/[≤]/g, '<=')
+              .replace(/\s+/g, ' ')
+              .toLowerCase();
+            for (const [k, v] of Object.entries(COMMON_PHRASES_DICT)) {
+              const kNorm = k
+                .replace(/medication\(s\)/gi, 'medications')
+                .replace(/[≥]/g, '>=')
+                .replace(/[≤]/g, '<=')
+                .replace(/\s+/g, ' ')
+                .toLowerCase();
+              if (kNorm === sNorm) {
+                trans = v;
+                break;
+              }
+            }
+          }
+          if (trans) {
+            hasAnyMatch = true;
+            translatedParts.push(trans);
+          } else {
+            translatedParts.push(sTrim);
+          }
+        }
+        if (hasAnyMatch) {
+          return fixMedicalArabicTranslation(translatedParts.join(' '));
+        }
+      }
+
+      return '';
+    }
+
     async function translateTextToAr(text) {
       if (!text || typeof text !== 'string') return text;
       const clean = text.trim();
       if (!clean) return clean;
       if (/[\u0600-\u06FF]/.test(clean)) return fixMedicalArabicTranslation(clean);
 
-      if (COMMON_PHRASES_DICT[clean]) {
-        return fixMedicalArabicTranslation(COMMON_PHRASES_DICT[clean]);
+      const offline = getOfflineArabicTranslation(clean);
+      if (offline) {
+        translationCache.set(clean, offline);
+        return offline;
       }
+
       if (translationCache.has(clean)) {
         return fixMedicalArabicTranslation(translationCache.get(clean));
       }
@@ -6296,6 +6406,7 @@ function detectInstructionIcon(text) {
       } catch (err) {
         console.warn("Translation API error, fallback to original:", err);
       }
+
       return clean;
     }
 
@@ -6731,11 +6842,13 @@ function detectInstructionIcon(text) {
 
       workingInstructions = points.map(pt => {
         const isMatch = isInstructionRelevantToProduct(pt, currentLoadedProduct);
+        const cleanPt = pt.trim();
+        const directAr = getOfflineArabicTranslation(cleanPt);
         return {
           tag: route,
           textEn: pt,
-          textAr: '',
-          text: pt,
+          textAr: directAr || '',
+          text: (currentLabelLang === 'ar' && directAr) ? directAr : pt,
           checked: isMatch,
           isBrandFiltered: !isMatch
         };
@@ -6902,6 +7015,19 @@ function detectInstructionIcon(text) {
       const modalSelect = document.getElementById("modalLangSelector");
       if (modalSelect) modalSelect.value = lang;
 
+      if (Array.isArray(workingInstructions)) {
+        workingInstructions.forEach(item => {
+          if (lang === 'ar') {
+            if (!item.textAr && typeof getOfflineArabicTranslation === 'function') {
+              item.textAr = getOfflineArabicTranslation(item.textEn || item.text);
+            }
+            if (item.textAr) item.text = item.textAr;
+          } else {
+            if (item.textEn) item.text = item.textEn;
+          }
+        });
+      }
+
       if (currentActiveDrug && currentActiveRoute) {
         loadRouteInstructions(currentActiveDrug, currentActiveRoute);
       } else {
@@ -7018,7 +7144,7 @@ function detectInstructionIcon(text) {
 
         const row = document.createElement("div");
         row.className = `instruction-card-row ${item.checked ? 'is-checked' : ''}`;
-        let textVal = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
+        let textVal = (isRtl) ? (item.textAr || getOfflineArabicTranslation(item.textEn || item.text) || item.text) : (item.text || item.textEn || '');
         if (isRtl) textVal = fixMedicalArabicTranslation(textVal);
         const iconName = (typeof detectInstructionIcon === 'function') 
           ? detectInstructionIcon(textVal) 
@@ -7696,7 +7822,7 @@ function detectInstructionIcon(text) {
             let pointsHtml = "";
             pageItems.forEach((inst) => {
               const currentPointNum = pointCounter++;
-              let textToShow = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
+              let textToShow = (isRtl) ? (inst.textAr || (typeof getOfflineArabicTranslation === 'function' ? getOfflineArabicTranslation(inst.textEn || inst.text) : '') || inst.text || inst.textEn || '') : (inst.text || inst.textEn || '');
               if (isRtl) {
                 textToShow = fixMedicalArabicTranslation(textToShow);
               }
@@ -7735,10 +7861,7 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 1.5px;">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900; line-height: 1.2;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
-                        <div class="label-header-subtitle" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:nowrap; gap:4px;">
-                        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${displayActiveHtml}</div>
-                        ${pregLactLabelBadgeHtml}
-                      </div>
+                        <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -7776,10 +7899,7 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
-                        <div class="label-header-subtitle" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:nowrap; gap:4px;">
-                        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${displayActiveHtml}</div>
-                        ${pregLactLabelBadgeHtml}
-                      </div>
+                        <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -8125,6 +8245,7 @@ function detectInstructionIcon(text) {
       // 1. Initialize with current selected medication FIRST (loads active profile & checklist)
       try {
         selectMedicationItem(currentMedication, false);
+        try { updatePregnancyLactationMainBar(null, currentMedication); } catch(e){}
       } catch (err) {
         console.error("Error initializing medication:", err);
       }
@@ -8563,10 +8684,10 @@ function detectInstructionIcon(text) {
       const bar = document.getElementById("mainPregLactSummaryBar");
       if (!bar) return;
 
-      const p = product || currentLoadedProduct;
-      const rawActive = p ? (p.active || p.activeIngredient || '') : '';
-      const rawTrade = p ? (p.descEn || p.brand || '') : '';
-      const slug = drug ? drug.slug : '';
+      const p = product || currentLoadedProduct || currentMedication || {};
+      const rawActive = p.active || p.activeIngredient || p["Category Level E"] || p["Category Level D"] || (currentMedication ? currentMedication.activeIngredient : '') || '';
+      const rawTrade = p.descEn || p.tradeNameEn || p["Item Description"] || p.brand || (currentMedication ? currentMedication.tradeNameEn : '') || '';
+      const slug = (drug && drug.slug) ? drug.slug : (drug && drug.drugName ? drug.drugName : (drug && drug.name ? drug.name : ''));
 
       const info = resolvePregnancyLactation(rawActive, rawTrade, slug);
       if (!info) {
