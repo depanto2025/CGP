@@ -2292,8 +2292,12 @@ function detectInstructionIcon(text) {
 
     /* Screen Representation of label (Default 100mm x 50mm / 4" x 2" - 2:1 aspect ratio) */
     .screen-label-card {
-      width: 460px;
-      height: 230px;
+      width: 76.2mm !important;
+      min-width: 76.2mm !important;
+      max-width: 76.2mm !important;
+      height: 50.8mm !important;
+      min-height: 50.8mm !important;
+      max-height: 50.8mm !important;
       background: #ffffff;
       border: 1.5px solid #0f172a;
       border-radius: 4px;
@@ -2303,9 +2307,11 @@ function detectInstructionIcon(text) {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 6px 10px;
-      box-sizing: border-box;
+      padding: 1.0mm 1.5mm !important;
+      box-sizing: border-box !important;
       user-select: none;
+      zoom: 1.25;
+      margin: 8px auto;
     }
 
     .screen-label-card.is-rtl {
@@ -2920,7 +2926,7 @@ function detectInstructionIcon(text) {
         margin-bottom: 1.5px !important;
         color: #000000 !important;
         width: 100% !important;
-        line-height: inherit !important;
+        line-height: inherit;
       }
 
       .print-label-page .label-point-badge {
@@ -3828,8 +3834,15 @@ function detectInstructionIcon(text) {
       }
     }
     .screen-label-card {
-      width: 360px !important;
-      height: 240px !important;
+      width: 76.2mm !important;
+      min-width: 76.2mm !important;
+      max-width: 76.2mm !important;
+      height: 50.8mm !important;
+      min-height: 50.8mm !important;
+      max-height: 50.8mm !important;
+      padding: 1.0mm 1.5mm !important;
+      box-sizing: border-box !important;
+      zoom: 1.25;
     }
   </style>
 </head>
@@ -6243,9 +6256,22 @@ function detectInstructionIcon(text) {
         .replace(/'/g, '&#39;');
     }
 
+    function cleanMonographPhrases(text) {
+      if (!text || typeof text !== 'string') return '';
+      return text
+        .replace(/\s*[\(\[]\s*(?:انظر|راجع|راجعوا|انظري)\s*(?:أدناه|ادناه|الأسفل|تحت|في الأسفل|في ادناه|في أدناه|التفاصيل أدناه|التفاصيل ادناه)(?:\s*(?:للحصول على|لمزيد من|لمعرفة)\s*(?:التفاصيل|المعلومات))?\s*[\)\]]/gi, '')
+        .replace(/\s*[\(\[]\s*see\s+below(?:\s+for\s+(?:details|more\s+information))?\s*[\)\]]/gi, '')
+        .replace(/(?:انظر|راجع|انظري)\s+(?:أدناه|ادناه|الأسفل|التفاصيل\s+أدناه|التفاصيل\s+ادناه)(?:\s+(?:للحصول\s+على|لمزيد\s+من|لمعرفة)\s+(?:التفاصيل|المعلومات))?/gi, '')
+        .replace(/see\s+below(?:\s+for\s+(?:details|more\s+information))?/gi, '')
+        .replace(/\s+([،,.;؛])/g, '$1')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    }
+
     function fixMedicalArabicTranslation(arabicText) {
       if (!arabicText || typeof arabicText !== 'string') return '';
-      return arabicText
+      const cleaned = cleanMonographPhrases(arabicText);
+      return cleaned
         // Fix "[إا]دارة" -> "تناول" / "يؤخذ" (Strictly avoiding institutional office translation)
         .replace(/(?<!\p{L})[إا]دارة\s+مع\s+[أا]و\s+بدون\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام [أا]و بدونه')
         .replace(/(?<!\p{L})[إا]دارة\s+مع\s+[أا]و\s+بدون\s+وجبات\s+الطعام(?!\p{L})/gu, 'تناول الدواء مع الطعام [أا]و بدونه')
@@ -6758,10 +6784,12 @@ function detectInstructionIcon(text) {
             return false;
           }
           // Extended-release vs Immediate-release
-          if ((fNorm.includes('extended-release') || fNorm.includes('xr') || fNorm.includes('ممتد')) && !isProdXR) {
+          const isXRTag = /extended[-\s]?release|\b(xr|er|cr|sr|dr)\b|delayed[-\s]?release|ممتد|بطيء/i.test(fNorm);
+          if (isXRTag && !isProdXR) {
             return false;
           }
-          if ((fNorm.includes('immediate-release') || fNorm.includes('سريع')) && isProdXR) {
+          const isIRTag = /immediate[-\s]?release|\b(ir)\b|سريع/i.test(fNorm);
+          if (isIRTag && isProdXR) {
             return false;
           }
         }
@@ -7091,8 +7119,15 @@ function detectInstructionIcon(text) {
             }
           }
           .screen-label-card {
-            width: ${screenWidthPx}px !important;
-            height: ${screenHeightPx}px !important;
+            width: ${widthMm}mm !important;
+            min-width: ${widthMm}mm !important;
+            max-width: ${widthMm}mm !important;
+            height: ${heightMm}mm !important;
+            min-height: ${heightMm}mm !important;
+            max-height: ${heightMm}mm !important;
+            box-sizing: border-box !important;
+            padding: 1.0mm 1.5mm !important;
+            zoom: 1.25;
           }
         `;
       }
@@ -7550,14 +7585,21 @@ function detectInstructionIcon(text) {
 
     function estimateLinesForFontFullWidth(text, fontSize = 7.5, isRtl = true, hasQr = false) {
       if (!text) return 1;
-      const cleanLen = text.trim().length;
+      const cleaned = (typeof cleanMonographPhrases === 'function') ? cleanMonographPhrases(text) : text;
+      const cleanLen = cleaned.trim().length;
+      if (cleanLen === 0) return 1;
+      
       const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
       const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
       
+      // Calibrated characters per line in Cairo font:
+      // 76.2mm: without QR ~46 chars/line, with QR ~34 chars/line
+      // 80mm: without QR ~52 chars/line, with QR ~38 chars/line
+      // 100mm: without QR ~68 chars/line, with QR ~48 chars/line
       const baseChars = is100mm 
-        ? (hasQr ? 60 : 88)
-        : (is80mm ? (hasQr ? 48 : 72) : (hasQr ? 42 : 62));
-      const charsPerLine = Math.max(20, Math.round(baseChars * (7.5 / fontSize)));
+        ? (hasQr ? 48 : 68)
+        : (is80mm ? (hasQr ? 38 : 52) : (hasQr ? 34 : 46));
+      const charsPerLine = Math.max(16, Math.round(baseChars * (7.5 / fontSize)));
       return Math.max(1, Math.ceil(cleanLen / charsPerLine));
     }
 
@@ -7572,38 +7614,39 @@ function detectInstructionIcon(text) {
 
     function getAdaptiveCardStyleFullWidth(pageItems, userFontSize = null, isRtl = true, hasQr = false) {
       const count = pageItems ? pageItems.length : 0;
-      if (count === 0) return { fontSize: 8.5, lineHeight: 1.22, gap: 3, padding: '1px 0', justify: 'flex-start' };
+      if (count === 0) return { fontSize: 8.5, lineHeight: 1.20, gap: 2, padding: '1px 0', justify: 'flex-start' };
 
       const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
-      const safeBodyHeightPt = is100mm ? 88 : 84;
+      const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
+      const safeBodyHeightPt = is100mm ? 86 : (is80mm ? 82 : 78);
 
       const rawBase = parseFloat(userFontSize);
       const isCustomUserSize = (!isNaN(rawBase) && rawBase > 0 && Math.abs(rawBase - 9.0) > 0.1);
 
-      // Adaptive font ladder from large (to utilize white space) down to compact (to fit without footer clipping)
+      // Adaptive font ladder from 10.0 down to 6.2
       const candidateSizes = [
-        11.5, 11.0, 10.5, 10.0, 9.5, 9.0, 8.6, 8.2, 7.8, 7.5, 7.2, 7.0, 6.7, 6.4, 6.2
+        10.0, 9.5, 9.0, 8.6, 8.2, 7.8, 7.5, 7.2, 7.0, 6.7, 6.4, 6.2
       ];
 
-      let chosenSize = 7.5;
-      let chosenLh = 1.18;
+      let chosenSize = 7.2;
+      let chosenLh = 1.15;
       let chosenGap = 2;
 
       for (const fs of candidateSizes) {
         if (isCustomUserSize && fs > rawBase) continue;
 
-        const lh = (fs >= 10.0) ? 1.32 : ((fs >= 8.5) ? 1.24 : ((fs >= 7.2) ? 1.16 : 1.12));
-        const gapPt = (count <= 2) ? 5 : ((count <= 4) ? 3 : 1.5);
+        const lh = (fs >= 10.0) ? 1.28 : ((fs >= 8.5) ? 1.20 : ((fs >= 7.2) ? 1.15 : 1.12));
+        const gapPt = (count <= 2) ? 4 : ((count <= 4) ? 2.5 : 1.5);
 
         let totalHeightPt = (count - 1) * gapPt;
         for (const item of pageItems) {
           const txt = (isRtl && item.textAr) ? item.textAr : (item.text || item.textEn || '');
           const lines = estimateLinesForFontFullWidth(txt, fs, isRtl, hasQr);
-          const itemHeightPt = Math.max(10.5, lines * fs * lh);
+          const itemHeightPt = Math.max(10, lines * fs * lh + 1.5);
           totalHeightPt += itemHeightPt;
         }
 
-        if (totalHeightPt <= safeBodyHeightPt - 2.5) {
+        if (totalHeightPt <= safeBodyHeightPt - 2.0) {
           chosenSize = fs;
           chosenLh = lh;
           chosenGap = gapPt;
@@ -7615,7 +7658,7 @@ function detectInstructionIcon(text) {
         fontSize: Number(chosenSize.toFixed(1)),
         lineHeight: chosenLh,
         gap: chosenGap,
-        padding: count === 1 ? '4px 0' : '1px 0',
+        padding: count === 1 ? '3px 0' : '1px 0',
         justify: count === 1 ? 'center' : 'flex-start'
       };
     }
@@ -7624,7 +7667,7 @@ function detectInstructionIcon(text) {
       const { maxPerLabelVal = "auto", isRtl = true, enableQr = true } = options;
       if (!instructions || instructions.length === 0) return [];
 
-      // 1. Fixed points per card if selected by user (e.g. 1, 2, 3, 4, 5)
+      // 1. User manual override (e.g. 1, 2, 3 points per label)
       if (maxPerLabelVal !== "auto" && maxPerLabelVal !== "all") {
         const limit = parseInt(maxPerLabelVal) || 99;
         const pages = [];
@@ -7634,37 +7677,69 @@ function detectInstructionIcon(text) {
         return pages;
       }
 
-      // 2. Can all items fit comfortably on 1 SINGLE CARD?
-      if (instructions.length <= 4) {
-        const singleStyle = getAdaptiveCardStyleFullWidth(instructions, null, isRtl, enableQr);
-        if (singleStyle.fontSize >= 6.7) {
+      const is100mm = (typeof currentLabelSizeKey === 'undefined' || currentLabelSizeKey === '100x50');
+      const is80mm = (typeof currentLabelSizeKey !== 'undefined' && currentLabelSizeKey === '80x50');
+
+      // Calibrated safe line limits per card:
+      // Reduced by ~2 lines from previous limit as explicitly requested ("شيل منه سطرين بعدها يبقى كارت جديد")
+      // Card 1 (no QR, full width): Max ~6.0 lines for 76x50
+      // Card with QR (side dock): Max ~5.2 lines for 76x50
+      const maxLinesCard1 = is100mm ? 7.6 : (is80mm ? 6.6 : 6.0);
+      const maxLinesWithQr = is100mm ? 6.6 : (is80mm ? 5.8 : 5.2);
+
+      function getItemLines(inst, hasQr, fs = 7.5) {
+        const txt = (isRtl && inst.textAr) ? inst.textAr : (inst.text || inst.textEn || '');
+        const lines = estimateLinesForFontFullWidth(txt, fs, isRtl, hasQr);
+        return lines + 0.4;
+      }
+
+      // 2. Can all items fit comfortably on 1 SINGLE CARD with QR?
+      if (instructions.length <= 3) {
+        let singleLines = 0;
+        for (const inst of instructions) {
+          singleLines += getItemLines(inst, enableQr, 7.2);
+        }
+        if (singleLines <= maxLinesWithQr) {
           return [instructions];
         }
       }
 
-      // 3. User Rule: Maximum 2 Cards for drugs with many instructions ("الكتير كارتين")!
-      // Fully utilizes empty spaces by auto-scaling font and balancing cards
-      const total = instructions.length;
+      // 3. User Rule: Maximum 2 Cards ("الكتير كارتين")
+      // Card 1 has full width (no QR dock).
+      // Pack Card 1 up to maxLinesCard1:
+      const card1 = [];
+      let card1Lines = 0;
 
-      if (total <= 10) {
-        // Balanced 2-card split:
-        // Card 1 has full width (no QR), so it takes Math.ceil(total / 2)
-        // Card 2 has QR dock and takes the remaining points
-        const card1Count = Math.ceil(total / 2);
-        return [
-          instructions.slice(0, card1Count),
-          instructions.slice(card1Count)
-        ];
+      for (let i = 0; i < instructions.length; i++) {
+        const inst = instructions[i];
+        const instLines = getItemLines(inst, false, 7.5);
+
+        // If adding this exceeds Card 1 line budget and Card 1 already has at least 1 item:
+        if (card1.length > 0 && (card1Lines + instLines > maxLinesCard1)) {
+          break;
+        }
+        card1.push(inst);
+        card1Lines += instLines;
+
+        // If total instructions >= 4, keep balance so Card 1 doesn't over-stuff
+        if (instructions.length >= 4 && card1.length >= Math.ceil(instructions.length / 2)) {
+          break;
+        }
       }
 
-      // If extreme count (>10 points), split into 3 cards
-      const card1Count = Math.ceil(total / 3);
-      const card2Count = Math.ceil((total - card1Count) / 2);
-      return [
-        instructions.slice(0, card1Count),
-        instructions.slice(card1Count, card1Count + card2Count),
-        instructions.slice(card1Count + card2Count)
-      ];
+      const remaining = instructions.slice(card1.length);
+      if (remaining.length === 0) {
+        return [card1];
+      }
+
+      // Strict 2-card limit for normal cases (<= 10 items)
+      if (remaining.length <= 7 || instructions.length <= 10) {
+        return [card1, remaining];
+      }
+
+      // Only for extreme count (>10 items), split remaining across 2 cards
+      const halfRem = Math.ceil(remaining.length / 2);
+      return [card1, remaining.slice(0, halfRem), remaining.slice(halfRem)];
     }
 
     let isModalSingleMode = false;
@@ -7752,6 +7827,9 @@ function detectInstructionIcon(text) {
               if (isRtl) {
                 textToShow = fixMedicalArabicTranslation(textToShow);
               }
+              if (typeof cleanMonographPhrases === 'function') {
+                textToShow = cleanMonographPhrases(textToShow);
+              }
               const iconName = (typeof detectInstructionIcon === 'function') 
                 ? detectInstructionIcon(textToShow) 
                 : 'medical_shield';
@@ -7822,34 +7900,34 @@ function detectInstructionIcon(text) {
               allCardsHtml += `
                 <div class="screen-label-card ${isRtl ? 'is-rtl' : 'is-ltr'}">
                   <div class="label-main-text-area">
-                    <div class="label-header-block">
+                    <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 1.5px;">
                       <div style="flex:1; overflow:hidden;">
-                        <div class="label-header-title" style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
+                        <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900; line-height: 1.2;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
                         <div class="label-header-subtitle">${displayActiveHtml}</div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
                         ${qty > 1 ? `<span style="background:#ea580c; color:#fff; font-size:10px; font-weight:800; padding:1px 6px; border-radius:10px;">نسخة ${q + 1} من ${qty}</span>` : ''}
-                        ${totalPages > 1 ? `<div class="label-page-chip">${pageNum} / ${totalPages}</div>` : ''}
+                        ${totalPages > 1 ? `<div class="label-page-chip" style="font-size: 7.5pt; font-weight: 900;">${pageNum}/${totalPages}</div>` : ''}
                       </div>
                     </div>
-                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:6px; overflow:hidden; min-height:0; width:100%; padding-bottom:2px; margin-bottom:2px;">
+                    <div class="label-body-content" style="flex:1; display:flex; flex-direction:row; gap:${bodyGapMm}; overflow:hidden; min-height:0; width:100%;">
                       <div class="label-items-list" style="flex:1; display:flex; flex-direction:column; justify-content:${cardStyle.justify}; gap:${cardStyle.gap}px; padding:${cardStyle.padding}; overflow:hidden; min-height:0;">
                         ${pointsHtml}
                       </div>
                       ${qrDataUrl ? `
-                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:${qrDockWidthPx}; flex-shrink:0;">
-                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:2px; border:1.5px solid #000; border-radius:3px;">
-                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:${qrImgSizePx}; height:${qrImgSizePx}; display:block; image-rendering:pixelated;" alt="QR" />
-                            <span class="qr-dock-caption" style="font-size:6.8pt; font-weight:800; line-height:1.1; text-align:center; margin-top:2px; color:#000;">
+                        <div class="label-qr-side-dock" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:${qrDockWidthMm}; flex-shrink:0;">
+                          <div class="qr-dock-frame" style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; padding:0.8mm; border:1.5px solid #000; border-radius:3px;">
+                            <img src="${qrDataUrl}" class="qr-dock-img" style="width:${qrImgSizeMm}; height:${qrImgSizeMm}; display:block; image-rendering:pixelated;" alt="QR" />
+                            <span class="qr-dock-caption" style="font-size:${qrCaptionFontSize}; font-weight:900; line-height:1.05; text-align:center; margin-top:0.4mm; color:#000;">
                               ${isRtl ? 'امسح للتثقيف<br>الدوائي' : 'Scan for<br>Patient Guide'}
                             </span>
                           </div>
                         </div>
                       ` : ''}
                     </div>
-                    <div class="label-footer-bar" style="border-top:1px dashed #444; padding-top:2px; font-size:7.0pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
-                      <div style="flex:1; text-align:center; overflow:hidden; font-size:7.0pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
+                    <div class="label-footer-bar" style="border-top:1px dashed #000; padding-top:0.4mm; margin-bottom:0.1mm; font-size:6.8pt; display:flex; align-items:center; justify-content:center; width:100%; flex-shrink:0;">
+                      <div style="flex:1; text-align:center; overflow:hidden; font-size:6.8pt; line-height:1.2; font-weight:900; font-family:'Cairo', Arial, sans-serif; letter-spacing:-0.1px; color:#000;">
                         <span>${displayFooter}</span>
                         ${totalPages > 1 ? `<span style="font-weight:900;"> • ${pageNum}/${totalPages}</span>` : ''}
                       </div>
