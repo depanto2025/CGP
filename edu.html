@@ -1037,6 +1037,28 @@
         page-break-inside: avoid;
       }
     }
+  
+    .drawer-lang-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .drawer-lang-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .drawer-lang-btn.active {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+    }
+
   </style>
 </head>
 <body>
@@ -2016,6 +2038,56 @@
       }
     }
 
+    
+    const CLINICAL_PHRASE_DICTIONARY = [
+      { en: /fetal risk cannot be ruled out/gi, ar: 'لا يمكن استبعاد الخطر على الجنين؛ يُستخدم فقط للضرورة القصوى وتحت إشراف طبي.' },
+      { en: /fetal risk is minimal/gi, ar: 'المخاطر على الجنين ضئيلة جداً، ويُعتبر استخدامه آمناً.' },
+      { en: /fetal harm has been demonstrated/gi, ar: 'تم إثبات حدوث أضرار وتشوهات للجنين؛ يُحظر استخدامه أثناء الحمل.' },
+      { en: /may cause fetal harm/gi, ar: 'قد يسبب ضرراً أو تشوهات للجنين؛ يُنصح بتجنب استخدامه.' },
+      { en: /crosses the placenta/gi, ar: 'يعبر المشيمة ويصل إلى أنسجة الجنين' },
+      { en: /major congenital malformation/gi, ar: 'تشوهات خلقية كبرى' },
+      { en: /is under study/gi, ar: 'قيد الدراسة السريرية' },
+      { en: /clearance is decreased immediately after birth/gi, ar: 'ينخفض معدل تخلص الجسم من الدواء مباشرة بعد الولادة' },
+      { en: /in neonates exposed to ondansetron in utero/gi, ar: 'لدى حديثي الولادة الذين تعرضوا للدواء داخل الرحم' },
+      { en: /infant risk cannot be ruled out/gi, ar: 'لا يمكن استبعاد الخطر على الرضيع؛ يُنصح بمراقبة الرضيع واستشارة الصيدلي.' },
+      { en: /infant risk is minimal/gi, ar: 'المخاطر على الرضيع ضئيلة جداً، ويُعتبر متوافقاً مع الرضاعة.' },
+      { en: /infant risk has been demonstrated/gi, ar: 'تم إثبات حدوث أضرار للرضيع؛ يجب تجنب الرضاعة أثناء العلاج.' },
+      { en: /compatible with breastfeeding/gi, ar: 'متوافق وآمن مع الرضاعة الطبيعية.' },
+      { en: /avoid breastfeeding/gi, ar: 'يُوصى بتجنب الرضاعة الطبيعية أثناء تناول هذا الدواء.' },
+      { en: /it is not known if .*? is present in breast milk/gi, ar: 'من غير المعروف ما إذا كان الدواء يُفرز في حليب الأم البشري.' },
+      { en: /is present in breast milk/gi, ar: 'يُفرز في حليب الأم البشري.' }
+    ];
+
+    function translateClinicalMonographFast(text) {
+      if (!text || typeof text !== 'string') return '';
+      let res = text.trim();
+      for (const item of CLINICAL_PHRASE_DICTIONARY) {
+        res = res.replace(item.en, item.ar);
+      }
+      return res;
+    }
+
+    function switchDrawerLang(drawerId, targetLang) {
+      const drawer = document.getElementById(drawerId);
+      if (!drawer) return;
+      const boxes = drawer.querySelectorAll('.drawer-text-block');
+      boxes.forEach(box => {
+        if (targetLang === 'ar') {
+          box.dir = 'rtl';
+          box.textContent = box.getAttribute('data-ar') || box.textContent;
+        } else {
+          box.dir = 'ltr';
+          box.textContent = box.getAttribute('data-en') || box.textContent;
+        }
+      });
+      const btns = drawer.querySelectorAll('.drawer-lang-btn');
+      btns.forEach(btn => {
+        if (btn.getAttribute('data-lang') === targetLang) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+
+
     async function renderPregnancyLactationSection() {
       const secEl = document.getElementById("secPregnancyLactation");
       const contentEl = document.getElementById("contentPregnancyLactation");
@@ -2038,6 +2110,11 @@
 
       const pregSummary = isAr ? (preg.simpleSummaryAr || preg.simpleSummaryEn) : (preg.simpleSummaryEn || preg.simpleSummaryAr);
       const lactSummary = isAr ? (lact.simpleSummaryAr || lact.simpleSummaryEn) : (lact.simpleSummaryEn || lact.simpleSummaryAr);
+
+      const pregLexiAr = translateClinicalMonographFast(preg.lexidrugs || '');
+      const pregDynaAr = translateClinicalMonographFast(preg.dynamedex || '');
+      const lactLexiAr = translateClinicalMonographFast(lact.lexidrugs || '');
+      const lactDynaAr = translateClinicalMonographFast(lact.dynamedex || '');
 
       contentEl.innerHTML = `
         <div class="preg-lact-container">
@@ -2064,8 +2141,26 @@
                 <span>${isAr ? 'المزيد من تفاصيل المراجع السريرية (Lexi & DynaMedex) ▾' : 'Clinical Evidence & Drug Monographs ▾'}</span>
               </button>
               <div class="details-drawer" id="drawerEduPregDetails">
-                ${preg.lexidrugs ? `<div style="margin-bottom:8px;"><b>📘 Lexicomp Pregnancy Considerations:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${preg.lexidrugs}</p></div>` : ''}
-                ${preg.dynamedex ? `<div><b>📗 DynaMedex Teratogenicity & Fetal Risk:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${preg.dynamedex}</p></div>` : ''}
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px;">
+                  <button type="button" class="drawer-lang-btn ${isAr ? 'active' : ''}" data-lang="ar" onclick="switchDrawerLang('drawerEduPregDetails', 'ar')">🇸🇦 العربية</button>
+                  <button type="button" class="drawer-lang-btn ${!isAr ? 'active' : ''}" data-lang="en" onclick="switchDrawerLang('drawerEduPregDetails', 'en')">🇬🇧 English</button>
+                </div>
+                ${preg.lexidrugs ? `
+                  <div style="margin-bottom:8px;">
+                    <b>📘 ${isAr ? 'اعتبارات الحمل السريرية من Lexicomp' : 'Lexicomp Pregnancy Considerations'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(pregLexiAr)}" data-en="${escapeHtml(preg.lexidrugs)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? pregLexiAr : preg.lexidrugs)}
+                    </p>
+                  </div>
+                ` : ''}
+                ${preg.dynamedex ? `
+                  <div>
+                    <b>📗 ${isAr ? 'تقييم مخاطر الجنين والتشوهات من DynaMedex' : 'DynaMedex Teratogenicity & Fetal Risk'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(pregDynaAr)}" data-en="${escapeHtml(preg.dynamedex)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? pregDynaAr : preg.dynamedex)}
+                    </p>
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
           </div>
@@ -2095,8 +2190,26 @@
                 <span>${isAr ? 'المزيد من تفاصيل المراجع السريرية (Lexi & DynaMedex) ▾' : 'Clinical Evidence & Drug Monographs ▾'}</span>
               </button>
               <div class="details-drawer" id="drawerEduLactDetails">
-                ${lact.lexidrugs ? `<div style="margin-bottom:8px;"><b>📘 Lexicomp Breast-Feeding Considerations:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${lact.lexidrugs}</p></div>` : ''}
-                ${lact.dynamedex ? `<div><b>📗 DynaMedex Infant Risk Assessment:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${lact.dynamedex}</p></div>` : ''}
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px;">
+                  <button type="button" class="drawer-lang-btn ${isAr ? 'active' : ''}" data-lang="ar" onclick="switchDrawerLang('drawerEduLactDetails', 'ar')">🇸🇦 العربية</button>
+                  <button type="button" class="drawer-lang-btn ${!isAr ? 'active' : ''}" data-lang="en" onclick="switchDrawerLang('drawerEduLactDetails', 'en')">🇬🇧 English</button>
+                </div>
+                ${lact.lexidrugs ? `
+                  <div style="margin-bottom:8px;">
+                    <b>📘 ${isAr ? 'اعتبارات الرضاعة الطبيعية من Lexicomp' : 'Lexicomp Breast-Feeding Considerations'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(lactLexiAr)}" data-en="${escapeHtml(lact.lexidrugs)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? lactLexiAr : lact.lexidrugs)}
+                    </p>
+                  </div>
+                ` : ''}
+                ${lact.dynamedex ? `
+                  <div>
+                    <b>📗 ${isAr ? 'تقييم مخاطر الرضيع وسلامة الحليب من DynaMedex' : 'DynaMedex Infant Risk Assessment'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(lactDynaAr)}" data-en="${escapeHtml(lact.dynamedex)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? lactDynaAr : lact.dynamedex)}
+                    </p>
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
           </div>

@@ -3776,6 +3776,28 @@ function detectInstructionIcon(text) {
       background: #fff;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
+  
+    .drawer-lang-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .drawer-lang-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .drawer-lang-btn.active {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+    }
+
   </style>
 
   <!-- Dynamic Thermal Label Size Injector (76.2x50.8mm default, 80x50mm, 100x50mm) -->
@@ -4572,19 +4594,73 @@ function detectInstructionIcon(text) {
     window.escapeHtml = escapeHtml;
 
     const COMMON_PRIMARY_INDICATIONS = {
+      // Antiemetic & GI Motility (القيء والغثيان وتنظيم حركة المعدة)
+      'ondansetron': { ar: 'للقيء والغثيان', en: 'Nausea & Vomiting' },
+      'granisetron': { ar: 'للقيء والغثيان', en: 'Nausea & Vomiting' },
+      'metoclopramide': { ar: 'للقيء والغثيان وتنظيم حركة المعدة', en: 'Antiemetic / Prokinetic' },
+      'domperidone': { ar: 'للغثيان وتنظيم حركة المعدة', en: 'Antiemetic / Prokinetic' },
+      'aprepitant': { ar: 'للقيء والغثيان الشديد', en: 'Antiemetic' },
+
+      // IBD & Colon (القولون والتهاب الأمعاء)
+      'mesalamine': { ar: 'التهاب القولون التقرحي', en: 'Ulcerative Colitis' },
+      'mesalazine': { ar: 'التهاب القولون التقرحي', en: 'Ulcerative Colitis' },
+      'sulfasalazine': { ar: 'التهاب القولون والمفاصل', en: 'Ulcerative Colitis / Arthritis' },
+
+      // Constipation & Laxatives (الملينات والإمساك)
       'bisacodyl': { ar: 'ملين للإمساك', en: 'Laxative / Constipation' },
-      'alendronate': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
-      'alendronate monosodium': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
-      'alendronate monosodium trihydr': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
-      'alendronate sodium': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
       'lactulose': { ar: 'ملين للإمساك', en: 'Laxative' },
       'senna': { ar: 'ملين للإمساك', en: 'Laxative' },
       'glycerin': { ar: 'ملين للإمساك', en: 'Constipation' },
       'polyethylene glycol': { ar: 'ملين للإمساك', en: 'Laxative' },
+      'sodium picosulfate': { ar: 'ملين للإمساك', en: 'Laxative' },
+
+      // Antidiarrheal (الإسهال)
+      'loperamide': { ar: 'مضاد للإسهال', en: 'Antidiarrheal' },
+
+      // IBS & Antispasmodics (المغص والقولون العصبي)
+      'hyoscine': { ar: 'مغص وتقلصات البطن والقولون', en: 'Antispasmodic / Cramps' },
+      'hyoscine butylbromide': { ar: 'مغص وتقلصات البطن والقولون', en: 'Antispasmodic / Cramps' },
+      'mebeverine': { ar: 'تشنجات وتقلصات القولون العصبي', en: 'IBS / Antispasmodic' },
+      'otilonium': { ar: 'تقلصات القولون العصبي', en: 'IBS / Antispasmodic' },
+      'pinaverium': { ar: 'تقلصات القولون العصبي', en: 'IBS / Antispasmodic' },
+      'chlordiazepoxide': { ar: 'مهدئ لتقلصات القولون والقلق', en: 'IBS / Anxiety' },
+      'simethicone': { ar: 'طارد للغازات والانتفاخ', en: 'Antiflatulent / Gas Relief' },
+      'ursodiol': { ar: 'إذابة حصوات المرارة وصحة الكبد', en: 'Gallstones / Liver' },
+      'ursodeoxycholic acid': { ar: 'إذابة حصوات المرارة وصحة الكبد', en: 'Gallstones / Liver' },
+
+      // Osteoporosis (هشاشة العظام)
+      'alendronate': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'alendronate monosodium': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'alendronate monosodium trihydr': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'alendronate sodium': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'risedronate': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'ibandronate': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+      'denosumab': { ar: 'هشاشة العظام', en: 'Osteoporosis' },
+
+      // Acid Reflux & Ulcers (المعدة والحموضة)
+      'esomeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'omeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'pantoprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'rabeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'lansoprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
+      'famotidine': { ar: 'حموضة وحرقة المعدة', en: 'Heartburn / GERD' },
+
+      // Pain & Fever (المسكنات والحرارة والالتهاب)
+      'paracetamol': { ar: 'مسكن للألم وخافض حرارة', en: 'Analgesic / Antipyretic' },
+      'acetaminophen': { ar: 'مسكن للألم وخافض حرارة', en: 'Analgesic / Antipyretic' },
+      'ibuprofen': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief / Anti-inflammatory' },
+      'diclofenac': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief / Anti-inflammatory' },
+      'celecoxib': { ar: 'مسكن ومضاد لالتهاب المفاصل', en: 'Arthritis / Pain Relief' },
+      'meloxicam': { ar: 'مسكن لالتهاب المفاصل', en: 'Arthritis / Pain Relief' },
+      'ketoprofen': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief' },
+      'naproxen': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief' },
+
+      // Diabetes (السكري)
       'metformin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
       'metformin hydrochloride': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
       'sitagliptin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
       'vildagliptin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
+      'linagliptin': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
       'empagliflozin': { ar: 'السكري وقصور القلب', en: 'Diabetes / Heart Failure' },
       'dapagliflozin': { ar: 'السكري وقصور القلب', en: 'Diabetes / Heart Failure' },
       'glimepiride': { ar: 'السكري النوع 2', en: 'Type 2 Diabetes' },
@@ -4592,44 +4668,44 @@ function detectInstructionIcon(text) {
       'liraglutide': { ar: 'السكري والوزن', en: 'Diabetes / Weight' },
       'semaglutide': { ar: 'السكري وإنقاص الوزن', en: 'Diabetes / Weight Loss' },
       'insulin glargine': { ar: 'السكري', en: 'Diabetes' },
+      'insulin aspart': { ar: 'السكري سريع المفعول', en: 'Diabetes Rapid Acting' },
+
+      // Hypertension & Heart (ضغط الدم والقلب)
       'valsartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
       'losartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
       'telmisartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
       'candesartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'irbesartan': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
       'amlodipine': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
       'bisoprolol': { ar: 'ضغط الدم ونبض القلب', en: 'Hypertension / Heart' },
       'carvedilol': { ar: 'قصور القلب وضغط الدم', en: 'Heart Failure / Hypertension' },
       'metoprolol': { ar: 'ضغط الدم ونبض القلب', en: 'Hypertension' },
       'nebivolol': { ar: 'ضغط الدم ونبض القلب', en: 'Hypertension' },
+      'atenolol': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
       'ramipril': { ar: 'ضغط الدم وحماية القلب', en: 'Hypertension' },
       'perindopril': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'lisinopril': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'enalapril': { ar: 'ارتفاع ضغط الدم', en: 'Hypertension' },
+      'indapamide': { ar: 'مدر للبول وضغط الدم', en: 'Diuretic / Hypertension' },
+      'hydrochlorothiazide': { ar: 'مدر للبول وضغط الدم', en: 'Diuretic / Hypertension' },
+      'furosemide': { ar: 'مدر للبول وإزالة السوائل', en: 'Diuretic' },
+      'spironolactone': { ar: 'مدر للبول وضغط الدم', en: 'Diuretic' },
+
+      // Cholesterol & Lipids (الكوليسترول والدهون)
       'atorvastatin': { ar: 'الكوليسترول والدهون', en: 'Cholesterol / Lipids' },
       'rosuvastatin': { ar: 'الكوليسترول والدهون', en: 'Cholesterol / Lipids' },
       'simvastatin': { ar: 'الكوليسترول والدهون', en: 'Cholesterol / Lipids' },
+      'fenofibrate': { ar: 'الدهون الثلاثية والكوليسترول', en: 'Triglycerides / Lipids' },
+      'ezetimibe': { ar: 'الكوليسترول والدهون', en: 'Cholesterol' },
+
+      // Blood Thinners (سيولة الدم ومنع التجلط)
       'clopidogrel': { ar: 'سيولة الدم ومنع التجلط', en: 'Antiplatelet' },
+      'aspirin': { ar: 'سيولة الدم ومنع التجلط', en: 'Antiplatelet' },
       'warfarin': { ar: 'مانع للتخثر وسيولة الدم', en: 'Anticoagulant' },
       'rivaroxaban': { ar: 'مانع للتخثر ومنع الجلطات', en: 'Anticoagulant' },
       'apixaban': { ar: 'مانع للتخثر ومنع الجلطات', en: 'Anticoagulant' },
-      'esomeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
-      'omeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
-      'pantoprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
-      'rabeprazole': { ar: 'حموضة وقرحة المعدة', en: 'Acid Reflux / GERD' },
-      'famotidine': { ar: 'حموضة وحرقة المعدة', en: 'Heartburn / GERD' },
-      'paracetamol': { ar: 'مسكن للألم وخافض حرارة', en: 'Analgesic / Antipyretic' },
-      'ibuprofen': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief / Anti-inflammatory' },
-      'diclofenac': { ar: 'مسكن ومضاد للالتهاب', en: 'Pain Relief / Anti-inflammatory' },
-      'celecoxib': { ar: 'مسكن ومضاد لالتهاب المفاصل', en: 'Arthritis / Pain Relief' },
-      'meloxicam': { ar: 'مسكن لالتهاب المفاصل', en: 'Arthritis / Pain Relief' },
-      'fluticasone': { ar: 'حساسية والتهاب الأنف', en: 'Nasal Allergy / Rhinitis' },
-      'fluticasone propionate': { ar: 'حساسية والتهاب الأنف', en: 'Nasal Allergy / Rhinitis' },
-      'mometasone': { ar: 'حساسية الأنف', en: 'Nasal Allergy' },
-      'montelukast': { ar: 'حساسية الصدر والربو', en: 'Asthma / Allergy' },
-      'salbutamol': { ar: 'موسع للشعب والربو', en: 'Bronchodilator / Asthma' },
-      'budesonide': { ar: 'الربو وحساسية الصدر', en: 'Asthma / Inflammation' },
-      'levocetirizine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
-      'desloratadine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
-      'loratadine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
-      'fexofenadine': { ar: 'مضاد للحساسية', en: 'Antihistamine' },
+
+      // Antibiotics (المضادات الحيوية)
       'amoxicillin and clavulanate': { ar: 'مضاد حيوي للعدوى البكتيرية', en: 'Antibacterial' },
       'amoxicillin': { ar: 'مضاد حيوي للعدوى البكتيرية', en: 'Antibacterial' },
       'azithromycin': { ar: 'مضاد حيوي للعدوى البكتيرية', en: 'Antibacterial' },
@@ -4638,46 +4714,185 @@ function detectInstructionIcon(text) {
       'levofloxacin': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
       'cefixime': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
       'cefuroxime': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'cefdinir': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'ceftriaxone': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'doxycycline': { ar: 'مضاد حيوي بكتيري', en: 'Antibacterial' },
+      'metronidazole': { ar: 'مضاد للبكتيريا اللاهوائية والطفيليات', en: 'Antimicrobial / Antiprotozoal' },
+
+      // Antifungals & Antivirals (الفطريات والفيروسات)
+      'fluconazole': { ar: 'مضاد للفطريات', en: 'Antifungal' },
+      'itraconazole': { ar: 'مضاد للفطريات', en: 'Antifungal' },
+      'voriconazole': { ar: 'مضاد للفطريات', en: 'Antifungal' },
+      'acyclovir': { ar: 'مضاد للفيروسات', en: 'Antiviral' },
+      'valacyclovir': { ar: 'مضاد للفيروسات', en: 'Antiviral' },
+      'oseltamivir': { ar: 'مضاد لفيروس الإنفلونزا', en: 'Influenza Antiviral' },
+
+      // Allergy & Respiratory (الحساسية والربو)
+      'fluticasone': { ar: 'حساسية والتهاب الأنف', en: 'Nasal Allergy / Rhinitis' },
+      'fluticasone propionate': { ar: 'حساسية والتهاب الأنف', en: 'Nasal Allergy / Rhinitis' },
+      'mometasone': { ar: 'حساسية الأنف', en: 'Nasal Allergy' },
+      'montelukast': { ar: 'حساسية الصدر والربو', en: 'Asthma / Allergy' },
+      'salbutamol': { ar: 'موسع للشعب والربو', en: 'Bronchodilator / Asthma' },
+      'albuterol': { ar: 'موسع للشعب والربو', en: 'Bronchodilator / Asthma' },
+      'budesonide': { ar: 'الربو وحساسية الصدر', en: 'Asthma / Inflammation' },
+      'levocetirizine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
+      'desloratadine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
+      'loratadine': { ar: 'مضاد للحساسية والرشح', en: 'Antihistamine / Allergy' },
+      'fexofenadine': { ar: 'مضاد للحساسية', en: 'Antihistamine' },
+      'cetirizine': { ar: 'مضاد للحساسية', en: 'Antihistamine' },
+
+      // Gout & Thyroid & Prostate (النقرس والغدة والبروستاتا)
+      'allopurinol': { ar: 'النقرس وحمض اليوريك', en: 'Gout / Uric Acid' },
+      'febuxostat': { ar: 'النقرس وحمض اليوريك', en: 'Gout / Uric Acid' },
+      'colchicine': { ar: 'علاج نوبات النقرس', en: 'Gout' },
+      'levothyroxine': { ar: 'خمول الغدة الدرقية', en: 'Hypothyroidism' },
+      'tamsulosin': { ar: 'تضخم البروستاتا وصعوبة التبول', en: 'Prostate / BPH' },
+      'finasteride': { ar: 'تضخم البروستاتا وتساقط الشعر', en: 'Prostate / Hair Loss' },
+      'sildenafil': { ar: 'علاج الضعف والانتصاب', en: 'Erectile Dysfunction' },
+      'tadalafil': { ar: 'علاج الضعف والانتصاب', en: 'Erectile Dysfunction' },
+
+      // Neuro & Psych (الأعصاب والنفسية)
       'escitalopram': { ar: 'مضاد للاكتئاب والقلق', en: 'Depression / Anxiety' },
       'sertraline': { ar: 'مضاد للاكتئاب والتوتر', en: 'Depression / Anxiety' },
+      'fluoxetine': { ar: 'مضاد للاكتئاب والوسواس', en: 'Antidepressant' },
+      'paroxetine': { ar: 'مضاد للاكتئاب والقلق', en: 'Antidepressant' },
+      'venlafaxine': { ar: 'مضاد للاكتئاب والقلق', en: 'Antidepressant' },
+      'duloxetine': { ar: 'مضاد للاكتئاب وآلام الأعصاب', en: 'Antidepressant / Pain' },
       'pregabalin': { ar: 'آلام الأعصاب', en: 'Neuropathic Pain' },
       'gabapentin': { ar: 'آلام الأعصاب', en: 'Neuropathic Pain' },
-      'levothyroxine': { ar: 'خمول الغدة الدرقية', en: 'Hypothyroidism' }
+      'betahistine': { ar: 'علاج الدوخة والدوار وطنين الأذن', en: 'Vertigo / Meniere' }
     };
 
     function getPrimaryIndication(med, isRtl = true) {
       if (!med) return '';
       const rawActive = (med.activeIngredient || '').trim().toLowerCase();
+      const rawTrade = (med.tradeNameEn || med.tradeNameAr || '').trim().toLowerCase();
 
+      // 1. Direct active ingredient matching
       for (const [k, v] of Object.entries(COMMON_PRIMARY_INDICATIONS)) {
-        if (rawActive === k || rawActive.startsWith(k) || rawActive.includes(k)) {
+        if (rawActive === k || rawActive.startsWith(k) || rawActive.includes(k) || rawTrade.includes(k)) {
           return isRtl ? v.ar : v.en;
         }
       }
 
+      // Token match
+      const cleanActive = (typeof cleanDrugActiveToken === 'function') 
+        ? cleanDrugActiveToken(rawActive) 
+        : rawActive.replace(/[^a-z0-9]+/g, '-');
+      for (const [k, v] of Object.entries(COMMON_PRIMARY_INDICATIONS)) {
+        if (cleanActive === k || cleanActive.startsWith(k)) {
+          return isRtl ? v.ar : v.en;
+        }
+      }
+
+      // Check Clinical Aliases
+      if (typeof DRUG_CLINICAL_ALIASES !== 'undefined') {
+        const alias = DRUG_CLINICAL_ALIASES[cleanActive] || DRUG_CLINICAL_ALIASES[rawActive];
+        if (alias && COMMON_PRIMARY_INDICATIONS[alias]) {
+          return isRtl ? COMMON_PRIMARY_INDICATIONS[alias].ar : COMMON_PRIMARY_INDICATIONS[alias].en;
+        }
+      }
+
+      // 2. Resolve Patient Edu Drug
       if (typeof resolvePatientEduDrug === 'function') {
         const drug = resolvePatientEduDrug(med.activeIngredient, med.tradeNameEn);
         if (drug) {
-          const mix = drug.mix || {};
-          const fda = (mix.fdaUses && mix.fdaUses.length) ? mix.fdaUses[0] : (drug.lexidrugs?.labeledUses?.[0] || drug.dynamedex?.fdaUses?.[0]);
-          if (fda) {
-            let clean = fda.split(':')[0].replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim();
-            if (clean.length > 0 && clean.length <= 35) {
-              if (isRtl && typeof fixMedicalArabicTranslation === 'function') {
-                return fixMedicalArabicTranslation(clean);
-              }
-              return clean;
-            }
+          if (drug.slug && COMMON_PRIMARY_INDICATIONS[drug.slug]) {
+            return isRtl ? COMMON_PRIMARY_INDICATIONS[drug.slug].ar : COMMON_PRIMARY_INDICATIONS[drug.slug].en;
           }
-          if (drug.classes && drug.classes.length > 0) {
-            let cls = drug.classes[drug.classes.length - 1];
-            if (cls.toLowerCase().includes('agent') && drug.classes.length > 1) {
-              cls = drug.classes[1] || drug.classes[0];
-            }
-            return cls;
+
+          // Clinical keywords search
+          const allContext = []
+            .concat(drug.mix?.fdaUses || [])
+            .concat(drug.mix?.uses || [])
+            .concat(drug.lexidrugs?.labeledUses || [])
+            .concat(drug.dynamedex?.fdaUses || [])
+            .concat(drug.classes || [])
+            .join(' ')
+            .toLowerCase();
+
+          if (allContext.includes('nausea') || allContext.includes('vomit') || allContext.includes('antiemetic') || allContext.includes('emetogenic')) {
+            return isRtl ? 'للقيء والغثيان' : 'Nausea & Vomiting';
+          }
+          if (allContext.includes('hypertension') || allContext.includes('blood pressure')) {
+            return isRtl ? 'ارتفاع ضغط الدم' : 'Hypertension';
+          }
+          if (allContext.includes('diabetes') || allContext.includes('antidiabetic') || allContext.includes('hypoglycemic') || allContext.includes('glycemic')) {
+            return isRtl ? 'السكري' : 'Diabetes';
+          }
+          if (allContext.includes('osteoporosis') || allContext.includes('bone resorption') || allContext.includes('bisphosphonate')) {
+            return isRtl ? 'هشاشة العظام' : 'Osteoporosis';
+          }
+          if (allContext.includes('colitis') || allContext.includes('crohn') || allContext.includes('inflammatory bowel') || allContext.includes('5-aminosalicylic')) {
+            return isRtl ? 'التهاب القولون التقرحي' : 'Ulcerative Colitis';
+          }
+          if (allContext.includes('acid reflux') || allContext.includes('gerd') || allContext.includes('peptic ulcer') || allContext.includes('proton pump inhibitor')) {
+            return isRtl ? 'حموضة وقرحة المعدة' : 'Acid Reflux / Ulcer';
+          }
+          if (allContext.includes('constipation') || allContext.includes('laxative')) {
+            return isRtl ? 'ملين للإمساك' : 'Laxative';
+          }
+          if (allContext.includes('antibacterial') || allContext.includes('antibiotic') || allContext.includes('bacterial infection') || allContext.includes('cephalosporin') || allContext.includes('penicillin') || allContext.includes('fluoroquinolone') || allContext.includes('macrolide')) {
+            return isRtl ? 'مضاد حيوي بكتيري' : 'Antibacterial';
+          }
+          if (allContext.includes('antifungal') || allContext.includes('fungal') || allContext.includes('candidiasis')) {
+            return isRtl ? 'مضاد للفطريات' : 'Antifungal';
+          }
+          if (allContext.includes('antiviral') || allContext.includes('viral infection') || allContext.includes('herpes')) {
+            return isRtl ? 'مضاد للفيروسات' : 'Antiviral';
+          }
+          if (allContext.includes('antihistamine') || allContext.includes('allergic rhinitis') || allContext.includes('hay fever')) {
+            return isRtl ? 'مضاد للحساسية والرشح' : 'Allergy Relief';
+          }
+          if (allContext.includes('asthma') || allContext.includes('bronchodilator') || allContext.includes('bronchospasm') || allContext.includes('copd')) {
+            return isRtl ? 'موسع للشعب والربو' : 'Asthma / Bronchodilator';
+          }
+          if (allContext.includes('hyperlipidemia') || allContext.includes('cholesterol') || allContext.includes('statin') || allContext.includes('hmg-coa')) {
+            return isRtl ? 'الكوليسترول والدهون' : 'Cholesterol / Lipids';
+          }
+          if (allContext.includes('analgesic') || allContext.includes('antipyretic') || allContext.includes('pain') || allContext.includes('fever')) {
+            return isRtl ? 'مسكن للألم وخافض حرارة' : 'Pain & Fever Relief';
+          }
+          if (allContext.includes('anti-inflammatory') || allContext.includes('nsaid') || allContext.includes('arthritis')) {
+            return isRtl ? 'مسكن ومضاد للالتهاب' : 'Anti-inflammatory';
+          }
+          if (allContext.includes('antidepressant') || allContext.includes('depression') || allContext.includes('ssri')) {
+            return isRtl ? 'مضاد للاكتئاب والقلق' : 'Antidepressant';
+          }
+          if (allContext.includes('neuropathic pain') || allContext.includes('anticonvulsant') || allContext.includes('epilepsy') || allContext.includes('seizure')) {
+            return isRtl ? 'آلام الأعصاب' : 'Neuropathic Pain';
+          }
+          if (allContext.includes('anticoagulant') || allContext.includes('thrombosis') || allContext.includes('embolism')) {
+            return isRtl ? 'مانع للتخثر ومنع الجلطات' : 'Anticoagulant';
+          }
+          if (allContext.includes('antiplatelet') || allContext.includes('platelet aggregation')) {
+            return isRtl ? 'سيولة الدم ومنع التجلط' : 'Antiplatelet';
+          }
+          if (allContext.includes('hypothyroidism') || allContext.includes('thyroid hormone')) {
+            return isRtl ? 'خمول الغدة الدرقية' : 'Hypothyroidism';
+          }
+          if (allContext.includes('gout') || allContext.includes('hyperuricemia')) {
+            return isRtl ? 'النقرس وحمض اليوريك' : 'Gout';
+          }
+          if (allContext.includes('glaucoma') || allContext.includes('intraocular pressure')) {
+            return isRtl ? 'ضغط العين والماء الأزرق' : 'Glaucoma';
+          }
+          if (allContext.includes('benign prostatic') || allContext.includes('prostate') || allContext.includes('bph')) {
+            return isRtl ? 'تضخم البروستاتا' : 'Prostate / BPH';
+          }
+          if (allContext.includes('erectile') || allContext.includes('pde-5')) {
+            return isRtl ? 'علاج الضعف والانتصاب' : 'Erectile Dysfunction';
+          }
+          if (allContext.includes('cough') || allContext.includes('antitussive')) {
+            return isRtl ? 'مهدئ للسعال والكحة' : 'Cough Relief';
+          }
+          if (allContext.includes('antidiarrheal') || allContext.includes('diarrhea')) {
+            return isRtl ? 'مضاد للإسهال' : 'Antidiarrheal';
           }
         }
       }
+
+      // STRICT PATIENT RULE: NEVER return a raw pharmacological mechanism or English class!
       return '';
     }
 
@@ -7520,7 +7735,10 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block" style="border-bottom: 1.5px solid #000; padding-bottom: 1.5px;">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="font-size: 10.5pt; font-weight: 900; line-height: 1.2;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
-                        <div class="label-header-subtitle">${displayActiveHtml}</div>
+                        <div class="label-header-subtitle" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:nowrap; gap:4px;">
+                        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${displayActiveHtml}</div>
+                        ${pregLactLabelBadgeHtml}
+                      </div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -7558,7 +7776,10 @@ function detectInstructionIcon(text) {
                     <div class="label-header-block">
                       <div style="flex:1; overflow:hidden;">
                         <div class="label-header-title" style="display:flex; align-items:baseline; gap:4px; flex-wrap:wrap;"><span>${displayTradeName}</span> ${mainIndicationHtml}</div>
-                        <div class="label-header-subtitle">${displayActiveHtml}</div>
+                        <div class="label-header-subtitle" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:nowrap; gap:4px;">
+                        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${displayActiveHtml}</div>
+                        ${pregLactLabelBadgeHtml}
+                      </div>
                       </div>
                       <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
                         <span class="label-code-badge">#${med.code}</span>
@@ -8396,6 +8617,56 @@ function detectInstructionIcon(text) {
       }
     }
 
+    
+    const CLINICAL_PHRASE_DICTIONARY = [
+      { en: /fetal risk cannot be ruled out/gi, ar: 'لا يمكن استبعاد الخطر على الجنين؛ يُستخدم فقط للضرورة القصوى وتحت إشراف طبي.' },
+      { en: /fetal risk is minimal/gi, ar: 'المخاطر على الجنين ضئيلة جداً، ويُعتبر استخدامه آمناً.' },
+      { en: /fetal harm has been demonstrated/gi, ar: 'تم إثبات حدوث أضرار وتشوهات للجنين؛ يُحظر استخدامه أثناء الحمل.' },
+      { en: /may cause fetal harm/gi, ar: 'قد يسبب ضرراً أو تشوهات للجنين؛ يُنصح بتجنب استخدامه.' },
+      { en: /crosses the placenta/gi, ar: 'يعبر المشيمة ويصل إلى أنسجة الجنين' },
+      { en: /major congenital malformation/gi, ar: 'تشوهات خلقية كبرى' },
+      { en: /is under study/gi, ar: 'قيد الدراسة السريرية' },
+      { en: /clearance is decreased immediately after birth/gi, ar: 'ينخفض معدل تخلص الجسم من الدواء مباشرة بعد الولادة' },
+      { en: /in neonates exposed to ondansetron in utero/gi, ar: 'لدى حديثي الولادة الذين تعرضوا للدواء داخل الرحم' },
+      { en: /infant risk cannot be ruled out/gi, ar: 'لا يمكن استبعاد الخطر على الرضيع؛ يُنصح بمراقبة الرضيع واستشارة الصيدلي.' },
+      { en: /infant risk is minimal/gi, ar: 'المخاطر على الرضيع ضئيلة جداً، ويُعتبر متوافقاً مع الرضاعة.' },
+      { en: /infant risk has been demonstrated/gi, ar: 'تم إثبات حدوث أضرار للرضيع؛ يجب تجنب الرضاعة أثناء العلاج.' },
+      { en: /compatible with breastfeeding/gi, ar: 'متوافق وآمن مع الرضاعة الطبيعية.' },
+      { en: /avoid breastfeeding/gi, ar: 'يُوصى بتجنب الرضاعة الطبيعية أثناء تناول هذا الدواء.' },
+      { en: /it is not known if .*? is present in breast milk/gi, ar: 'من غير المعروف ما إذا كان الدواء يُفرز في حليب الأم البشري.' },
+      { en: /is present in breast milk/gi, ar: 'يُفرز في حليب الأم البشري.' }
+    ];
+
+    function translateClinicalMonographFast(text) {
+      if (!text || typeof text !== 'string') return '';
+      let res = text.trim();
+      for (const item of CLINICAL_PHRASE_DICTIONARY) {
+        res = res.replace(item.en, item.ar);
+      }
+      return res;
+    }
+
+    function switchDrawerLang(drawerId, targetLang) {
+      const drawer = document.getElementById(drawerId);
+      if (!drawer) return;
+      const boxes = drawer.querySelectorAll('.drawer-text-block');
+      boxes.forEach(box => {
+        if (targetLang === 'ar') {
+          box.dir = 'rtl';
+          box.textContent = box.getAttribute('data-ar') || box.textContent;
+        } else {
+          box.dir = 'ltr';
+          box.textContent = box.getAttribute('data-en') || box.textContent;
+        }
+      });
+      const btns = drawer.querySelectorAll('.drawer-lang-btn');
+      btns.forEach(btn => {
+        if (btn.getAttribute('data-lang') === targetLang) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+
+
     function renderPregLactModalCard(drug, lang = 'ar') {
       const card = document.getElementById("cardEduPregLact");
       const body = document.getElementById("bodyEduPregLact");
@@ -8419,6 +8690,11 @@ function detectInstructionIcon(text) {
 
       const pregSummary = isAr ? (preg.simpleSummaryAr || preg.simpleSummaryEn) : (preg.simpleSummaryEn || preg.simpleSummaryAr);
       const lactSummary = isAr ? (lact.simpleSummaryAr || lact.simpleSummaryEn) : (lact.simpleSummaryEn || lact.simpleSummaryAr);
+
+      const pregLexiAr = translateClinicalMonographFast(preg.lexidrugs || '');
+      const pregDynaAr = translateClinicalMonographFast(preg.dynamedex || '');
+      const lactLexiAr = translateClinicalMonographFast(lact.lexidrugs || '');
+      const lactDynaAr = translateClinicalMonographFast(lact.dynamedex || '');
 
       body.innerHTML = `
         <div class="preg-lact-container">
@@ -8445,8 +8721,26 @@ function detectInstructionIcon(text) {
                 <span>${isAr ? 'تفاصيل المراجع السريرية (Lexi & DynaMedex) ▾' : 'Clinical Evidence & Monographs ▾'}</span>
               </button>
               <div class="details-drawer" id="drawerPregDetails">
-                ${preg.lexidrugs ? `<div style="margin-bottom:8px;"><b>📘 Lexicomp Pregnancy Considerations:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${preg.lexidrugs}</p></div>` : ''}
-                ${preg.dynamedex ? `<div><b>📗 DynaMedex Teratogenicity & Fetal Risk:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${preg.dynamedex}</p></div>` : ''}
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px;">
+                  <button type="button" class="drawer-lang-btn ${isAr ? 'active' : ''}" data-lang="ar" onclick="switchDrawerLang('drawerPregDetails', 'ar')">🇸🇦 العربية</button>
+                  <button type="button" class="drawer-lang-btn ${!isAr ? 'active' : ''}" data-lang="en" onclick="switchDrawerLang('drawerPregDetails', 'en')">🇬🇧 English</button>
+                </div>
+                ${preg.lexidrugs ? `
+                  <div style="margin-bottom:8px;">
+                    <b>📘 ${isAr ? 'اعتبارات الحمل السريرية من Lexicomp' : 'Lexicomp Pregnancy Considerations'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(pregLexiAr)}" data-en="${escapeHtml(preg.lexidrugs)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? pregLexiAr : preg.lexidrugs)}
+                    </p>
+                  </div>
+                ` : ''}
+                ${preg.dynamedex ? `
+                  <div>
+                    <b>📗 ${isAr ? 'تقييم مخاطر الجنين والتشوهات من DynaMedex' : 'DynaMedex Teratogenicity & Fetal Risk'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(pregDynaAr)}" data-en="${escapeHtml(preg.dynamedex)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? pregDynaAr : preg.dynamedex)}
+                    </p>
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
           </div>
@@ -8476,8 +8770,26 @@ function detectInstructionIcon(text) {
                 <span>${isAr ? 'تفاصيل المراجع السريرية (Lexi & DynaMedex) ▾' : 'Clinical Evidence & Monographs ▾'}</span>
               </button>
               <div class="details-drawer" id="drawerLactDetails">
-                ${lact.lexidrugs ? `<div style="margin-bottom:8px;"><b>📘 Lexicomp Breast-Feeding Considerations:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${lact.lexidrugs}</p></div>` : ''}
-                ${lact.dynamedex ? `<div><b>📗 DynaMedex Infant Risk Assessment:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${lact.dynamedex}</p></div>` : ''}
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px;">
+                  <button type="button" class="drawer-lang-btn ${isAr ? 'active' : ''}" data-lang="ar" onclick="switchDrawerLang('drawerLactDetails', 'ar')">🇸🇦 العربية</button>
+                  <button type="button" class="drawer-lang-btn ${!isAr ? 'active' : ''}" data-lang="en" onclick="switchDrawerLang('drawerLactDetails', 'en')">🇬🇧 English</button>
+                </div>
+                ${lact.lexidrugs ? `
+                  <div style="margin-bottom:8px;">
+                    <b>📘 ${isAr ? 'اعتبارات الرضاعة الطبيعية من Lexicomp' : 'Lexicomp Breast-Feeding Considerations'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(lactLexiAr)}" data-en="${escapeHtml(lact.lexidrugs)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? lactLexiAr : lact.lexidrugs)}
+                    </p>
+                  </div>
+                ` : ''}
+                ${lact.dynamedex ? `
+                  <div>
+                    <b>📗 ${isAr ? 'تقييم مخاطر الرضيع وسلامة الحليب من DynaMedex' : 'DynaMedex Infant Risk Assessment'}:</b>
+                    <p class="drawer-text-block" data-ar="${escapeHtml(lactDynaAr)}" data-en="${escapeHtml(lact.dynamedex)}" dir="${isAr ? 'rtl' : 'ltr'}" style="margin:4px 0 0 0; white-space:pre-line;">
+                      ${escapeHtml(isAr ? lactDynaAr : lact.dynamedex)}
+                    </p>
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
           </div>
