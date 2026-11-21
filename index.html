@@ -29,6 +29,8 @@
   <script src="lexidrugs_patient_education.js"></script>
   <script src="dynamedex_patient_education.js"></script>
   <script src="patient_education_data.js"></script>
+  <!-- Pregnancy & Lactation Safety Database (3,120 Drugs - Lexicomp FDA Risk Categories & DynaMedex Fetal/Infant Risk) -->
+  <script src="pregnancy_lactation_data.js"></script>
     <!-- External script link -->
   <script src="pictograms.js"></script>
   <!-- Inline Fallback for GitHub / Vercel deployments (guarantees icons load even if pictograms.js wasn't uploaded) -->
@@ -3590,20 +3592,189 @@ function detectInstructionIcon(text) {
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 8px 14px;
+      padding: 9px 14px;
       margin-top: 10px;
-      background: #f0fdf4;
-      border: 1px dashed #86efac;
+      background: #fefce8;
+      border: 1px dashed #f59e0b;
       border-radius: var(--radius-md);
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
-      color: #166534;
+      color: #92400e;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .brand-filter-notice:hover {
-      background: #dcfce7;
-      border-color: #4ade80;
+      background: #fef3c7;
+      border-color: #d97706;
+    }
+    .brand-filter-notice.active-shown {
+      background: #eff6ff !important;
+      border: 1.5px solid #3b82f6 !important;
+      color: #1d4ed8 !important;
+    }
+    .brand-filter-notice.active-shown:hover {
+      background: #dbeafe !important;
+      border-color: #2563eb !important;
+    }
+
+    /* Pregnancy & Lactation Clinical Styles */
+    .preg-lact-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 10px;
+    }
+    @media (max-width: 680px) {
+      .preg-lact-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .preg-lact-box {
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      transition: all 0.2s ease;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .preg-box {
+      background: #fff5f7;
+      border-color: #fbcfe8;
+    }
+    .lact-box {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .preg-lact-box-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .cat-badge-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    .cat-badge-circle.cat-A { background: linear-gradient(135deg, #10b981, #059669); }
+    .cat-badge-circle.cat-B { background: linear-gradient(135deg, #059669, #047857); }
+    .cat-badge-circle.cat-C { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .cat-badge-circle.cat-D { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .cat-badge-circle.cat-X { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .cat-badge-circle.cat-none { background: linear-gradient(135deg, #64748b, #475569); font-size: 15px; }
+
+    .lact-badge-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    .lact-badge-circle.lact-safe { background: linear-gradient(135deg, #10b981, #059669); }
+    .lact-badge-circle.lact-caution { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .lact-badge-circle.lact-avoid { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+
+    .preg-lact-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      margin: 0;
+      color: #0f172a;
+    }
+    .preg-lact-subtitle {
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .preg-lact-meaning {
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 600;
+      color: #334155;
+      background: #ffffff;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .btn-more-details {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      transition: all 0.2s ease;
+      margin-top: 2px;
+    }
+    .btn-more-details:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+    .details-drawer {
+      display: none;
+      background: #ffffff;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #1e293b;
+      border: 1px solid #e2e8f0;
+      margin-top: 6px;
+    }
+
+    /* Main Screen Preg/Lact Summary Bar */
+    .preg-lact-summary-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
+      border: 1.5px solid #f0abfc;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #86198f;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .preg-lact-summary-bar:hover {
+      background: linear-gradient(135deg, #fae8ff, #f5d0fe);
+      border-color: #e879f9;
+      transform: translateY(-1px);
+    }
+    .preg-pill-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
   </style>
 
@@ -3884,6 +4055,23 @@ function detectInstructionIcon(text) {
               <i class="fas fa-graduation-cap" style="font-size:18px;"></i>
             </button>
           </div>
+        </div>
+
+        <!-- Main Screen Pregnancy & Lactation Safety Bar -->
+        <div id="mainPregLactSummaryBar" class="preg-lact-summary-bar" style="display:none;" onclick="openPatientEducationModal()">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span class="preg-pill-item" id="mainPregPill">
+              <span id="mainPregCatBadge" style="font-weight:900; padding:2px 8px; border-radius:6px; color:#fff; background:#059669; font-size:12px;">Cat B</span>
+              <span id="mainPregText" style="color:#0f172a; font-weight:700;">الحمل: آمن للاستخدام</span>
+            </span>
+            <span class="preg-pill-item" id="mainLactPill">
+              <span id="mainLactBadge" style="font-weight:900; padding:2px 8px; border-radius:6px; color:#fff; background:#d97706; font-size:12px;">🤱</span>
+              <span id="mainLactText" style="color:#0f172a; font-weight:700;">الرضاعة: بحذر مع المراقبة</span>
+            </span>
+          </div>
+          <span style="font-size:12px; font-weight:800; color:#86198f; text-decoration:underline;">
+            <i class="fas fa-info-circle"></i> عرض تفاصيل الحمل والرضاعة الكاملة ▾
+          </span>
         </div>
 
         <!-- Add Custom Instruction Row (Prominently at the TOP) -->
@@ -4242,6 +4430,20 @@ function detectInstructionIcon(text) {
             <i class="fas fa-layer-group" style="color: #15803d; font-size: 16px;"></i>
             <span id="lblModalClassTitle">تصنيف الدواء:</span>
             <span id="patientEduClassText" style="color: #0f172a; font-weight: 700;"></span>
+          </div>
+
+          <!-- Section 0: Pregnancy & Lactation Safety Guidance (Rose / Pink) -->
+          <div class="edu-card" id="cardEduPregLact" style="border: 1.5px solid #f472b6; border-radius: 12px; overflow: hidden; margin-bottom: 14px; display:none;">
+            <div class="edu-card-header" style="background:#fdf2f8; color:#be185d; border-bottom: 2px solid #fbcfe8; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-person-pregnant" style="font-size: 19px; color:#db2777;"></i>
+                <h4 id="hdrEduPregLact" style="margin: 0; font-size: 14.5px; font-weight: 800;">إرشادات ومخاطر استخدام الدواء أثناء الحمل والرضاعة (Pregnancy & Lactation)</h4>
+              </div>
+              <span id="badgePregLactSource" style="font-size:11px; font-weight:800; background:#fbcfe8; color:#9d174d; padding:2px 8px; border-radius:6px;">Lexicomp & DynaMedex</span>
+            </div>
+            <div style="padding: 14px;" id="bodyEduPregLact">
+              <!-- Dynamically rendered via renderPregLactCards() -->
+            </div>
           </div>
 
           <!-- Section 1: Uses / Indications (Sky Blue) -->
@@ -6263,6 +6465,7 @@ function detectInstructionIcon(text) {
         syncCurrentItemToBatch();
         renderInstructionsChecklist();
         renderModalLabels();
+        updatePregnancyLactationMainBar(null, p);
       }
     }
 
@@ -6438,6 +6641,7 @@ function detectInstructionIcon(text) {
 
         currentActiveRoute = chosenRoute;
         loadRouteInstructions(drug, chosenRoute);
+        updatePregnancyLactationMainBar(drug, p);
 
       } else {
         currentSelectedPresetKey = null;
@@ -6469,6 +6673,7 @@ function detectInstructionIcon(text) {
 
         renderInstructionsChecklist();
         renderModalLabels();
+        updatePregnancyLactationMainBar(null, p);
       }
     }
 
@@ -6626,12 +6831,39 @@ function detectInstructionIcon(text) {
         container.appendChild(row);
       });
 
-      if (isBrandFilterEnabled && hiddenBrandCount > 0) {
+      const otherBrandCount = workingInstructions.filter(i => i.isBrandFiltered).length;
+      if (otherBrandCount > 0) {
         const notice = document.createElement("div");
-        notice.className = "brand-filter-notice";
+        notice.className = "brand-filter-notice" + (!isBrandFilterEnabled ? " active-shown" : "");
         notice.style.marginBottom = "12px";
         notice.style.marginTop = "0px";
-        notice.innerHTML = `<i class="fas fa-filter"></i> <span>تم إخفاء ${hiddenBrandCount} تعليمات خاصة ببراندات تجارية أخرى غير مطابقة للصنف. (انقر لإظهار كافة البراندات)</span>`;
+        notice.style.cursor = "pointer";
+        
+        if (isBrandFilterEnabled) {
+          notice.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-filter" style="color:#d97706; font-size:14px;"></i>
+                <span>تم إخفاء <b>${otherBrandCount}</b> تعليمات خاصة ببراندات تجارية أخرى غير مطابقة للصنف.</span>
+              </div>
+              <span style="font-weight:800; text-decoration:underline; background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:6px; font-size:12px;">
+                انقر لإظهار كافة البراندات ▾
+              </span>
+            </div>
+          `;
+        } else {
+          notice.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-eye" style="color:#2563eb; font-size:15px;"></i>
+                <span>يتم حالياً عرض تعليمات البراندات الأخرى (<b>${otherBrandCount}</b> تعليمات).</span>
+              </div>
+              <span style="font-weight:800; text-decoration:underline; background:#dbeafe; color:#1d4ed8; padding:3px 10px; border-radius:6px; font-size:12px;">
+                <i class="fas fa-filter"></i> انقر لإعادة إخفائها (تفعيل الفلترة) ▴
+              </span>
+            </div>
+          `;
+        }
         notice.onclick = () => toggleBrandFilter();
         container.prepend(notice);
       }
@@ -6648,6 +6880,7 @@ function detectInstructionIcon(text) {
         syncCurrentItemToBatch();
         renderInstructionsChecklist();
         renderModalLabels();
+        updatePregnancyLactationMainBar(null, p);
       }
     }
 
@@ -8069,6 +8302,194 @@ function detectInstructionIcon(text) {
     function togglePatientEduLang() {
       currentEduLang = currentEduLang === 'ar' ? 'en' : 'ar';
       renderPatientEducationModalContent();
+    }
+
+    // =========================================================
+    // Pregnancy & Lactation Clinical Guidance Logic (Lexicomp & DynaMedex)
+    // =========================================================
+    function resolvePregnancyLactation(rawActive, rawTrade, slug) {
+      const db = window.PREGNANCY_LACTATION_DATA;
+      if (!db) return null;
+
+      const candidates = [slug, rawActive, rawTrade].filter(Boolean);
+      for (const c of candidates) {
+        const rawSlug = String(c).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const cleanSlug = (typeof cleanStringForMatching === 'function') ? cleanStringForMatching(c) : rawSlug;
+        const alias = (typeof DRUG_CLINICAL_ALIASES !== 'undefined') ? (DRUG_CLINICAL_ALIASES[rawSlug] || DRUG_CLINICAL_ALIASES[cleanSlug]) : null;
+
+        if (db[rawSlug]) return db[rawSlug];
+        if (db[cleanSlug]) return db[cleanSlug];
+        if (alias && db[alias]) return db[alias];
+      }
+
+      if (rawActive) {
+        const cleanActive = (typeof cleanDrugActiveToken === 'function') ? cleanDrugActiveToken(rawActive) : rawActive.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const alias = (typeof DRUG_CLINICAL_ALIASES !== 'undefined') ? DRUG_CLINICAL_ALIASES[cleanActive] : null;
+        if (alias && db[alias]) return db[alias];
+        if (db[cleanActive]) return db[cleanActive];
+
+        for (const [k, v] of Object.entries(db)) {
+          if (v.synonyms && (v.synonyms.includes(cleanActive) || v.synonyms.includes(rawActive.toLowerCase().trim()))) {
+            return v;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function updatePregnancyLactationMainBar(drug, product) {
+      const bar = document.getElementById("mainPregLactSummaryBar");
+      if (!bar) return;
+
+      const p = product || currentLoadedProduct;
+      const rawActive = p ? (p.active || p.activeIngredient || '') : '';
+      const rawTrade = p ? (p.descEn || p.brand || '') : '';
+      const slug = drug ? drug.slug : '';
+
+      const info = resolvePregnancyLactation(rawActive, rawTrade, slug);
+      if (!info) {
+        bar.style.display = "none";
+        return;
+      }
+
+      bar.style.display = "flex";
+      const preg = info.pregnancy;
+      const lact = info.lactation;
+
+      const catBadge = document.getElementById("mainPregCatBadge");
+      const pregText = document.getElementById("mainPregText");
+      const lactBadge = document.getElementById("mainLactBadge");
+      const lactText = document.getElementById("mainLactText");
+
+      if (catBadge) {
+        const cat = preg.category || 'N/A';
+        catBadge.textContent = cat !== 'N/A' ? `Cat ${cat}` : 'PLLR';
+        if (cat === 'A' || cat === 'B') catBadge.style.background = '#059669';
+        else if (cat === 'C') catBadge.style.background = '#d97706';
+        else if (cat === 'D') catBadge.style.background = '#ea580c';
+        else if (cat === 'X') catBadge.style.background = '#dc2626';
+        else catBadge.style.background = '#64748b';
+      }
+
+      if (pregText) {
+        const statusLabel = (preg.status === 'safe') ? 'آمن للاستخدام' : ((preg.status === 'caution') ? 'يُستخدم بحذر' : ((preg.status === 'risk') ? 'مخاطر محتملة' : ((preg.status === 'contraindicated') ? 'ممنوع تماماً' : 'إشراف طبي')));
+        pregText.textContent = `الحمل: ${statusLabel}`;
+      }
+
+      if (lactBadge) {
+        if (lact.status === 'safe') {
+          lactBadge.style.background = '#059669';
+          lactBadge.innerHTML = '🤱';
+        } else if (lact.status === 'avoid') {
+          lactBadge.style.background = '#dc2626';
+          lactBadge.innerHTML = '🚫 🤱';
+        } else {
+          lactBadge.style.background = '#d97706';
+          lactBadge.innerHTML = '⚠️ 🤱';
+        }
+      }
+
+      if (lactText) {
+        const lactLabel = (lact.status === 'safe') ? 'آمن ومناسب' : ((lact.status === 'avoid') ? 'غير موصى به / ممنوع' : 'بحذر مع المراقبة');
+        lactText.textContent = `الرضاعة: ${lactLabel}`;
+      }
+    }
+
+    function renderPregLactModalCard(drug, lang = 'ar') {
+      const card = document.getElementById("cardEduPregLact");
+      const body = document.getElementById("bodyEduPregLact");
+      if (!card || !body) return;
+
+      const rawActive = currentMedication ? currentMedication.activeIngredient : '';
+      const rawTrade = currentMedication ? currentMedication.tradeNameEn : '';
+      const slug = drug ? drug.slug : '';
+
+      const info = resolvePregnancyLactation(rawActive, rawTrade, slug);
+      if (!info) {
+        card.style.display = "none";
+        return;
+      }
+
+      card.style.display = "block";
+      const isAr = (lang === 'ar');
+      const preg = info.pregnancy;
+      const lact = info.lactation;
+      const cat = preg.category || 'None';
+
+      const pregSummary = isAr ? (preg.simpleSummaryAr || preg.simpleSummaryEn) : (preg.simpleSummaryEn || preg.simpleSummaryAr);
+      const lactSummary = isAr ? (lact.simpleSummaryAr || lact.simpleSummaryEn) : (lact.simpleSummaryEn || lact.simpleSummaryAr);
+
+      body.innerHTML = `
+        <div class="preg-lact-container">
+          <!-- Pregnancy Card -->
+          <div class="preg-lact-box preg-box">
+            <div class="preg-lact-box-header">
+              <div class="cat-badge-circle cat-${cat}" title="FDA Pregnancy Category ${cat}">${cat !== 'None' ? cat : 'Rx'}</div>
+              <div>
+                <h4 class="preg-lact-title">${isAr ? 'الحمل وسلامة الجنين (Pregnancy Safety)' : 'Pregnancy & Fetal Safety'}</h4>
+                <div class="preg-lact-subtitle" style="color: ${cat === 'A' || cat === 'B' ? '#059669' : (cat === 'C' ? '#d97706' : (cat === 'D' ? '#ea580c' : '#dc2626'))}">
+                  ${cat !== 'None' ? (isAr ? `فئة السلامة: Category ${cat}` : `FDA Category: ${cat}`) : (isAr ? 'إرشادات السلامة (PLLR)' : 'Prescription PLLR Guidance')}
+                </div>
+              </div>
+            </div>
+            
+            <div class="preg-lact-meaning">
+              <i class="fas fa-shield-alt" style="color:#db2777; margin-left:6px;"></i>
+              <span>${pregSummary}</span>
+            </div>
+
+            ${(preg.lexidrugs || preg.dynamedex) ? `
+              <button type="button" class="btn-more-details" onclick="toggleDetailsDrawer('drawerPregDetails')">
+                <i class="fas fa-microscope"></i>
+                <span>${isAr ? 'تفاصيل المراجع السريرية (Lexi & DynaMedex) ▾' : 'Clinical Evidence & Monographs ▾'}</span>
+              </button>
+              <div class="details-drawer" id="drawerPregDetails">
+                ${preg.lexidrugs ? `<div style="margin-bottom:8px;"><b>📘 Lexicomp Pregnancy Considerations:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${preg.lexidrugs}</p></div>` : ''}
+                ${preg.dynamedex ? `<div><b>📗 DynaMedex Teratogenicity & Fetal Risk:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${preg.dynamedex}</p></div>` : ''}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Lactation Card -->
+          <div class="preg-lact-box lact-box">
+            <div class="preg-lact-box-header">
+              <div class="lact-badge-circle lact-${lact.status}">
+                ${lact.status === 'safe' ? '<i class="fas fa-baby"></i>' : (lact.status === 'avoid' ? '<i class="fas fa-ban"></i>' : '<i class="fas fa-exclamation"></i>')}
+              </div>
+              <div>
+                <h4 class="preg-lact-title">${isAr ? 'الرضاعة الطبيعية (Breastfeeding Safety)' : 'Breastfeeding & Lactation'}</h4>
+                <div class="preg-lact-subtitle" style="color: ${lact.status === 'safe' ? '#059669' : (lact.status === 'avoid' ? '#dc2626' : '#d97706')}">
+                  ${lact.status === 'safe' ? (isAr ? 'آمن ومتوافق مع الرضاعة' : 'Compatible with Breastfeeding') : (lact.status === 'avoid' ? (isAr ? 'غير موصى به / تجنب الرضاعة' : 'Avoid / Contraindicated') : (isAr ? 'بحذر مع مراقبة الرضيع' : 'Use with Caution - Monitor Infant'))}
+                </div>
+              </div>
+            </div>
+
+            <div class="preg-lact-meaning">
+              <i class="fas fa-heart" style="color:#059669; margin-left:6px;"></i>
+              <span>${lactSummary}</span>
+            </div>
+
+            ${(lact.lexidrugs || lact.dynamedex) ? `
+              <button type="button" class="btn-more-details" onclick="toggleDetailsDrawer('drawerLactDetails')">
+                <i class="fas fa-microscope"></i>
+                <span>${isAr ? 'تفاصيل المراجع السريرية (Lexi & DynaMedex) ▾' : 'Clinical Evidence & Monographs ▾'}</span>
+              </button>
+              <div class="details-drawer" id="drawerLactDetails">
+                ${lact.lexidrugs ? `<div style="margin-bottom:8px;"><b>📘 Lexicomp Breast-Feeding Considerations:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${lact.lexidrugs}</p></div>` : ''}
+                ${lact.dynamedex ? `<div><b>📗 DynaMedex Infant Risk Assessment:</b><p style="margin:4px 0 0 0; white-space:pre-line;">${lact.dynamedex}</p></div>` : ''}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleDetailsDrawer(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+      }
     }
 
     async function renderPatientEducationModalContent() {
