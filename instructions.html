@@ -3856,7 +3856,7 @@ function detectInstructionIcon(text) {
   -->
   <header class="app-header">
     <div class="brand-group">
-      <div class="brand-icon">
+      <div class="brand-icon" id="mainBrandIcon">
         <img src="aldawaa_logo.png" alt="صيدليات الدواء" onerror="this.onerror=null; this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ8YJ2YMLZM2YLJNtxv1FoR-ZxjDjfKhovPjdmLB5ldMTdMtrB3KG5DdH_&s=10'">
       </div>
       <div class="brand-info">
@@ -3866,19 +3866,19 @@ function detectInstructionIcon(text) {
     </div>
 
     <!-- Pharmacist Mohamed Kholeif Premium Profile & WhatsApp -->
-    <div class="header-pharmacist-badge">
-      <div class="ph-avatar-wrapper">
+    <div class="header-pharmacist-badge" id="headerPharmacistBadge">
+      <div class="ph-avatar-wrapper" id="headerPhAvatarWrapper">
         <img src="pharmacist_photo.png" alt="Ph: Mohamed Kholeif" class="header-ph-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Mohamed+Kholeif&background=0284c7&color=fff'">
         <span class="ph-online-pulse" title="صيدلي معتمد متصل"></span>
       </div>
       <div class="ph-info-block">
         <div class="ph-name-row">
-          <span class="ph-name">Ph: Mohamed Kholeif</span>
+          <span class="ph-name" id="headerPhName">Ph: Mohamed Kholeif</span>
           <span class="ph-badge-verified" title="صيدلي استشاري معتمد"><i class="fas fa-check-circle"></i></span>
         </div>
-        <span class="ph-role-title">صيدلي استشاري • صيدليات الدواء</span>
+        <span class="ph-role-title" id="headerPhRole">صيدلي استشاري • صيدليات الدواء</span>
       </div>
-      <a href="https://wa.me/966541932559" target="_blank" rel="noopener noreferrer" class="ph-whatsapp-btn" title="تواصل مباشر عبر واتساب">
+      <a href="https://wa.me/966541932559" id="headerPhWhatsAppBtn" target="_blank" rel="noopener noreferrer" class="ph-whatsapp-btn" title="تواصل مباشر عبر واتساب">
         <i class="fab fa-whatsapp"></i>
       </a>
     </div>
@@ -4366,18 +4366,23 @@ function detectInstructionIcon(text) {
         <!-- Display & Privacy Toggles -->
         <div class="setting-group" style="background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px;">
           <label style="font-size: 13px; font-weight: 800; color: #1e293b;">
-            <i class="fas fa-eye-slash" style="color: #ea580c; margin-left: 6px;"></i>
-            خيارات العرض في صفحة دليل المريض:
+            <i class="fas fa-sliders-h" style="color: #0284c7; margin-left: 6px;"></i>
+            خيارات العرض والخصوصية (Display & Privacy):
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
+            <input type="checkbox" id="settingHideAldawaaLogo" checked style="width: 17px; height: 17px; cursor: pointer;">
+            <span>إخفاء لوجو صيدليات الدواء (في الهيدر وصفحة تثقيف المريض عبر QR)</span>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
+            <input type="checkbox" id="settingHidePhotoOnly" checked style="width: 17px; height: 17px; cursor: pointer;">
+            <span>إخفاء صورة الصيدلي الشخصية (في الهيدر وصفحة تثقيف المريض)</span>
           </label>
 
           <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
             <input type="checkbox" id="settingHidePharmacistCard" style="width: 17px; height: 17px; cursor: pointer;">
             <span>إخفاء بطاقة الصيدلي كاملة (الاسم والصورة) وإظهار بيانات الفرع فقط</span>
-          </label>
-
-          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
-            <input type="checkbox" id="settingHidePhotoOnly" style="width: 17px; height: 17px; cursor: pointer;">
-            <span>إخفاء صورة الصيدلي فقط مع إبقاء الاسم واللقب</span>
           </label>
 
           <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer;">
@@ -8397,10 +8402,11 @@ function detectInstructionIcon(text) {
         console.error("Error initializing master database:", err);
       }
 
-      // 4. Render initial Batch Queue Tray & Branch Badges
+      // 4. Render initial Batch Queue Tray, Branch Badges & Header Branding
       try {
         updateBatchQueueUI();
         updateBranchUIBadges();
+        applyHeaderBrandingUI();
       } catch (err) {
         console.error("Error updating batch queue / branch badges:", err);
       }
@@ -8513,9 +8519,10 @@ function detectInstructionIcon(text) {
       phone: "",
       locationUrl: "",
       pharmacistName: "",
-      hidePharmacistCard: true,
+      hideAldawaaLogo: true,
+      hidePharmacistCard: false,
       hidePhotoOnly: true,
-      printFooterBranch: false
+      printFooterBranch: true
     };
 
     function getBranchSettings() {
@@ -8523,7 +8530,16 @@ function detectInstructionIcon(text) {
         const raw = localStorage.getItem("rx_branch_settings");
         if (raw) {
           const parsed = JSON.parse(raw);
-          return { ...DEFAULT_BRANCH_SETTINGS, ...parsed };
+          return {
+            branch: parsed.branch || "",
+            phone: parsed.phone || "",
+            locationUrl: parsed.locationUrl || "",
+            pharmacistName: parsed.pharmacistName || "",
+            hideAldawaaLogo: (typeof parsed.hideAldawaaLogo !== 'undefined') ? !!parsed.hideAldawaaLogo : true,
+            hidePharmacistCard: !!parsed.hidePharmacistCard,
+            hidePhotoOnly: (typeof parsed.hidePhotoOnly !== 'undefined') ? !!parsed.hidePhotoOnly : true,
+            printFooterBranch: (typeof parsed.printFooterBranch !== 'undefined') ? !!parsed.printFooterBranch : true
+          };
         }
       } catch (e) {}
       return { ...DEFAULT_BRANCH_SETTINGS };
@@ -8534,6 +8550,7 @@ function detectInstructionIcon(text) {
         localStorage.setItem("rx_branch_settings", JSON.stringify(settings));
       } catch (e) {}
       updateBranchUIBadges();
+      applyHeaderBrandingUI();
     }
 
     function openBranchSettingsModal() {
@@ -8546,6 +8563,8 @@ function detectInstructionIcon(text) {
       if (locEl) locEl.value = settings.locationUrl || "";
       const pnEl = document.getElementById("settingPharmacistName");
       if (pnEl) pnEl.value = settings.pharmacistName || "";
+      const hlEl = document.getElementById("settingHideAldawaaLogo");
+      if (hlEl) hlEl.checked = !!settings.hideAldawaaLogo;
       const hcEl = document.getElementById("settingHidePharmacistCard");
       if (hcEl) hcEl.checked = !!settings.hidePharmacistCard;
       const hpoEl = document.getElementById("settingHidePhotoOnly");
@@ -8568,6 +8587,7 @@ function detectInstructionIcon(text) {
         phone: (document.getElementById("settingPharmacyPhone")?.value || "").trim(),
         locationUrl: (document.getElementById("settingBranchLocation")?.value || "").trim(),
         pharmacistName: (document.getElementById("settingPharmacistName")?.value || "").trim(),
+        hideAldawaaLogo: !!document.getElementById("settingHideAldawaaLogo")?.checked,
         hidePharmacistCard: !!document.getElementById("settingHidePharmacistCard")?.checked,
         hidePhotoOnly: !!document.getElementById("settingHidePhotoOnly")?.checked,
         printFooterBranch: document.getElementById("settingPrintFooterBranch") ? document.getElementById("settingPrintFooterBranch").checked : true
@@ -8584,6 +8604,30 @@ function detectInstructionIcon(text) {
       }
       if (typeof renderPatientEducationModalContent === 'function' && document.getElementById('patientEduModal')?.style.display === 'flex') {
         renderPatientEducationModalContent();
+      }
+    }
+
+    function applyHeaderBrandingUI() {
+      const settings = getBranchSettings();
+      const brandIcon = document.getElementById("mainBrandIcon");
+      if (brandIcon) {
+        brandIcon.style.display = settings.hideAldawaaLogo ? "none" : "";
+      }
+      const phBadge = document.getElementById("headerPharmacistBadge");
+      const phAvatar = document.getElementById("headerPhAvatarWrapper");
+      const phName = document.getElementById("headerPhName");
+      if (phBadge) {
+        if (settings.hidePharmacistCard) {
+          phBadge.style.display = "none";
+        } else {
+          phBadge.style.display = "flex";
+          if (phAvatar) {
+            phAvatar.style.display = settings.hidePhotoOnly ? "none" : "";
+          }
+          if (phName && settings.pharmacistName) {
+            phName.textContent = settings.pharmacistName;
+          }
+        }
       }
     }
 
@@ -8625,6 +8669,9 @@ function detectInstructionIcon(text) {
       if (settings) {
         if (settings.branch && settings.branch.trim()) queryParams += `&b=${encodeURIComponent(settings.branch.trim())}`;
         if (settings.phone && settings.phone.trim()) queryParams += `&p=${encodeURIComponent(settings.phone.trim())}`;
+        queryParams += `&hl=${settings.hideAldawaaLogo ? '1' : '0'}`;
+        queryParams += `&hpo=${settings.hidePhotoOnly ? '1' : '0'}`;
+        if (settings.hidePharmacistCard) queryParams += `&hp=1`;
       }
 
       if (lang && lang !== 'ar') queryParams += `&l=${lang}`;
@@ -8648,7 +8695,9 @@ function detectInstructionIcon(text) {
       const settings = (typeof getBranchSettings === 'function') ? getBranchSettings() : null;
       const bKey = settings ? (settings.branch || '') : '';
       const pKey = settings ? (settings.phone || '') : '';
-      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}`;
+      const hlKey = settings ? (settings.hideAldawaaLogo ? '1' : '0') : '1';
+      const hpoKey = settings ? (settings.hidePhotoOnly ? '1' : '0') : '1';
+      const cacheKey = `${cleanSlug}_${code}_${lang}_b${bKey}_p${pKey}_hl${hlKey}_hpo${hpoKey}`;
       if (patientEduQrCache.has(cacheKey)) {
         return patientEduQrCache.get(cacheKey);
       }

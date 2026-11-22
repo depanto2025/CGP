@@ -1067,8 +1067,11 @@
   <header class="top-header">
     <div class="header-content">
       <div class="header-title-wrap">
-        <div class="header-logo-box">
+        <div class="header-logo-box" id="headerLogoBox">
           <img src="aldawaa_logo.png" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ8YJ2YMLZM2YLJNtxv1FoR-ZxjDjfKhovPjdmLB5ldMTdMtrB3KG5DdH_&s=10'" class="aldawaa-brand-logo" alt="صيدليات الدواء">
+        </div>
+        <div class="header-icon" id="headerGenericIcon" style="display:none;">
+          <i class="fas fa-file-prescription"></i>
         </div>
         <div>
           <h1 class="header-title" id="uiHeaderTitle">دليل تثقيف المريض</h1>
@@ -1128,6 +1131,9 @@
         <div class="ph-avatar-box" id="phAvatarBox">
           <img src="pharmacist_photo.png" onerror="this.src='https://raw.githubusercontent.com/meralmohamed121022-cyber/Drug-Monograph/refs/heads/main/6_20251129_184528_0005.png'" class="ph-avatar-img" id="phAvatarImg" alt="Pharmacist">
           <span class="ph-online-dot" title="متصل الآن لخدمتك"></span>
+        </div>
+        <div class="ph-avatar-icon" id="phAvatarIcon" style="display:none; width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg, #e0f2fe, #bae6fd); color:#0284c7; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+          <i class="fas fa-user-md"></i>
         </div>
         <div class="ph-details">
           <span class="ph-name" id="phNameLabel">د. محمد خليف | صيدلي استشاري</span>
@@ -1733,6 +1739,7 @@
       const phoneParam = getUrlParam("p") || getUrlParam("phone");
       const hidePharmParam = getUrlParam("hp");
       const hidePhotoParam = getUrlParam("hpo");
+      const hideLogoParam = getUrlParam("hl");
       const pharmNameParam = getUrlParam("pn") || getUrlParam("name");
       const locParam = getUrlParam("loc") || getUrlParam("map");
 
@@ -1745,8 +1752,39 @@
       const branch = branchParam || (localSettings ? localSettings.branch : "");
       const phone = phoneParam || (localSettings ? localSettings.phone : "");
       const locationUrl = locParam || (localSettings ? localSettings.locationUrl : "");
-      const hidePharm = (hidePharmParam === "1" || hidePharmParam === "true") || (!branchParam && localSettings && localSettings.hidePharmacistCard);
-      const hidePhoto = (hidePhotoParam === "1" || hidePhotoParam === "true") || (!branchParam && localSettings && localSettings.hidePhotoOnly);
+
+      // 0. Aldawaa Logo Visibility (Toggled via settings or URL param &hl=1/0)
+      let hideLogo = true;
+      if (hideLogoParam !== null && hideLogoParam !== "") {
+        hideLogo = (hideLogoParam === "1" || hideLogoParam === "true");
+      } else if (localSettings && typeof localSettings.hideAldawaaLogo !== "undefined") {
+        hideLogo = !!localSettings.hideAldawaaLogo;
+      }
+
+      const logoBox = document.getElementById("headerLogoBox");
+      const genericIcon = document.getElementById("headerGenericIcon");
+      if (logoBox) {
+        logoBox.style.display = hideLogo ? "none" : "flex";
+      }
+      if (genericIcon) {
+        genericIcon.style.display = hideLogo ? "flex" : "none";
+      }
+
+      // Pharmacist Photo & Card Visibility (Toggled via settings or URL params &hpo=1/0 &hp=1/0)
+      let hidePhoto = true;
+      if (hidePhotoParam !== null && hidePhotoParam !== "") {
+        hidePhoto = (hidePhotoParam === "1" || hidePhotoParam === "true");
+      } else if (localSettings && typeof localSettings.hidePhotoOnly !== "undefined") {
+        hidePhoto = !!localSettings.hidePhotoOnly;
+      }
+
+      let hidePharm = false;
+      if (hidePharmParam !== null && hidePharmParam !== "") {
+        hidePharm = (hidePharmParam === "1" || hidePharmParam === "true");
+      } else if (localSettings && typeof localSettings.hidePharmacistCard !== "undefined") {
+        hidePharm = !!localSettings.hidePharmacistCard;
+      }
+
       const pharmName = pharmNameParam || (localSettings ? localSettings.pharmacistName : "د. محمد خليف | صيدلي استشاري");
 
       // 1. Branch Brand Title & Chip
@@ -1816,6 +1854,7 @@
       // 4. Pharmacist Consultation Card (Visibility & Profile)
       const consultCard = document.getElementById("pharmacistConsultCard");
       const avatarBox = document.getElementById("phAvatarBox");
+      const avatarIcon = document.getElementById("phAvatarIcon");
       const nameLabel = document.getElementById("phNameLabel");
       const calloutLabel = document.getElementById("phCalloutLabel");
 
@@ -1826,6 +1865,9 @@
           consultCard.style.display = "block";
           if (avatarBox) {
             avatarBox.style.display = hidePhoto ? "none" : "block";
+          }
+          if (avatarIcon) {
+            avatarIcon.style.display = hidePhoto ? "flex" : "none";
           }
           if (nameLabel && pharmName) {
             nameLabel.textContent = pharmName;
